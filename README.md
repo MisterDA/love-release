@@ -20,7 +20,7 @@ A directory (default is `./releases`) will be created, and filled with the zippe
   - *-w32*,  generates Windows x86 executable 
   - *-w64*,  generates Windows x86_64 executable
 - *-n*,  project's name. By default, the directory's name is used
-- *-r*,  release directory. By default, a subdirectory called 'releases' is created
+- *-r*,  release directory. By default, a subdirectory called `releases` is created
 - *-u*,  company name. Provide it for OSX CFBundleIdentifier, otherwise USER is used
 - *-v*,  love version. Default is 0.8.0. Prior to it, no special Win64 version is available
 
