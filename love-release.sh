@@ -28,6 +28,8 @@ OPTIONS
     -r,  release directory. By default, a subdirectory called 'releases' is created
     -u,  company name. Provide it for OSX CFBundleIdentifier, otherwise USER is used
     -v,  love version. Default is 0.8.0. Prior to it, no special Win64 version is available
+    
+    --refresh,  refresh the cache located in '~/.cache/love-release'
 
 SEE ALSO
     https://www.love2d.org
@@ -126,33 +128,6 @@ function getoptex()
   unset OPTARG
   return 1
 }
-function optlistex
-{
-  local l="$1"
-  local m # mask
-  local r # to store result
-  while [ ${#m} -lt $[${#l}-1] ]; do m="$m?"; done # create a "???..." mask
-  while [ -n "$l" ]
-  do
-    r="${r:+"$r "}${l%$m}" # append the first character of $l to $r
-    l="${l#?}" # cut the first charecter from $l
-    m="${m#?}"  # cut one "?" sign from m
-    if [ -n "${l%%[^:.;]*}" ]
-    then # a special character (";", ".", or ":") was found
-      r="$r${l%$m}" # append it to $r
-      l="${l#?}" # cut the special character from l
-      m="${m#?}"  # cut one more "?" sign
-    fi
-  done
-  echo $r
-}
-function getopt()
-{
-  local optlist=`optlistex "$1"`
-  shift
-  getoptex "$optlist" "$@"
-  return $?
-}
 
 
 ## Set defaults ##
@@ -164,10 +139,11 @@ PROJECT_NAME=${PWD##/*/}
 RELEASE_DIR=$PWD/releases
 COMPANY_NAME=$USER
 LOVE_VERSION=0.8.0
+CACHE_DIR=~/.cache/love-release
 
 
 ## Parsing options ##
-while getopt "hlmw.n:r:u:v:" "$@"
+while getoptex "h; l; m; w. n: r: u: v: refresh" "$@"
 do
   if [ $OPTOPT = "h" ]; then # print help
     echo "$HELP"
@@ -193,6 +169,8 @@ do
     COMPANY_NAME=$OPTARG
   elif [ $OPTOPT = "v" ]; then
     LOVE_VERSION=$OPTARG
+  elif [ $OPTOPT = "refresh" ]; then
+    rm -rf $CACHE_DIR/*
   fi
 done
 shift $[OPTIND-1]
@@ -219,11 +197,17 @@ else
   zip -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 ${RELEASE_DIR##/*/}/ ${RELEASE_DIR##/*/}/* @ $PROJECT_FILES
 fi
 cd $RELEASE_DIR
+mkdir -p $CACHE_DIR
 
 
 ## Windows 32-bits ##
 if [ $RELEASE_WIN_32 = true ]; then
-  wget https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x86.zip
+  if [ -f $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ]; then
+    cp $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ./
+  else
+    wget -O $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x86.zip
+    cp $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ./
+  fi
   unzip -qq love-$LOVE_VERSION-win-x86.zip
   rm -rf $PROJECT_NAME-win-x86.zip 2> /dev/null
   cat love-$LOVE_VERSION-win-x86/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win-x86/$PROJECT_NAME.exe
@@ -234,7 +218,12 @@ fi
 
 ## Windows 64-bits ##
 if [ $LOVE_SUPPORT_WIN_64 = "1" ] &&  [ $RELEASE_WIN_64 = true ]; then
-  wget https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x64.zip
+  if [ -f $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ]; then
+    cp $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ./
+  else
+    wget -O $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x64.zip
+    cp $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ./
+  fi
   unzip -qq love-$LOVE_VERSION-win-x64.zip
   rm -rf $PROJECT_NAME-win-x64.zip 2> /dev/null
   cat love-$LOVE_VERSION-win-x64/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win-x64/$PROJECT_NAME.exe
@@ -245,7 +234,12 @@ fi
 
 ## Mac OS X ##
 if [ $RELEASE_OSX = true ]; then
-  wget https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-macosx-ub.zip
+  if [ -f $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ]; then
+    cp $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ./
+  else
+    wget -O $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-macosx-ub.zip
+    cp $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ./
+  fi
   unzip -qq love-$LOVE_VERSION-macosx-ub.zip
   rm -rf $PROJECT_NAME.app 2> /dev/null
   mv love.app $PROJECT_NAME.app

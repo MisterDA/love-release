@@ -23,6 +23,7 @@ A directory (default is `./releases`) will be created, and filled with the zippe
 - *-r*,  release directory. By default, a subdirectory called `releases` is created
 - *-u*,  company name. Provide it for OSX CFBundleIdentifier, otherwise USER is used
 - *-v*,  love version. Default is 0.8.0. Prior to it, no special Win64 version is available
+- *--refresh*,  refresh the cache located in `~/.cache/love-release`
 
 ### SEE ALSO
 - [https://www.love2d.org](https://www.love2d.org)
