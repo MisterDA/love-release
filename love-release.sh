@@ -188,7 +188,7 @@ LOVE_SUPPORT_WIN_64=`echo "${LOVE_VERSION#[0-9]\.}>=8.0" | bc`
 
 
 ## Releases generation ##
-mkdir -p $RELEASE_DIR
+mkdir -p $RELEASE_DIR $CACHE_DIR
 
 rm -rf $RELEASE_DIR/$PROJECT_NAME.love 2> /dev/null
 if [ -z $PROJECT_FILES ]; then
@@ -197,7 +197,6 @@ else
   zip -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 ${RELEASE_DIR##/*/}/ ${RELEASE_DIR##/*/}/* @ $PROJECT_FILES
 fi
 cd $RELEASE_DIR
-mkdir -p $CACHE_DIR
 
 
 ## Windows 32-bits ##
@@ -241,7 +240,7 @@ if [ $RELEASE_OSX = true ]; then
     cp $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ./
   fi
   unzip -qq love-$LOVE_VERSION-macosx-ub.zip
-  rm -rf $PROJECT_NAME.app 2> /dev/null
+  rm -rf $PROJECT_NAME-osx.zip 2> /dev/null
   mv love.app $PROJECT_NAME.app
   cp $PROJECT_NAME.love $PROJECT_NAME.app/Contents/Resources
 echo '<?xml version="1.0" encoding="UTF-8"?>
