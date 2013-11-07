@@ -184,7 +184,8 @@ if [ $RELEASE_LOVE = false ] && [ $RELEASE_OSX = false ] && [ $RELEASE_WIN_32 = 
   RELEASE_WIN_32=true
   RELEASE_WIN_64=true
 fi
-LOVE_SUPPORT_WIN_64=`echo "${LOVE_VERSION#[0-9]\.}>=8.0" | bc`
+LOVE_VERSION_MAJOR=`echo "$LOVE_VERSION" | grep -Po '^[0-9]+\.?[0-9]*'`
+LOVE_SUPPORT_WIN_64=`echo "$LOVE_VERSION_MAJOR>=0.8" | bc`
 
 
 ## Releases generation ##
