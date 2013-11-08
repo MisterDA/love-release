@@ -73,8 +73,9 @@ function getoptex()
             if [ -z "$OPTARG" ];
             then # error: must have an agrument
               let OPTERR && echo "$0: error: $OPTOPT must have an argument" >&2
-              OPTARG="$OPTOPT";
-              OPTOPT="?"
+              exit
+              # OPTARG="$OPTOPT";
+              # OPTOPT="?"
               return 1;
             fi
             OPTIND=$[OPTIND+1] # skip option's argument
@@ -84,8 +85,9 @@ function getoptex()
             if [ "$opttype" = ";" ];
             then  # error: must not have arguments
               let OPTERR && echo "$0: error: $OPTOPT must not have arguments" >&2
-              OPTARG="$OPTOPT"
-              OPTOPT="?"
+              exit
+              # OPTARG="$OPTOPT"
+              # OPTOPT="?"
               return 1
             fi
             OPTARG=${o#"--$OPTOPT="}
@@ -101,8 +103,9 @@ function getoptex()
             if [ -z "$OPTARG" ]
             then
               echo "$0: error: -$OPTOPT must have an argument" >&2
-              OPTARG="$OPTOPT"
-              OPTOPT="?"
+              exit
+              # OPTARG="$OPTOPT"
+              # OPTOPT="?"
               return 1
             fi
             OPTIND=$[OPTIND+1] # skip option's argument
@@ -124,6 +127,7 @@ function getoptex()
       fi
     done
     echo "$0: error: invalid option: $o"
+    exit
   fi; fi
   OPTOPT="?"
   unset OPTARG
