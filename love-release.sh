@@ -21,14 +21,15 @@ OPTIONS
     -l,  generates a .love file
     -m,  generates a Mac OS X app
     -w,  generates Windows x86 and x86_64 executables
-         -w32,  generates Windows x86 executable 
+         -w32,  generates Windows x86 executable
          -w64,  generates Windows x86_64 executable
-    
+
     -n,  project's name. By default, the directory's name is used
     -r,  release directory. By default, a subdirectory called 'releases' is created
     -u,  company name. Provide it for OSX CFBundleIdentifier, otherwise USER is used
     -v,  love version. Default is 0.8.0. Prior to it, no special Win64 version is available
-    
+         Use '-v dev' for nightly builds
+
     --refresh,  refresh the cache located in '~/.cache/love-release'
 
 SEE ALSO
@@ -139,6 +140,8 @@ PROJECT_NAME=${PWD##/*/}
 RELEASE_DIR=$PWD/releases
 COMPANY_NAME=$USER
 LOVE_VERSION=0.8.0
+LOVE_VERSION_MAJOR=0.8
+LOVE_SUPPORT_WIN_64=1
 CACHE_DIR=~/.cache/love-release
 
 
@@ -169,6 +172,13 @@ do
     COMPANY_NAME=$OPTARG
   elif [ $OPTOPT = "v" ]; then
     LOVE_VERSION=$OPTARG
+    if [ $LOVE_VERSION = "dev" ]; then
+      LOVE_VERSION_MAJOR="dev"
+      LOVE_SUPPORT_WIN_64="1"
+    else
+      LOVE_VERSION_MAJOR=`echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*'`
+      LOVE_SUPPORT_WIN_64=`echo "$LOVE_VERSION_MAJOR>=0.8" | bc`
+    fi
   elif [ $OPTOPT = "refresh" ]; then
     rm -rf $CACHE_DIR/*
   fi
@@ -184,11 +194,10 @@ if [ $RELEASE_LOVE = false ] && [ $RELEASE_OSX = false ] && [ $RELEASE_WIN_32 = 
   RELEASE_WIN_32=true
   RELEASE_WIN_64=true
 fi
-LOVE_VERSION_MAJOR=`echo "$LOVE_VERSION" | grep -Po '^[0-9]+\.?[0-9]*'`
-LOVE_SUPPORT_WIN_64=`echo "$LOVE_VERSION_MAJOR>=0.8" | bc`
 
 
 ## Releases generation ##
+RELEASE_DIR=$RELEASE_DIR/$LOVE_VERSION
 mkdir -p $RELEASE_DIR $CACHE_DIR
 
 rm -rf $RELEASE_DIR/$PROJECT_NAME.love 2> /dev/null
@@ -205,10 +214,15 @@ if [ $RELEASE_WIN_32 = true ]; then
   if [ -f $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ]; then
     cp $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ./
   else
-    wget -O $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x86.zip
+    if [ $LOVE_VERSION = "dev" ]; then
+      wget -O $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip https://bitbucket.org/Boolsheet/love_winbin/get/dev-x86.zip
+    else
+      wget -O $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x86.zip
+    fi
     cp $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ./
   fi
   unzip -qq love-$LOVE_VERSION-win-x86.zip
+  mv `/bin/ls -1 | grep -Eo '^Boolsheet-love_winbin-[0-9a-f]{12}$'` love-$LOVE_VERSION-win-x86 2> /dev/null
   rm -rf $PROJECT_NAME-win-x86.zip 2> /dev/null
   cat love-$LOVE_VERSION-win-x86/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win-x86/$PROJECT_NAME.exe
   rm love-$LOVE_VERSION-win-x86/love.exe
@@ -221,10 +235,15 @@ if [ $LOVE_SUPPORT_WIN_64 = "1" ] &&  [ $RELEASE_WIN_64 = true ]; then
   if [ -f $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ]; then
     cp $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ./
   else
-    wget -O $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x64.zip
+    if [ $LOVE_VERSION = "dev" ]; then
+      wget -O $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip https://bitbucket.org/Boolsheet/love_winbin/get/dev-x64.zip
+    else
+      wget -O $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x64.zip
+    fi
     cp $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ./
   fi
   unzip -qq love-$LOVE_VERSION-win-x64.zip
+  mv `/bin/ls -1 | grep -Eo '^Boolsheet-love_winbin-[0-9a-f]{12}$'` love-$LOVE_VERSION-win-x64 2> /dev/null
   rm -rf $PROJECT_NAME-win-x64.zip 2> /dev/null
   cat love-$LOVE_VERSION-win-x64/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win-x64/$PROJECT_NAME.exe
   rm love-$LOVE_VERSION-win-x64/love.exe
@@ -237,10 +256,16 @@ if [ $RELEASE_OSX = true ]; then
   if [ -f $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ]; then
     cp $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ./
   else
-    wget -O $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-macosx-ub.zip
+    if [ $LOVE_VERSION = "dev" ]; then
+      wget -O $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip https://bitbucket.org/slime73/love_macbin/get/tip.zip
+    else
+      wget -O $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-macosx-ub.zip
+    fi
     cp $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ./
   fi
   unzip -qq love-$LOVE_VERSION-macosx-ub.zip
+  mv `/bin/ls -1 | grep -Eo '^slime73-love_macbin-[0-9a-f]{12}$'`/love.app ./love.app 2> /dev/null
+  rm -rf `/bin/ls -1 | grep -Eo '^slime73-love_macbin-[0-9a-f]{12}$'` 2> /dev/null
   rm -rf $PROJECT_NAME-osx.zip 2> /dev/null
   mv love.app $PROJECT_NAME.app
   cp $PROJECT_NAME.love $PROJECT_NAME.app/Contents/Resources
