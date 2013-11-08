@@ -184,7 +184,7 @@ do
       LOVE_SUPPORT_WIN_64=`echo "$LOVE_VERSION_MAJOR>=0.8" | bc`
     fi
   elif [ $OPTOPT = "refresh" ]; then
-    rm -rf $CACHE_DIR/*
+    rm -rf $CACHE_DIR
   fi
 done
 shift $[OPTIND-1]
