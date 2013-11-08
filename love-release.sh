@@ -198,6 +198,7 @@ fi
 
 ## Releases generation ##
 RELEASE_DIR=$RELEASE_DIR/$LOVE_VERSION
+CACHE_DIR=$CACHE_DIR/$LOVE_VERSION
 mkdir -p $RELEASE_DIR $CACHE_DIR
 
 rm -rf $RELEASE_DIR/$PROJECT_NAME.love 2> /dev/null
