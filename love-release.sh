@@ -12,6 +12,7 @@ DESCRIPTION
     By default, the script generates releases for every system. But if you add options, 
     it will generate releases only for the specified systems.
 
+    Game releases will be named after your project's root directory.
     A directory (default is './releases') will be created, and filled with the zipped releases:
         'YourGame-win-x86.zip', 'YourGame-win-x64.zip', 'YourGame-osx.zip' and 'YourGame.love'.
 
@@ -24,7 +25,6 @@ OPTIONS
          -w32,  generates Windows x86 executable
          -w64,  generates Windows x86_64 executable
 
-    -n,  project's name. By default, the directory's name is used
     -r,  release directory. By default, a subdirectory called 'releases' is created
     -u,  company name. Provide it for OSX CFBundleIdentifier, otherwise USER is used
     -v,  love version. Default is 0.8.0. Prior to it, no special Win64 version is available
@@ -147,10 +147,82 @@ LOVE_VERSION=0.8.0
 LOVE_VERSION_MAJOR=0.8
 LOVE_SUPPORT_WIN_64=1
 CACHE_DIR=~/.cache/love-release
+CONFIG_FILE=~/.config/love-release.cfg
+CONFIG_FOUND=false
+
+
+## Config file ##
+if [ -f $CONFIG_FILE ]; then
+  . $CONFIG_FILE
+  for (( i=0; i<${#PROJECTS[@]}; i++ ))
+  do
+    if [ ${PROJECTS[$i]} = $PROJECT_NAME ]; then
+      CONFIG_FOUND=true
+      RELEASE_DIR_TMP=${CFG[$PROJECT_NAME"_release-dir"]}
+      if [ -n $RELEASE_DIR_TMP ]; then
+        if [ ${RELEASE_DIR_TMP:0:1} != '/' ] && [ ${RELEASE_DIR_TMP:0:1} != '~' ]; then
+          RELEASE_DIR=$PWD/$RELEASE_DIR_TMP
+        else
+          RELEASE_DIR=$RELEASE_DIR_TMP
+        fi
+      fi
+      LOVE_VERSION_TMP=${CFG[$PROJECT_NAME"_love-version"]}
+      if [ -n $LOVE_VERSION_TMP ]; then
+        LOVE_VERSION=$LOVE_VERSION_TMP
+        if [ $LOVE_VERSION_TMP = "dev" ]; then
+          LOVE_VERSION_MAJOR="dev"
+          LOVE_SUPPORT_WIN_64="1"
+        else
+          LOVE_VERSION_MAJOR=`echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*'`
+          LOVE_SUPPORT_WIN_64=`echo "$LOVE_VERSION_MAJOR>=0.8" | bc`
+        fi
+    fi
+      RELEASE_LOVE_TMP=${CFG[$PROJECT_NAME"_release-love"]}
+      if [ -n $RELEASE_LOVE_TMP ]; then
+        RELEASE_LOVE=$RELEASE_LOVE_TMP
+      fi
+      RELEASE_OSX_TMP=${CFG[$PROJECT_NAME"_release-osx"]}
+      if [ -n $RELEASE_OSX_TMP ]; then
+        RELEASE_OSX=$RELEASE_OSX_TMP
+      fi
+      RELEASE_WIN_32_TMP=${CFG[$PROJECT_NAME"_release-win32"]}
+      if [ -n $RELEASE_WIN_32_TMP ]; then
+        RELEASE_WIN_32=$RELEASE_WIN_32_TMP
+      fi
+      RELEASE_WIN_64_TMP=${CFG[$PROJECT_NAME"_release-win64"]}
+      if [ -n $RELEASE_WIN_64_TMP ]; then
+        RELEASE_WIN_64=$RELEASE_WIN_64_TMP
+      fi
+      COMPANY_NAME_TMP=${CFG[$PROJECT_NAME"_company-name"]}
+      if [ -n $COMPANY_NAME_TMP ]; then
+        COMPANY_NAME=$COMPANY_NAME_TMP
+      fi
+    fi
+  done
+else
+echo '## Config file for love-release.sh ##
+
+# Declare your projects here, to automate release process and not having to retype every options
+# The name MUST be the same as your projects root directory
+PROJECTS=()
+
+# First project is PROJECTS[0]. You can use PROJECTS[i] and do ((i++)) after each configuration
+declare -A CFG
+i=0
+
+# CFG[${PROJECTS[i]}"_company-name"]="MyCompany"
+# CFG[${PROJECTS[i]}"_love-version"]="0.8.0"
+# CFG[${PROJECTS[i]}"_release-dir"]="releases"
+# CFG[${PROJECTS[i]}"_release-love"]=true
+# CFG[${PROJECTS[i]}"_release-osx"]=true
+# CFG[${PROJECTS[i]}"_release-win32"]=true
+# CFG[${PROJECTS[i]}"_release-win64"]=true
+# ((i++))' > $CONFIG_FILE
+fi
 
 
 ## Parsing options ##
-while getoptex "h; l; m; w. n: r: u: v: refresh" "$@"
+while getoptex "h; l; m; w. r: u: v: refresh" "$@"
 do
   if [ $OPTOPT = "h" ]; then # print help
     echo "$HELP"
@@ -168,8 +240,6 @@ do
       RELEASE_WIN_32=true
       RELEASE_WIN_64=true
     fi
-  elif [ $OPTOPT = "n" ]; then
-    PROJECT_NAME=$OPTARG
   elif [ $OPTOPT = "r" ]; then
     RELEASE_DIR=$OPTARG
   elif [ $OPTOPT = "u" ]; then
@@ -192,7 +262,7 @@ for file in "$@"
 do
   PROJECT_FILES="$PROJECT_FILES $file"
 done
-if [ $RELEASE_LOVE = false ] && [ $RELEASE_OSX = false ] && [ $RELEASE_WIN_32 = false ] && [ $RELEASE_WIN_64 = false ]; then
+if [ $RELEASE_LOVE = false ] && [ $RELEASE_OSX = false ] && [ $RELEASE_WIN_32 = false ] && [ $RELEASE_WIN_64 = false ] && [ $CONFIG_FOUND = false ]; then
   RELEASE_LOVE=true
   RELEASE_OSX=true
   RELEASE_WIN_32=true
@@ -237,7 +307,7 @@ if [ $RELEASE_WIN_32 = true ]; then
 fi
 
 ## Windows 64-bits ##
-if [ $LOVE_SUPPORT_WIN_64 = "1" ] &&  [ $RELEASE_WIN_64 = true ]; then
+if [ $LOVE_SUPPORT_WIN_64 = "1" ] && [ $RELEASE_WIN_64 = true ]; then
   if [ -f $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ]; then
     cp $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ./
   else
