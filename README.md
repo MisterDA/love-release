@@ -19,12 +19,12 @@ A directory (default is `./releases`) will be created, and filled with the zippe
 - *-w*,  generates Windows x86 and x86_64 executables
   - *-w32*,  generates Windows x86 executable
   - *-w64*,  generates Windows x86_64 executable
-- *-n*,  project's name. By default, the directory's name is used
 - *-r*,  release directory. By default, a subdirectory called `releases` is created
 - *-u*,  company name. Provide it for OSX CFBundleIdentifier, otherwise USER is used
 - *-v*,  love version. Default is 0.8.0. Prior to it, no special Win64 version is available  
          Use `-v dev` for nightly builds
 - *--refresh*,  refresh the cache located in `~/.cache/love-release`
+- *--debug*,    dumps script variables. Does not make releases
 
 ### SEE ALSO
 - [https://www.love2d.org](https://www.love2d.org)

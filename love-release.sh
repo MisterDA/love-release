@@ -31,6 +31,7 @@ OPTIONS
          Use '-v dev' for nightly builds
 
     --refresh,  refresh the cache located in '~/.cache/love-release'
+    --debug,    dumps script variables. Does not make releases
 
 SEE ALSO
     https://www.love2d.org
@@ -135,6 +136,25 @@ function getoptex()
 }
 
 
+## Debug function ##
+function debug()
+{
+  echo "PROJECT_NAME: $PROJECT_NAME"
+  echo "COMPANY_NAME: $COMPANY_NAME"
+  echo "RELEASE_LOVE: $RELEASE_LOVE"
+  echo "RELEASE_OSX: $RELEASE_OSX"
+  echo "RELEASE_WIN_32: $RELEASE_WIN_32"
+  echo "RELEASE_WIN_64: $RELEASE_WIN_64"
+  echo "LOVE_VERSION: $LOVE_VERSION"
+  echo "LOVE_SUPPORT_WIN_64: $LOVE_SUPPORT_WIN_64"
+  echo "RELEASE_DIR: $RELEASE_DIR"
+  echo "CACHE_DIR: $CACHE_DIR"
+  echo "CONFIG_FILE: $CONFIG_FILE"
+  echo "CONFIG_FOUND: $CONFIG_FOUND"
+  echo "DEBUG: $DEBUG"
+}
+
+
 ## Set defaults ##
 RELEASE_LOVE=false
 RELEASE_OSX=false
@@ -149,6 +169,7 @@ LOVE_SUPPORT_WIN_64=1
 CACHE_DIR=~/.cache/love-release
 CONFIG_FILE=~/.config/love-release.cfg
 CONFIG_FOUND=false
+DEBUG=false
 
 
 ## Config file ##
@@ -222,7 +243,7 @@ fi
 
 
 ## Parsing options ##
-while getoptex "h; l; m; w. r: u: v: refresh" "$@"
+while getoptex "h; l; m; w. r: u: v: refresh debug" "$@"
 do
   if [ $OPTOPT = "h" ]; then # print help
     echo "$HELP"
@@ -255,6 +276,8 @@ do
     fi
   elif [ $OPTOPT = "refresh" ]; then
     rm -rf $CACHE_DIR
+  elif [ $OPTOPT = "debug" ]; then
+    DEBUG=true
   fi
 done
 shift $[OPTIND-1]
@@ -267,6 +290,13 @@ if [ $RELEASE_LOVE = false ] && [ $RELEASE_OSX = false ] && [ $RELEASE_WIN_32 = 
   RELEASE_OSX=true
   RELEASE_WIN_32=true
   RELEASE_WIN_64=true
+fi
+
+
+## Debug log ##
+if [ $DEBUG = true ]; then
+  debug
+  exit
 fi
 
 
