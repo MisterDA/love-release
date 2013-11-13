@@ -321,9 +321,9 @@ if [ $RELEASE_WIN_32 = true ]; then
     cp $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ./
   else
     if [ $LOVE_VERSION = "dev" ]; then
-      wget -O $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip https://bitbucket.org/Boolsheet/love_winbin/get/dev-x86.zip
+      wget -t 2 -c -O $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip https://bitbucket.org/Boolsheet/love_winbin/get/dev-x86.zip
     else
-      wget -O $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x86.zip
+      wget -t 2 -c -O $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x86.zip
     fi
     cp $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ./
   fi
@@ -342,9 +342,9 @@ if [ $LOVE_SUPPORT_WIN_64 = "1" ] && [ $RELEASE_WIN_64 = true ]; then
     cp $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ./
   else
     if [ $LOVE_VERSION = "dev" ]; then
-      wget -O $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip https://bitbucket.org/Boolsheet/love_winbin/get/dev-x64.zip
+      wget -t 2 -c -O $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip https://bitbucket.org/Boolsheet/love_winbin/get/dev-x64.zip
     else
-      wget -O $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x64.zip
+      wget -t 2 -c -O $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x64.zip
     fi
     cp $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ./
   fi
@@ -363,9 +363,9 @@ if [ $RELEASE_OSX = true ]; then
     cp $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ./
   else
     if [ $LOVE_VERSION = "dev" ]; then
-      wget -O $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip https://bitbucket.org/slime73/love_macbin/get/tip.zip
+      wget -t 2 -c -O $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip https://bitbucket.org/slime73/love_macbin/get/tip.zip
     else
-      wget -O $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-macosx-ub.zip
+      wget -t 2 -c -O $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-macosx-ub.zip
     fi
     cp $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ./
   fi
