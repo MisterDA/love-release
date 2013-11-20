@@ -20,6 +20,7 @@ OPTIONS
     -h,  print this help
 
     -l,  generates a .love file
+    -d,  generates a Debian package
     -m,  generates a Mac OS X app
     -w,  generates Windows x86 and x86_64 executables
          -w32,  generates Windows x86 executable
@@ -29,6 +30,7 @@ OPTIONS
     -u,  company name. Provide it for OSX CFBundleIdentifier, otherwise USER is used
     -v,  love version. Default is 0.8.0. Prior to it, no special Win64 version is available
          Use '-v dev' for nightly builds
+    -V,  project's version (eg 3.1.4). Must not include revision nor commit id
 
     --refresh,  refresh the cache located in '~/.cache/love-release'
     --debug,    dumps script variables. Does not make releases
@@ -139,19 +141,21 @@ function getoptex()
 ## Debug function ##
 function debug()
 {
-  echo "PROJECT_NAME: $PROJECT_NAME"
-  echo "COMPANY_NAME: $COMPANY_NAME"
-  echo "RELEASE_LOVE: $RELEASE_LOVE"
-  echo "RELEASE_OSX: $RELEASE_OSX"
-  echo "RELEASE_WIN_32: $RELEASE_WIN_32"
-  echo "RELEASE_WIN_64: $RELEASE_WIN_64"
-  echo "LOVE_VERSION: $LOVE_VERSION"
-  echo "LOVE_SUPPORT_WIN_64: $LOVE_SUPPORT_WIN_64"
-  echo "RELEASE_DIR: $RELEASE_DIR"
-  echo "CACHE_DIR: $CACHE_DIR"
-  echo "CONFIG_FILE: $CONFIG_FILE"
-  echo "CONFIG_FOUND: $CONFIG_FOUND"
-  echo "DEBUG: $DEBUG"
+  echo "PROJECT_NAME: $PROJECT_NAME
+PROJECT_VERSION: $PROJECT_VERSION
+COMPANY_NAME: $COMPANY_NAME
+RELEASE_LOVE: $RELEASE_LOVE
+RELEASE_OSX: $RELEASE_OSX
+RELEASE_WIN_32: $RELEASE_WIN_32
+RELEASE_WIN_64: $RELEASE_WIN_64
+RELEASE_DEBIAN: $RELEASE_DEBIAN
+LOVE_VERSION: $LOVE_VERSION
+LOVE_SUPPORT_WIN_64: $LOVE_SUPPORT_WIN_64
+RELEASE_DIR: $RELEASE_DIR
+CACHE_DIR: $CACHE_DIR
+CONFIG_FILE: $CONFIG_FILE
+CONFIG_FOUND: $CONFIG_FOUND
+DEBUG: $DEBUG"
 }
 
 
@@ -160,6 +164,7 @@ RELEASE_LOVE=false
 RELEASE_OSX=false
 RELEASE_WIN_32=false
 RELEASE_WIN_64=false
+RELEASE_DEBIAN=false
 PROJECT_NAME=${PWD##/*/}
 RELEASE_DIR=$PWD/releases
 COMPANY_NAME=$USER
@@ -170,6 +175,7 @@ CACHE_DIR=~/.cache/love-release
 CONFIG_FILE=~/.config/love-release.cfg
 CONFIG_FOUND=false
 DEBUG=false
+GIT=`git log --pretty=format:'%h' -n 1 $1`
 
 
 ## Config file ##
@@ -214,6 +220,10 @@ if [ -f $CONFIG_FILE ]; then
       if [ -n $RELEASE_WIN_64_TMP ]; then
         RELEASE_WIN_64=$RELEASE_WIN_64_TMP
       fi
+      RELEASE_DEBIAN_TMP=${CFG[$PROJECT_NAME"_release-debian"]}
+      if [ -n $RELEASE_DEBIAN_TMP ]; then
+        RELEASE_DEBIAN=$RELEASE_DEBIAN_TMP
+      fi
       COMPANY_NAME_TMP=${CFG[$PROJECT_NAME"_company-name"]}
       if [ -n $COMPANY_NAME_TMP ]; then
         COMPANY_NAME=$COMPANY_NAME_TMP
@@ -221,7 +231,7 @@ if [ -f $CONFIG_FILE ]; then
     fi
   done
 else
-echo '## Config file for love-release.sh ##
+  echo "## Configuration file for love-release.sh ##
 
 # Declare your projects here, to automate release process and not having to retype every options
 # The name MUST be the same as your projects root directory
@@ -231,19 +241,20 @@ PROJECTS=()
 declare -A CFG
 i=0
 
-# CFG[${PROJECTS[i]}"_company-name"]="MyCompany"
-# CFG[${PROJECTS[i]}"_love-version"]="0.8.0"
-# CFG[${PROJECTS[i]}"_release-dir"]="releases"
-# CFG[${PROJECTS[i]}"_release-love"]=true
-# CFG[${PROJECTS[i]}"_release-osx"]=true
-# CFG[${PROJECTS[i]}"_release-win32"]=true
-# CFG[${PROJECTS[i]}"_release-win64"]=true
-# ((i++))' > $CONFIG_FILE
+# CFG[${PROJECTS[i]}\"_company-name\"]=\"MyCompany\"
+# CFG[${PROJECTS[i]}\"_love-version\"]=\"0.8.0\"
+# CFG[${PROJECTS[i]}\"_release-dir\"]=\"releases\"
+# CFG[${PROJECTS[i]}\"_release-love\"]=true
+# CFG[${PROJECTS[i]}\"_release-osx\"]=true
+# CFG[${PROJECTS[i]}\"_release-win32\"]=true
+# CFG[${PROJECTS[i]}\"_release-win64\"]=true
+# CFG[${PROJECTS[i]}\"_release-debian\"]=true
+# ((i++))" > $CONFIG_FILE
 fi
 
 
 ## Parsing options ##
-while getoptex "h; l; m; w. r: u: v: refresh debug" "$@"
+while getoptex "h; d; l; m; w. r: u: v: refresh debug" "$@"
 do
   if [ $OPTOPT = "h" ]; then # print help
     echo "$HELP"
@@ -261,6 +272,8 @@ do
       RELEASE_WIN_32=true
       RELEASE_WIN_64=true
     fi
+  elif [ $OPTOPT = "d"]; then
+      RELEASE_DEBIAN=true
   elif [ $OPTOPT = "r" ]; then
     RELEASE_DIR=$OPTARG
   elif [ $OPTOPT = "u" ]; then
@@ -285,11 +298,12 @@ for file in "$@"
 do
   PROJECT_FILES="$PROJECT_FILES $file"
 done
-if [ $RELEASE_LOVE = false ] && [ $RELEASE_OSX = false ] && [ $RELEASE_WIN_32 = false ] && [ $RELEASE_WIN_64 = false ] && [ $CONFIG_FOUND = false ]; then
+if [ $RELEASE_LOVE = false ] && [ $RELEASE_OSX = false ] && [ $RELEASE_WIN_32 = false ] && [ $RELEASE_WIN_64 = false ] && [ $RELEASE_DEBIAN = false ] && [ $CONFIG_FOUND = false ]; then
   RELEASE_LOVE=true
   RELEASE_OSX=true
   RELEASE_WIN_32=true
   RELEASE_WIN_64=true
+  RELEASE_DEBIAN=true
 fi
 
 
@@ -357,6 +371,25 @@ if [ $LOVE_SUPPORT_WIN_64 = "1" ] && [ $RELEASE_WIN_64 = true ]; then
  rm -rf love-$LOVE_VERSION-win-x64.zip love-$LOVE_VERSION-win-x64
 fi
 
+## Debian package ##
+if [ $RELEASE_DEBIAN = true ]; then
+  mkdir -p $PROJECT_NAME/{DEBIAN,usr/{bin,share/games}}
+  echo "Package: $PROJECT
+Version:
+Architecture: all
+Maintainer: $COMPANY_NAME
+Installed-Size:
+Depends: love (>= $LOVE_VERSION)
+Section: games
+Priority: extra
+Homepage:
+Description: " > $PROJECT_NAME/DEBIAN/control
+  echo "#!/bin/bash
+set -e
+love /usr/share/games/$PROJECT_NAME/$PROJECT_NAME.love" > $PROJECT_NAME/usr/bin/$PROJECT_NAME
+  chmod +x $PROJECT_NAME/usr/bin/$PROJECT_NAME
+fi
+
 ## Mac OS X ##
 if [ $RELEASE_OSX = true ]; then
   if [ -f $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ]; then
@@ -375,9 +408,9 @@ if [ $RELEASE_OSX = true ]; then
   rm -rf $PROJECT_NAME-osx.zip 2> /dev/null
   mv love.app $PROJECT_NAME.app
   cp $PROJECT_NAME.love $PROJECT_NAME.app/Contents/Resources
-echo '<?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
-<plist version="1.0">
+  echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
 <dict>
     <key>BuildMachineOSBuild</key>
     <string>11D50b</string>
@@ -449,8 +482,7 @@ echo '<?xml version="1.0" encoding="UTF-8"?>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
 </dict>
-</plist>
-' > $PROJECT_NAME.app/Contents/Info.plist
+</plist>" > $PROJECT_NAME.app/Contents/Info.plist
   zip -qr $PROJECT_NAME-osx.zip $PROJECT_NAME.app
   rm -rf love-$LOVE_VERSION-macosx-ub.zip $PROJECT_NAME.app
 fi

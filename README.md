@@ -15,6 +15,7 @@ A directory (default is `./releases`) will be created, and filled with the zippe
 ### OPTIONS
 - *-h*,  help
 - *-l*,  generates a .love file
+- *-d*,  generates a Debian package **currently not working**
 - *-m*,  generates a Mac OS X app
 - *-w*,  generates Windows x86 and x86_64 executables
   - *-w32*,  generates Windows x86 executable
