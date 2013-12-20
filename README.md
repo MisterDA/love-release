@@ -2,9 +2,9 @@
 `love-release.sh [OPTIONS] [FILES...]`
 
 ### DESCRIPTION
-You can use love-release.sh to generate Love2D executables for Linux, OS X, Windows (x86 and x86_64), 
+You can use love-release.sh to generate Love2D executables for Linux, OS X, Windows (x86 and x86_64),
 as specified in love2d.org.
-An Internet connection is required. The script uses wget, zip and unzip commands.
+An Internet connection is required. The script uses curl, zip and unzip commands.
 
 By default, the script generates releases for every system. But if you add options, 
 it will generate releases only for the specified systems.

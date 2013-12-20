@@ -7,7 +7,7 @@ SYNOPSIS
 
 DESCRIPTION
     You can use love-release.sh to generate Love2D executables for Linux, OS X, Windows (x86 and x86_64), as specified in love2d.org.
-    An Internet connection is required. The script uses wget, zip and unzip commands.
+    An Internet connection is required. The script uses curl, zip and unzip commands.
 
     By default, the script generates releases for every system. But if you add options, 
     it will generate releases only for the specified systems.
@@ -43,7 +43,7 @@ SEE ALSO
 
 
 ## Test if requirements are installed ##
-command -v wget  >/dev/null 2>&1 || { echo "wget is not installed. Aborting." >&2; exit 1; }
+command -v curl  >/dev/null 2>&1 || { echo "curl is not installed. Aborting." >&2; exit 1; }
 command -v zip   >/dev/null 2>&1 || { echo "zip is not installed. Aborting." >&2; exit 1; }
 command -v unzip >/dev/null 2>&1 || { echo "unzip is not installed. Aborting." >&2; exit 1; }
 
@@ -335,9 +335,9 @@ if [ $RELEASE_WIN_32 = true ]; then
     cp $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ./
   else
     if [ $LOVE_VERSION = "dev" ]; then
-      wget -t 2 -c -O $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip https://bitbucket.org/Boolsheet/love_winbin/get/dev-x86.zip
+      curl -C - -o $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip https://bitbucket.org/Boolsheet/love_winbin/get/dev-x86.zip
     else
-      wget -t 2 -c -O $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x86.zip
+      curl -C - -o $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x86.zip
     fi
     cp $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ./
   fi
@@ -356,9 +356,9 @@ if [ $LOVE_SUPPORT_WIN_64 = "1" ] && [ $RELEASE_WIN_64 = true ]; then
     cp $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ./
   else
     if [ $LOVE_VERSION = "dev" ]; then
-      wget -t 2 -c -O $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip https://bitbucket.org/Boolsheet/love_winbin/get/dev-x64.zip
+      curl -C - -o $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip https://bitbucket.org/Boolsheet/love_winbin/get/dev-x64.zip
     else
-      wget -t 2 -c -O $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x64.zip
+      curl -C - -o $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x64.zip
     fi
     cp $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ./
   fi
@@ -396,9 +396,9 @@ if [ $RELEASE_OSX = true ]; then
     cp $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ./
   else
     if [ $LOVE_VERSION = "dev" ]; then
-      wget -t 2 -c -O $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip https://bitbucket.org/slime73/love_macbin/get/tip.zip
+      curl -C - -o $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip https://bitbucket.org/slime73/love_macbin/get/tip.zip
     else
-      wget -t 2 -c -O $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-macosx-ub.zip
+      curl -C - -o $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-macosx-ub.zip
     fi
     cp $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ./
   fi
