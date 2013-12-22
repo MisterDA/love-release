@@ -1,54 +1,87 @@
 #!/bin/bash
 
-HELP="### Generates Love2D Game releases ###
+## Short help ##
+function short_help()
+{
+echo "Usage: love-release.sh [options...] [files...]
+Options:
+ -h, --help  Prints short or long help
+ -l    Create a plain Love file
+ -m    Create a MacOS application
+ -w,   Create a Windows application
+    -w32  Create a Windows x86 application
+    -w64  Create a Windows x64 application
+ -n    Set the projects name
+ -r    Set the release directory
+ -u    Set the company name
+ -v    Set the Love version
+"
+}
 
+## Long help ##
+function long_help()
+{
+echo "NAME
+     love-release.sh -- Bash script to generate Love 2D game releases
 SYNOPSIS
-    love-release.sh [OPTIONS] [FILES...]
+     love-release.sh [-lmw] [-n project_name] [-r release_dir] [-u company_name] [-v love_version] [FILES...]
 
 DESCRIPTION
-    You can use love-release.sh to generate Love2D executables for Linux, OS X, Windows (x86 and x86_64), as specified in love2d.org.
-    An Internet connection is required. The script uses curl, zip and unzip commands.
-
-    By default, the script generates releases for every system. But if you add options, 
-    it will generate releases only for the specified systems.
-
-    Game releases will be named after your project's root directory.
-    A directory (default is './releases') will be created, and filled with the zipped releases:
-        'YourGame-win-x86.zip', 'YourGame-win-x64.zip', 'YourGame-osx.zip' and 'YourGame.love'.
+     You can use love-release.sh to generate Love 2D game applications and get over the fastidious zipping commands you had to do.
+     The script fully supports Windows, MacOS either on x86 or x64. 
+     It needs an Internet connection to download Love files, and relies on curl, zip and unzip commands.
 
 OPTIONS
-    -h,  print this help
+     -h     Print a short help
+     --help Print this longer help
 
-    -l,  generates a .love file
-    -d,  generates a Debian package
-    -m,  generates a Mac OS X app
-    -w,  generates Windows x86 and x86_64 executables
-         -w32,  generates Windows x86 executable
-         -w64,  generates Windows x86_64 executable
+  OPERATING SYSTEMS
+     -l     Create a plain Love file. It is just a zip of your sources, renamed in *.love.
+            Mostly aimed at Linux players or developpers and the most common distribution process.
+            
+     -m     Create MacOS application.
+            Starting with Love 0.9.0, Love no longer supports old x86 Macintosh. 
+            If you are targeting one of these, your project must be developped with Love 0.8.0 or lower.
+            Depending on the Love version used, the script will choose which one, between x64 only or Universal Build to create.
 
-    -r,  release directory. By default, a subdirectory called 'releases' is created
-    -u,  company name. Provide it for OSX CFBundleIdentifier, otherwise USER is used
-    -v,  love version. Default is 0.8.0. Prior to it, no special Win64 version is available
-         Use '-v dev' for nightly builds
-    -V,  project's version (eg 3.1.4). Must not include revision nor commit id
+     -w     Create Windows application.
+            Starting with Love 0.8.0, a release is specially available for Windows x64.
+            If you are targeting one of these, your project must be developped with Love 0.8.0 or newer.
+            Remember that x86 is always backwards compatible with x64.
+            Depending on the Love version used, the script will choose which one, between x64 and x86 or x86 only to create.
+       -w32  Create Windows x86 executable only
+       -w64  Create Windows x64 executable only
 
-    --refresh,  refresh the cache located in '~/.cache/love-release'
-    --debug,    dumps script variables. Does not make releases
+  PROJECT OPTIONS
+     -n     Set the projects name. By default, the name of the current directory is used.
+     
+     -r     Set the release directory. By default, a subdirectory called releases is created.
+           
+     -u     Set the company name. Provide it for MacOS CFBundleIdentifier.
+     
+     -v     Love version. Default is 0.9.0.
+            Starting with Love 0.8.0, a release is specially available for Windows x64.
+            Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
+
+  OTHERS
+     --refresh   Refresh the cache located in ~/.cache/love-release. One can replace the Love files there.
+     --debug     Dump the scripts variables without making releases.
 
 SEE ALSO
-    https://www.love2d.org
-    https://www.love2d.org/wiki/Game_Distribution
-    https://www.github.org/MisterDA/love-release
+     https://www.love2d.org
+     https://www.love2d.org/wiki/Game_Distribution
+     https://www.github.org/MisterDA/love-release
 "
+}
 
 
 ## Test if requirements are installed ##
-command -v curl  >/dev/null 2>&1 || { echo "curl is not installed. Aborting." >&2; exit 1; }
+command -v curl -L  >/dev/null 2>&1 || { echo "curl -L is not installed. Aborting." >&2; exit 1; }
 command -v zip   >/dev/null 2>&1 || { echo "zip is not installed. Aborting." >&2; exit 1; }
 command -v unzip >/dev/null 2>&1 || { echo "unzip is not installed. Aborting." >&2; exit 1; }
 
 
-## Parsing functions ##
+## Parsing function ##
 function getoptex()
 {
   let $# || return 1
@@ -138,126 +171,49 @@ function getoptex()
 }
 
 
-## Debug function ##
-function debug()
-{
-  echo "PROJECT_NAME: $PROJECT_NAME
-PROJECT_VERSION: $PROJECT_VERSION
-COMPANY_NAME: $COMPANY_NAME
-RELEASE_LOVE: $RELEASE_LOVE
-RELEASE_OSX: $RELEASE_OSX
-RELEASE_WIN_32: $RELEASE_WIN_32
-RELEASE_WIN_64: $RELEASE_WIN_64
-RELEASE_DEBIAN: $RELEASE_DEBIAN
-LOVE_VERSION: $LOVE_VERSION
-LOVE_SUPPORT_WIN_64: $LOVE_SUPPORT_WIN_64
-RELEASE_DIR: $RELEASE_DIR
-CACHE_DIR: $CACHE_DIR
-CONFIG_FILE: $CONFIG_FILE
-CONFIG_FOUND: $CONFIG_FOUND
-DEBUG: $DEBUG"
-}
-
-
 ## Set defaults ##
 RELEASE_LOVE=false
 RELEASE_OSX=false
 RELEASE_WIN_32=false
 RELEASE_WIN_64=false
-RELEASE_DEBIAN=false
+LOVE_GT_080=1  # Support Windows x64
+LOVE_GT_090=1  # Support MacOS x64 
+
+PROJECT_FILES=
 PROJECT_NAME=${PWD##/*/}
+COMPANY_NAME=love2d
 RELEASE_DIR=$PWD/releases
-COMPANY_NAME=$USER
-LOVE_VERSION=0.8.0
-LOVE_VERSION_MAJOR=0.8
-LOVE_SUPPORT_WIN_64=1
-CACHE_DIR=~/.cache/love-release
-CONFIG_FILE=~/.config/love-release.cfg
-CONFIG_FOUND=false
+LOVE_VERSION=0.9.0
+LOVE_VERSION_MAJOR=0.9
+
 DEBUG=false
-GIT=`git log --pretty=format:'%h' -n 1 $1`
+CACHE_DIR=~/.cache/love-release
 
-
-## Config file ##
-if [ -f $CONFIG_FILE ]; then
-  . $CONFIG_FILE
-  for (( i=0; i<${#PROJECTS[@]}; i++ ))
-  do
-    if [ ${PROJECTS[$i]} = $PROJECT_NAME ]; then
-      CONFIG_FOUND=true
-      RELEASE_DIR_TMP=${CFG[$PROJECT_NAME"_release-dir"]}
-      if [ -n $RELEASE_DIR_TMP ]; then
-        if [ ${RELEASE_DIR_TMP:0:1} != '/' ] && [ ${RELEASE_DIR_TMP:0:1} != '~' ]; then
-          RELEASE_DIR=$PWD/$RELEASE_DIR_TMP
-        else
-          RELEASE_DIR=$RELEASE_DIR_TMP
-        fi
-      fi
-      LOVE_VERSION_TMP=${CFG[$PROJECT_NAME"_love-version"]}
-      if [ -n $LOVE_VERSION_TMP ]; then
-        LOVE_VERSION=$LOVE_VERSION_TMP
-        if [ $LOVE_VERSION_TMP = "dev" ]; then
-          LOVE_VERSION_MAJOR="dev"
-          LOVE_SUPPORT_WIN_64="1"
-        else
-          LOVE_VERSION_MAJOR=`echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*'`
-          LOVE_SUPPORT_WIN_64=`echo "$LOVE_VERSION_MAJOR>=0.8" | bc`
-        fi
-    fi
-      RELEASE_LOVE_TMP=${CFG[$PROJECT_NAME"_release-love"]}
-      if [ -n $RELEASE_LOVE_TMP ]; then
-        RELEASE_LOVE=$RELEASE_LOVE_TMP
-      fi
-      RELEASE_OSX_TMP=${CFG[$PROJECT_NAME"_release-osx"]}
-      if [ -n $RELEASE_OSX_TMP ]; then
-        RELEASE_OSX=$RELEASE_OSX_TMP
-      fi
-      RELEASE_WIN_32_TMP=${CFG[$PROJECT_NAME"_release-win32"]}
-      if [ -n $RELEASE_WIN_32_TMP ]; then
-        RELEASE_WIN_32=$RELEASE_WIN_32_TMP
-      fi
-      RELEASE_WIN_64_TMP=${CFG[$PROJECT_NAME"_release-win64"]}
-      if [ -n $RELEASE_WIN_64_TMP ]; then
-        RELEASE_WIN_64=$RELEASE_WIN_64_TMP
-      fi
-      RELEASE_DEBIAN_TMP=${CFG[$PROJECT_NAME"_release-debian"]}
-      if [ -n $RELEASE_DEBIAN_TMP ]; then
-        RELEASE_DEBIAN=$RELEASE_DEBIAN_TMP
-      fi
-      COMPANY_NAME_TMP=${CFG[$PROJECT_NAME"_company-name"]}
-      if [ -n $COMPANY_NAME_TMP ]; then
-        COMPANY_NAME=$COMPANY_NAME_TMP
-      fi
-    fi
-  done
-else
-  echo "## Configuration file for love-release.sh ##
-
-# Declare your projects here, to automate release process and not having to retype every options
-# The name MUST be the same as your projects root directory
-PROJECTS=()
-
-# First project is PROJECTS[0]. You can use PROJECTS[i] and do ((i++)) after each configuration
-declare -A CFG
-i=0
-
-# CFG[${PROJECTS[i]}\"_company-name\"]=\"MyCompany\"
-# CFG[${PROJECTS[i]}\"_love-version\"]=\"0.8.0\"
-# CFG[${PROJECTS[i]}\"_release-dir\"]=\"releases\"
-# CFG[${PROJECTS[i]}\"_release-love\"]=true
-# CFG[${PROJECTS[i]}\"_release-osx\"]=true
-# CFG[${PROJECTS[i]}\"_release-win32\"]=true
-# CFG[${PROJECTS[i]}\"_release-win64\"]=true
-# CFG[${PROJECTS[i]}\"_release-debian\"]=true
-# ((i++))" > $CONFIG_FILE
-fi
+## Debug function ##
+function debug()
+{
+echo "DEBUG=$DEBUG
+RELEASE_LOVE=$RELEASE_LOVE
+RELEASE_OSX=$RELEASE_OSX
+RELEASE_WIN_32=$RELEASE_WIN_32
+RELEASE_WIN_64=$RELEASE_WIN_64
+LOVE_GT_080=$LOVE_GT_080
+LOVE_GT_090=$LOVE_GT_090
+PROJECT_FILES=$PROJECT_FILES
+PROJECT_NAME=$PROJECT_NAME
+COMPANY_NAME=$COMPANY_NAME
+RELEASE_DIR=$RELEASE_DIR
+LOVE_VERSION=$LOVE_VERSION
+LOVE_VERSION_MAJOR=$LOVE_VERSION_MAJOR
+CACHE_DIR=$CACHE_DIR"
+}
 
 
 ## Parsing options ##
-while getoptex "h; d; l; m; w. r: u: v: refresh debug" "$@"
+while getoptex "h; l; m; w. n: r: u: v: debug help refresh" "$@"
 do
-  if [ $OPTOPT = "h" ]; then # print help
-    echo "$HELP"
+  if [ $OPTOPT = "h" ]; then
+    short_help
     exit
   elif [ $OPTOPT = "l" ]; then
     RELEASE_LOVE=true
@@ -272,25 +228,24 @@ do
       RELEASE_WIN_32=true
       RELEASE_WIN_64=true
     fi
-  elif [ $OPTOPT = "d"]; then
-      RELEASE_DEBIAN=true
+  elif [ $OPTOPT = "n" ]; then
+    PROJECT_NAME=$OPTARG
   elif [ $OPTOPT = "r" ]; then
     RELEASE_DIR=$OPTARG
   elif [ $OPTOPT = "u" ]; then
     COMPANY_NAME=$OPTARG
   elif [ $OPTOPT = "v" ]; then
     LOVE_VERSION=$OPTARG
-    if [ $LOVE_VERSION = "dev" ]; then
-      LOVE_VERSION_MAJOR="dev"
-      LOVE_SUPPORT_WIN_64="1"
-    else
-      LOVE_VERSION_MAJOR=`echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*'`
-      LOVE_SUPPORT_WIN_64=`echo "$LOVE_VERSION_MAJOR>=0.8" | bc`
-    fi
-  elif [ $OPTOPT = "refresh" ]; then
-    rm -rf $CACHE_DIR
+    LOVE_VERSION_MAJOR=`echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*'`
+    LOVE_GT_080=`echo "$LOVE_VERSION_MAJOR>=0.8" | bc`
+    LOVE_GT_090=`echo "$LOVE_VERSION_MAJOR>=0.9" | bc`
   elif [ $OPTOPT = "debug" ]; then
     DEBUG=true
+  elif [ $OPTOPT = "help" ]; then
+    long_help
+    exit
+  elif [ $OPTOPT = "refresh" ]; then
+    rm -rf $CACHE_DIR
   fi
 done
 shift $[OPTIND-1]
@@ -298,13 +253,15 @@ for file in "$@"
 do
   PROJECT_FILES="$PROJECT_FILES $file"
 done
-if [ $RELEASE_LOVE = false ] && [ $RELEASE_OSX = false ] && [ $RELEASE_WIN_32 = false ] && [ $RELEASE_WIN_64 = false ] && [ $RELEASE_DEBIAN = false ] && [ $CONFIG_FOUND = false ]; then
+if [ $RELEASE_LOVE = false ] && [ $RELEASE_OSX = false ] && [ $RELEASE_WIN_32 = false ] && [ $RELEASE_WIN_64 = false ]; then
   RELEASE_LOVE=true
   RELEASE_OSX=true
   RELEASE_WIN_32=true
   RELEASE_WIN_64=true
-  RELEASE_DEBIAN=true
 fi
+MAIN_RELEASE_DIR=${RELEASE_DIR##/*/}
+RELEASE_DIR=$RELEASE_DIR/$LOVE_VERSION
+CACHE_DIR=$CACHE_DIR/$LOVE_VERSION
 
 
 ## Debug log ##
@@ -314,101 +271,184 @@ if [ $DEBUG = true ]; then
 fi
 
 
-## Releases generation ##
-MAIN_RELEASE_DIR=${RELEASE_DIR##/*/}
-RELEASE_DIR=$RELEASE_DIR/$LOVE_VERSION
-CACHE_DIR=$CACHE_DIR/$LOVE_VERSION
+## Zipping ##
 mkdir -p $RELEASE_DIR $CACHE_DIR
-
 rm -rf $RELEASE_DIR/$PROJECT_NAME.love 2> /dev/null
 if [ -z $PROJECT_FILES ]; then
-  zip -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/ $MAIN_RELEASE_DIR/* $MAIN_RELEASE_DIR/${RELEASE_DIR##/*/}/ $MAIN_RELEASE_DIR/${RELEASE_DIR##/*/}/* @ *
+  zip -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* @ *
 else
-  zip -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/ $MAIN_RELEASE_DIR/* $MAIN_RELEASE_DIR/${RELEASE_DIR##/*/}/ $MAIN_RELEASE_DIR/${RELEASE_DIR##/*/}/* @ $PROJECT_FILES
+  zip -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* @ $PROJECT_FILES
 fi
 cd $RELEASE_DIR
 
 
 ## Windows 32-bits ##
 if [ $RELEASE_WIN_32 = true ]; then
-  if [ -f $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ]; then
-    cp $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ./
-  else
-    if [ $LOVE_VERSION = "dev" ]; then
-      curl -C - -o $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip https://bitbucket.org/Boolsheet/love_winbin/get/dev-x86.zip
+  if [ $LOVE_GT_090 = "1" ]; then
+    if [ -f $CACHE_DIR/love-$LOVE_VERSION-win32.zip ]; then
+      cp $CACHE_DIR/love-$LOVE_VERSION-win32.zip ./
     else
-      curl -C - -o $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x86.zip
+      curl -L -C - -o $CACHE_DIR/love-$LOVE_VERSION-win32.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win32.zip
+      cp $CACHE_DIR/love-$LOVE_VERSION-win32.zip ./
     fi
-    cp $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ./
+    unzip -qq love-$LOVE_VERSION-win32.zip
+      rm -rf $PROJECT_NAME-win32.zip 2> /dev/null
+      cat love-$LOVE_VERSION-win32/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win32/$PROJECT_NAME.exe
+      rm love-$LOVE_VERSION-win32/love.exe
+      zip -qr $PROJECT_NAME-win32.zip love-$LOVE_VERSION-win32
+      rm -rf love-$LOVE_VERSION-win32.zip love-$LOVE_VERSION-win32
+  else
+    if [ -f $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ]; then
+      cp $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ./
+    else
+      curl -L -C - -o $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x86.zip
+      cp $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ./
+    fi
+    unzip -qq love-$LOVE_VERSION-win-x86.zip
+    rm -rf $PROJECT_NAME-win-x86.zip 2> /dev/null
+    cat love-$LOVE_VERSION-win-x86/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win-x86/$PROJECT_NAME.exe
+    rm love-$LOVE_VERSION-win-x86/love.exe
+    zip -qr $PROJECT_NAME-win-x86.zip love-$LOVE_VERSION-win-x86
+    rm -rf love-$LOVE_VERSION-win-x86.zip love-$LOVE_VERSION-win-x86
   fi
-  unzip -qq love-$LOVE_VERSION-win-x86.zip
-  mv `/bin/ls -1 | grep -Eo '^Boolsheet-love_winbin-[0-9a-f]{12}$'` love-$LOVE_VERSION-win-x86 2> /dev/null
-  rm -rf $PROJECT_NAME-win-x86.zip 2> /dev/null
-  cat love-$LOVE_VERSION-win-x86/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win-x86/$PROJECT_NAME.exe
-  rm love-$LOVE_VERSION-win-x86/love.exe
-  zip -qr $PROJECT_NAME-win-x86.zip love-$LOVE_VERSION-win-x86
-  rm -rf love-$LOVE_VERSION-win-x86.zip love-$LOVE_VERSION-win-x86
 fi
 
 ## Windows 64-bits ##
-if [ $LOVE_SUPPORT_WIN_64 = "1" ] && [ $RELEASE_WIN_64 = true ]; then
-  if [ -f $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ]; then
-    cp $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ./
-  else
-    if [ $LOVE_VERSION = "dev" ]; then
-      curl -C - -o $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip https://bitbucket.org/Boolsheet/love_winbin/get/dev-x64.zip
+if [ $RELEASE_WIN_64 = true ] && [ $LOVE_GT_080 = "1" ]; then
+  if [ $LOVE_GT_090 = "1" ]; then
+    if [ -f $CACHE_DIR/love-$LOVE_VERSION-win64.zip ]; then
+      cp $CACHE_DIR/love-$LOVE_VERSION-win64.zip ./
     else
-      curl -C - -o $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x64.zip
+      curl -L -C - -o $CACHE_DIR/love-$LOVE_VERSION-win64.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win64.zip
+      cp $CACHE_DIR/love-$LOVE_VERSION-win64.zip ./
     fi
-    cp $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ./
+    unzip -qq love-$LOVE_VERSION-win64.zip
+    rm -rf $PROJECT_NAME-win64.zip 2> /dev/null
+    cat love-$LOVE_VERSION-win64/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win64/$PROJECT_NAME.exe
+    rm love-$LOVE_VERSION-win64/love.exe
+    zip -qr $PROJECT_NAME-win64.zip love-$LOVE_VERSION-win64
+    rm -rf love-$LOVE_VERSION-win64.zip love-$LOVE_VERSION-win64
+  else
+    if [ -f $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ]; then
+      cp $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ./
+    else
+      curl -L -C - -o $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x64.zip
+    fi
+    unzip -qq love-$LOVE_VERSION-win-x64.zip
+    rm -rf $PROJECT_NAME-win-x64.zip 2> /dev/null
+    cat love-$LOVE_VERSION-win-x64/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win-x64/$PROJECT_NAME.exe
+    rm love-$LOVE_VERSION-win-x64/love.exe
+    zip -qr $PROJECT_NAME-win-x64.zip love-$LOVE_VERSION-win-x64
+    rm -rf love-$LOVE_VERSION-win-x64.zip love-$LOVE_VERSION-win-x64
   fi
-  unzip -qq love-$LOVE_VERSION-win-x64.zip
-  mv `/bin/ls -1 | grep -Eo '^Boolsheet-love_winbin-[0-9a-f]{12}$'` love-$LOVE_VERSION-win-x64 2> /dev/null
-  rm -rf $PROJECT_NAME-win-x64.zip 2> /dev/null
-  cat love-$LOVE_VERSION-win-x64/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win-x64/$PROJECT_NAME.exe
-  rm love-$LOVE_VERSION-win-x64/love.exe
-  zip -qr $PROJECT_NAME-win-x64.zip love-$LOVE_VERSION-win-x64
- rm -rf love-$LOVE_VERSION-win-x64.zip love-$LOVE_VERSION-win-x64
 fi
 
-## Debian package ##
-if [ $RELEASE_DEBIAN = true ]; then
-  mkdir -p $PROJECT_NAME/{DEBIAN,usr/{bin,share/games}}
-  echo "Package: $PROJECT
-Version:
-Architecture: all
-Maintainer: $COMPANY_NAME
-Installed-Size:
-Depends: love (>= $LOVE_VERSION)
-Section: games
-Priority: extra
-Homepage:
-Description: " > $PROJECT_NAME/DEBIAN/control
-  echo "#!/bin/bash
-set -e
-love /usr/share/games/$PROJECT_NAME/$PROJECT_NAME.love" > $PROJECT_NAME/usr/bin/$PROJECT_NAME
-  chmod +x $PROJECT_NAME/usr/bin/$PROJECT_NAME
-fi
-
-## Mac OS X ##
+## MacOS ##
 if [ $RELEASE_OSX = true ]; then
-  if [ -f $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ]; then
-    cp $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ./
-  else
-    if [ $LOVE_VERSION = "dev" ]; then
-      curl -C - -o $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip https://bitbucket.org/slime73/love_macbin/get/tip.zip
+
+  ## MacOS 64-bits ##
+  if [ $LOVE_GT_090 = "1" ]; then
+    if [ -f $CACHE_DIR/love-$LOVE_VERSION-macosx-x64.zip ]; then
+      cp $CACHE_DIR/love-$LOVE_VERSION-macosx-x64.zip ./
     else
-      curl -C - -o $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-macosx-ub.zip
+      curl -L -C - -o $CACHE_DIR/love-$LOVE_VERSION-macosx-x64.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-macosx-x64.zip
+      cp $CACHE_DIR/love-$LOVE_VERSION-macosx-x64.zip ./
     fi
-    cp $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ./
-  fi
-  unzip -qq love-$LOVE_VERSION-macosx-ub.zip
-  mv `/bin/ls -1 | grep -Eo '^slime73-love_macbin-[0-9a-f]{12}$'`/love.app ./love.app 2> /dev/null
-  rm -rf `/bin/ls -1 | grep -Eo '^slime73-love_macbin-[0-9a-f]{12}$'` 2> /dev/null
-  rm -rf $PROJECT_NAME-osx.zip 2> /dev/null
-  mv love.app $PROJECT_NAME.app
-  cp $PROJECT_NAME.love $PROJECT_NAME.app/Contents/Resources
-  echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+    unzip -qq love-$LOVE_VERSION-macosx-x64.zip
+    rm -rf $PROJECT_NAME-macosx-x64.zip 2> /dev/null
+    mv love.app $PROJECT_NAME.app
+    cp $PROJECT_NAME.love $PROJECT_NAME.app/Contents/Resources
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
+<!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
+<plist version=\"1.0\">
+<dict>
+    <key>BuildMachineOSBuild</key>
+    <string>13A603</string>
+    <key>CFBundleDevelopmentRegion</key>
+    <string>English</string>
+    <key>CFBundleDocumentTypes</key>
+    <array>
+        <dict>
+            <key>CFBundleTypeIconFile</key>
+            <string>LoveDocument.icns</string>
+            <key>CFBundleTypeName</key>
+            <string>LÖVE Project</string>
+            <key>CFBundleTypeRole</key>
+            <string>Viewer</string>
+            <key>LSHandlerRank</key>
+            <string>Owner</string>
+            <key>LSItemContentTypes</key>
+            <array>
+                <string>org.love2d.love-game</string>
+            </array>
+        </dict>
+        <dict>
+            <key>CFBundleTypeName</key>
+            <string>Folder</string>
+            <key>CFBundleTypeOSTypes</key>
+            <array>
+                <string>fold</string>
+            </array>
+            <key>CFBundleTypeRole</key>
+            <string>Viewer</string>
+            <key>LSHandlerRank</key>
+            <string>None</string>
+        </dict>
+    </array>
+    <key>CFBundleExecutable</key>
+    <string>love</string>
+    <key>CFBundleIconFile</key>
+    <string>Love.icns</string>
+    <key>CFBundleIdentifier</key>
+    <string>org.$COMPANY_NAME.$PROJECT_NAME</string>
+    <key>CFBundleInfoDictionaryVersion</key>
+    <string>6.0</string>
+    <key>CFBundleName</key>
+    <string>$PROJECT_NAME</string>
+    <key>CFBundlePackageType</key>
+    <string>APPL</string>
+    <key>CFBundleShortVersionString</key>
+    <string>$LOVE_VERSION</string>
+    <key>CFBundleSignature</key>
+    <string>LoVe</string>
+    <key>DTCompiler</key>
+    <string>com.apple.compilers.llvm.clang.1_0</string>
+    <key>DTPlatformBuild</key>
+    <string>5A3005</string>
+    <key>DTPlatformVersion</key>
+    <string>GM</string>
+    <key>DTSDKBuild</key>
+    <string>13A595</string>
+    <key>DTSDKName</key>
+    <string>macosx10.9</string>
+    <key>DTXcode</key>
+    <string>0502</string>
+    <key>DTXcodeBuild</key>
+    <string>5A3005</string>
+    <key>LSApplicationCategoryType</key>
+    <string>public.app-category.games</string>
+    <key>NSHumanReadableCopyright</key>
+    <string>© 2006-2013 LÖVE Development Team</string>
+    <key>NSPrincipalClass</key>
+    <string>NSApplication</string>
+</dict>
+</plist>" > $PROJECT_NAME.app/Contents/Info.plist
+    zip -qr $PROJECT_NAME-macosx-x64.zip $PROJECT_NAME.app
+    rm -rf love-$LOVE_VERSION-macosx-x64.zip $PROJECT_NAME.app
+
+  ## MacOS 32-bits ##
+  else
+    if [ -f $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ]; then
+      cp $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ./
+    else
+      curl -L -C - -o $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-macosx-ub.zip
+      cp $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ./
+    fi
+    unzip -qq love-$LOVE_VERSION-macosx-ub.zip
+    rm -rf $PROJECT_NAME-macosx-ub.zip 2> /dev/null
+    mv love.app $PROJECT_NAME.app
+    cp $PROJECT_NAME.love $PROJECT_NAME.app/Contents/Resources
+echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
 <plist version=\"1.0\">
 <dict>
@@ -463,7 +503,7 @@ if [ $RELEASE_OSX = true ]; then
     <string>LoVe</string>
     <key>DTCompiler</key>
     <string></string>
-    <key>DTPlatformBuild</key>
+    <key>DTPlatformBuild</key>x
     <string>4E2002</string>
     <key>DTPlatformVersion</key>
     <string>GM</string>
@@ -483,8 +523,9 @@ if [ $RELEASE_OSX = true ]; then
     <string>NSApplication</string>
 </dict>
 </plist>" > $PROJECT_NAME.app/Contents/Info.plist
-  zip -qr $PROJECT_NAME-osx.zip $PROJECT_NAME.app
-  rm -rf love-$LOVE_VERSION-macosx-ub.zip $PROJECT_NAME.app
+    zip -qr $PROJECT_NAME-macosx-ub.zip $PROJECT_NAME.app
+    rm -rf love-$LOVE_VERSION-macosx-ub.zip $PROJECT_NAME.app
+  fi
 fi
 
 ## Love file ##
