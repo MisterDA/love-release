@@ -189,6 +189,7 @@ LOVE_VERSION_MAJOR=0.9
 DEBUG=false
 CACHE_DIR=~/.cache/love-release
 
+
 ## Debug function ##
 function debug()
 {
@@ -275,9 +276,9 @@ fi
 mkdir -p $RELEASE_DIR $CACHE_DIR
 rm -rf $RELEASE_DIR/$PROJECT_NAME.love 2> /dev/null
 if [ -z $PROJECT_FILES ]; then
-  zip -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* @ *
+  zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* @ *
 else
-  zip -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* @ $PROJECT_FILES
+  zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* @ $PROJECT_FILES
 fi
 cd $RELEASE_DIR
 
@@ -295,7 +296,7 @@ if [ $RELEASE_WIN_32 = true ]; then
       rm -rf $PROJECT_NAME-win32.zip 2> /dev/null
       cat love-$LOVE_VERSION-win32/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win32/$PROJECT_NAME.exe
       rm love-$LOVE_VERSION-win32/love.exe
-      zip -qr $PROJECT_NAME-win32.zip love-$LOVE_VERSION-win32
+      zip -9 -qr $PROJECT_NAME-win32.zip love-$LOVE_VERSION-win32
       rm -rf love-$LOVE_VERSION-win32.zip love-$LOVE_VERSION-win32
   else
     if [ -f $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ]; then
@@ -308,7 +309,7 @@ if [ $RELEASE_WIN_32 = true ]; then
     rm -rf $PROJECT_NAME-win-x86.zip 2> /dev/null
     cat love-$LOVE_VERSION-win-x86/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win-x86/$PROJECT_NAME.exe
     rm love-$LOVE_VERSION-win-x86/love.exe
-    zip -qr $PROJECT_NAME-win-x86.zip love-$LOVE_VERSION-win-x86
+    zip -9 -qr $PROJECT_NAME-win-x86.zip love-$LOVE_VERSION-win-x86
     rm -rf love-$LOVE_VERSION-win-x86.zip love-$LOVE_VERSION-win-x86
   fi
 fi
@@ -326,7 +327,7 @@ if [ $RELEASE_WIN_64 = true ] && [ $LOVE_GT_080 = "1" ]; then
     rm -rf $PROJECT_NAME-win64.zip 2> /dev/null
     cat love-$LOVE_VERSION-win64/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win64/$PROJECT_NAME.exe
     rm love-$LOVE_VERSION-win64/love.exe
-    zip -qr $PROJECT_NAME-win64.zip love-$LOVE_VERSION-win64
+    zip -9 -qr $PROJECT_NAME-win64.zip love-$LOVE_VERSION-win64
     rm -rf love-$LOVE_VERSION-win64.zip love-$LOVE_VERSION-win64
   else
     if [ -f $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ]; then
@@ -338,7 +339,7 @@ if [ $RELEASE_WIN_64 = true ] && [ $LOVE_GT_080 = "1" ]; then
     rm -rf $PROJECT_NAME-win-x64.zip 2> /dev/null
     cat love-$LOVE_VERSION-win-x64/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win-x64/$PROJECT_NAME.exe
     rm love-$LOVE_VERSION-win-x64/love.exe
-    zip -qr $PROJECT_NAME-win-x64.zip love-$LOVE_VERSION-win-x64
+    zip -9 -qr $PROJECT_NAME-win-x64.zip love-$LOVE_VERSION-win-x64
     rm -rf love-$LOVE_VERSION-win-x64.zip love-$LOVE_VERSION-win-x64
   fi
 fi
@@ -433,7 +434,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     <string>NSApplication</string>
 </dict>
 </plist>" > $PROJECT_NAME.app/Contents/Info.plist
-    zip -qr $PROJECT_NAME-macosx-x64.zip $PROJECT_NAME.app
+    zip -9 -qr $PROJECT_NAME-macosx-x64.zip $PROJECT_NAME.app
     rm -rf love-$LOVE_VERSION-macosx-x64.zip $PROJECT_NAME.app
 
   ## MacOS 32-bits ##
@@ -523,7 +524,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     <string>NSApplication</string>
 </dict>
 </plist>" > $PROJECT_NAME.app/Contents/Info.plist
-    zip -qr $PROJECT_NAME-macosx-ub.zip $PROJECT_NAME.app
+    zip -9 -qr $PROJECT_NAME-macosx-ub.zip $PROJECT_NAME.app
     rm -rf love-$LOVE_VERSION-macosx-ub.zip $PROJECT_NAME.app
   fi
 fi
