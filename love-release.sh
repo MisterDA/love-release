@@ -1,5 +1,9 @@
 #!/bin/bash
 
+## Edit this if you want to use another Löve version.
+LOVE_VERSION=0.9.0
+
+
 ## Short help ##
 function short_help()
 {
@@ -28,8 +32,9 @@ SYNOPSIS
 
 DESCRIPTION
      You can use love-release.sh to generate Love 2D game applications and get over the fastidious zipping commands you had to do.
-     The script fully supports Windows, MacOS either on x86 or x64. 
+     The script fully supports Windows, MacOS either on x86 or x64.
      It needs an Internet connection to download Love files, and relies on curl, zip and unzip commands.
+     To set the default Love version to use, you can edit the very beginning of the script.
 
 OPTIONS
      -h     Print a short help
@@ -38,9 +43,9 @@ OPTIONS
   OPERATING SYSTEMS
      -l     Create a plain Love file. It is just a zip of your sources, renamed in *.love.
             Mostly aimed at Linux players or developpers and the most common distribution process.
-            
+
      -m     Create MacOS application.
-            Starting with Love 0.9.0, Love no longer supports old x86 Macintosh. 
+            Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
             If you are targeting one of these, your project must be developped with Love 0.8.0 or lower.
             Depending on the Love version used, the script will choose which one, between x64 only or Universal Build to create.
 
@@ -54,11 +59,11 @@ OPTIONS
 
   PROJECT OPTIONS
      -n     Set the projects name. By default, the name of the current directory is used.
-     
+
      -r     Set the release directory. By default, a subdirectory called releases is created.
-           
+
      -u     Set the company name. Provide it for MacOS CFBundleIdentifier.
-     
+
      -v     Love version. Default is 0.9.0.
             Starting with Love 0.8.0, a release is specially available for Windows x64.
             Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
@@ -176,15 +181,14 @@ RELEASE_LOVE=false
 RELEASE_OSX=false
 RELEASE_WIN_32=false
 RELEASE_WIN_64=false
-LOVE_GT_080=1  # Support Windows x64
-LOVE_GT_090=1  # Support MacOS x64 
+LOVE_VERSION_MAJOR=`echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*'`
+LOVE_GT_080=`echo "$LOVE_VERSION_MAJOR>=0.8" | bc`
+LOVE_GT_090=`echo "$LOVE_VERSION_MAJOR>=0.9" | bc`
 
 PROJECT_FILES=
 PROJECT_NAME=${PWD##/*/}
 COMPANY_NAME=love2d
 RELEASE_DIR=$PWD/releases
-LOVE_VERSION=0.9.0
-LOVE_VERSION_MAJOR=0.9
 
 DEBUG=false
 CACHE_DIR=~/.cache/love-release
