@@ -1,7 +1,7 @@
 #!/bin/bash
 
 ## Edit this if you want to use another Löve version.
-LOVE_VERSION=0.9.0
+LOVE_VERSION=0.9.1
 
 
 ## Short help ##
