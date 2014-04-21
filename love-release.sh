@@ -36,6 +36,7 @@ DESCRIPTION
      It needs an Internet connection to download Love files, and relies on curl, zip and unzip commands.
      To set the default Love version to use, you can edit the very beginning of the script.
      If a conf.lua file is provided, the script will try to detect the right version of Love to use.
+     If a game.ico file is provided, the script will use it to set the game icon on Windows.
 
 OPTIONS
      -h     Print a short help
@@ -201,6 +202,12 @@ LOVE_GT_090=`echo "$LOVE_VERSION_MAJOR>=0.9" | bc`
 DEBUG=false
 CACHE_DIR=~/.cache/love-release
 
+if [ -f $PWD/game.ico ]; then
+  GAME_ICO=$PWD/game.ico
+else
+  GAME_ICO=
+fi
+
 
 ## Debug function ##
 function debug()
@@ -219,7 +226,8 @@ RELEASE_DIR=$RELEASE_DIR
 LOVE_VERSION=$LOVE_VERSION
 LOVE_VERSION_CONF=$LOVE_VERSION_CONF
 LOVE_VERSION_MAJOR=$LOVE_VERSION_MAJOR
-CACHE_DIR=$CACHE_DIR"
+CACHE_DIR=$CACHE_DIR
+GAME_ICO=$GAME_ICO"
 }
 
 
@@ -302,9 +310,9 @@ fi
 mkdir -p $RELEASE_DIR $CACHE_DIR
 rm -rf $RELEASE_DIR/$PROJECT_NAME.love 2> /dev/null
 if [ -z $PROJECT_FILES ]; then
-  zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* @ *
+  zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* ${GAME_ICO##/*/} @ *
 else
-  zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* @ $PROJECT_FILES
+  zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* ${GAME_ICO##/*/} @ $PROJECT_FILES
 fi
 cd $RELEASE_DIR
 
@@ -322,6 +330,7 @@ if [ $RELEASE_WIN_32 = true ]; then
     rm -rf $PROJECT_NAME-win32.zip 2> /dev/null
     cat love-$LOVE_VERSION-win32/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win32/$PROJECT_NAME.exe
     rm love-$LOVE_VERSION-win32/love.exe
+    /bin/cp $GAME_ICO love-$LOVE_VERSION-win32/
     zip -9 -qr $PROJECT_NAME-win32.zip love-$LOVE_VERSION-win32
     rm -rf love-$LOVE_VERSION-win32.zip love-$LOVE_VERSION-win32
   else
@@ -335,6 +344,7 @@ if [ $RELEASE_WIN_32 = true ]; then
     rm -rf $PROJECT_NAME-win-x86.zip 2> /dev/null
     cat love-$LOVE_VERSION-win-x86/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win-x86/$PROJECT_NAME.exe
     rm love-$LOVE_VERSION-win-x86/love.exe
+    /bin/cp $GAME_ICO love-$LOVE_VERSION-win-x86/
     zip -9 -qr $PROJECT_NAME-win-x86.zip love-$LOVE_VERSION-win-x86
     rm -rf love-$LOVE_VERSION-win-x86.zip love-$LOVE_VERSION-win-x86
   fi
@@ -353,6 +363,7 @@ if [ $RELEASE_WIN_64 = true ] && [ $LOVE_GT_080 = "1" ]; then
     rm -rf $PROJECT_NAME-win64.zip 2> /dev/null
     cat love-$LOVE_VERSION-win64/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win64/$PROJECT_NAME.exe
     rm love-$LOVE_VERSION-win64/love.exe
+    /bin/cp $GAME_ICO love-$LOVE_VERSION-win64/
     zip -9 -qr $PROJECT_NAME-win64.zip love-$LOVE_VERSION-win64
     rm -rf love-$LOVE_VERSION-win64.zip love-$LOVE_VERSION-win64
   else
@@ -365,6 +376,7 @@ if [ $RELEASE_WIN_64 = true ] && [ $LOVE_GT_080 = "1" ]; then
     rm -rf $PROJECT_NAME-win-x64.zip 2> /dev/null
     cat love-$LOVE_VERSION-win-x64/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win-x64/$PROJECT_NAME.exe
     rm love-$LOVE_VERSION-win-x64/love.exe
+    /bin/cp $GAME_ICO love-$LOVE_VERSION-win-x64/
     zip -9 -qr $PROJECT_NAME-win-x64.zip love-$LOVE_VERSION-win-x64
     rm -rf love-$LOVE_VERSION-win-x64.zip love-$LOVE_VERSION-win-x64
   fi
