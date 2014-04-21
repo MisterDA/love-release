@@ -9,6 +9,7 @@ You can use love-release.sh to generate Love 2D game applications and get over t
 The script fully supports Windows, MacOS either on x86 or x64.  
 It needs an Internet connection to download Love files, and relies on curl, zip and unzip commands.  
 To set the default Love version to use, you can edit the very beginning of the script.  
+If a `conf.lua` file is provided, the script will try to detect the right version of Love to use.  
 
 ### OPTIONS
 `-h`     Print a short help  

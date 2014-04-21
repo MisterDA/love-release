@@ -35,6 +35,7 @@ DESCRIPTION
      The script fully supports Windows, MacOS either on x86 or x64.
      It needs an Internet connection to download Love files, and relies on curl, zip and unzip commands.
      To set the default Love version to use, you can edit the very beginning of the script.
+     If a conf.lua file is provided, the script will try to detect the right version of Love to use.
 
 OPTIONS
      -h     Print a short help
@@ -181,14 +182,21 @@ RELEASE_LOVE=false
 RELEASE_OSX=false
 RELEASE_WIN_32=false
 RELEASE_WIN_64=false
-LOVE_VERSION_MAJOR=`echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*'`
-LOVE_GT_080=`echo "$LOVE_VERSION_MAJOR>=0.8" | bc`
-LOVE_GT_090=`echo "$LOVE_VERSION_MAJOR>=0.9" | bc`
 
 PROJECT_FILES=
 PROJECT_NAME=${PWD##/*/}
 COMPANY_NAME=love2d
 RELEASE_DIR=$PWD/releases
+
+if [ -f $PWD/conf.lua ]; then
+    LOVE_VERSION_CONF=`grep -Eo 'version = "[0-9]+.[0-9]+.[0-9]+"' $PWD/conf.lua | grep -Eo '[0-9]+.[0-9]+.[0-9]+'`
+    if [ -n $LOVE_VERSION_CONF ]; then
+        LOVE_VERSION=$LOVE_VERSION_CONF
+    fi
+fi
+LOVE_VERSION_MAJOR=`echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*'`
+LOVE_GT_080=`echo "$LOVE_VERSION_MAJOR>=0.8" | bc`
+LOVE_GT_090=`echo "$LOVE_VERSION_MAJOR>=0.9" | bc`
 
 DEBUG=false
 CACHE_DIR=~/.cache/love-release
@@ -209,6 +217,7 @@ PROJECT_NAME=$PROJECT_NAME
 COMPANY_NAME=$COMPANY_NAME
 RELEASE_DIR=$RELEASE_DIR
 LOVE_VERSION=$LOVE_VERSION
+LOVE_VERSION_CONF=$LOVE_VERSION_CONF
 LOVE_VERSION_MAJOR=$LOVE_VERSION_MAJOR
 CACHE_DIR=$CACHE_DIR"
 }
@@ -240,10 +249,23 @@ do
   elif [ $OPTOPT = "u" ]; then
     COMPANY_NAME=$OPTARG
   elif [ $OPTOPT = "v" ]; then
-    LOVE_VERSION=$OPTARG
-    LOVE_VERSION_MAJOR=`echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*'`
-    LOVE_GT_080=`echo "$LOVE_VERSION_MAJOR>=0.8" | bc`
-    LOVE_GT_090=`echo "$LOVE_VERSION_MAJOR>=0.9" | bc`
+    if [ -n $LOVE_VERSION_CONF ] && [ -n $OPTARG ] && [ $LOVE_VERSION_CONF != $OPTARG ]; then
+      echo "The version of $PROJECT_NAME found in conf.lua does not match the one you specified."
+      read -p "Keep the old one ? [Y/n] " yn;
+      case $yn in
+        [Yy]* ) ;;
+        * )
+          LOVE_VERSION=$OPTARG
+          LOVE_VERSION_MAJOR=`echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*'`
+          LOVE_GT_080=`echo "$LOVE_VERSION_MAJOR>=0.8" | bc`
+          LOVE_GT_090=`echo "$LOVE_VERSION_MAJOR>=0.9" | bc`;;
+      esac
+    else
+      LOVE_VERSION=$OPTARG
+      LOVE_VERSION_MAJOR=`echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*'`
+      LOVE_GT_080=`echo "$LOVE_VERSION_MAJOR>=0.8" | bc`
+      LOVE_GT_090=`echo "$LOVE_VERSION_MAJOR>=0.9" | bc`
+    fi
   elif [ $OPTOPT = "debug" ]; then
     DEBUG=true
   elif [ $OPTOPT = "help" ]; then
