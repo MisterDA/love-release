@@ -319,11 +319,11 @@ if [ $RELEASE_WIN_32 = true ]; then
       cp $CACHE_DIR/love-$LOVE_VERSION-win32.zip ./
     fi
     unzip -qq love-$LOVE_VERSION-win32.zip
-      rm -rf $PROJECT_NAME-win32.zip 2> /dev/null
-      cat love-$LOVE_VERSION-win32/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win32/$PROJECT_NAME.exe
-      rm love-$LOVE_VERSION-win32/love.exe
-      zip -9 -qr $PROJECT_NAME-win32.zip love-$LOVE_VERSION-win32
-      rm -rf love-$LOVE_VERSION-win32.zip love-$LOVE_VERSION-win32
+    rm -rf $PROJECT_NAME-win32.zip 2> /dev/null
+    cat love-$LOVE_VERSION-win32/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win32/$PROJECT_NAME.exe
+    rm love-$LOVE_VERSION-win32/love.exe
+    zip -9 -qr $PROJECT_NAME-win32.zip love-$LOVE_VERSION-win32
+    rm -rf love-$LOVE_VERSION-win32.zip love-$LOVE_VERSION-win32
   else
     if [ -f $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ]; then
       cp $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ./
@@ -556,8 +556,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 fi
 
 ## Love file ##
-if [ $RELEASE_LOVE = false ]
-then
+if [ $RELEASE_LOVE = false ]; then
   rm $PROJECT_NAME.love
 fi
 
