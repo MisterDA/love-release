@@ -330,7 +330,7 @@ if [ $RELEASE_WIN_32 = true ]; then
     rm -rf $PROJECT_NAME-win32.zip 2> /dev/null
     cat love-$LOVE_VERSION-win32/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win32/$PROJECT_NAME.exe
     rm love-$LOVE_VERSION-win32/love.exe
-    /bin/cp $GAME_ICO love-$LOVE_VERSION-win32/
+    /bin/cp $GAME_ICO love-$LOVE_VERSION-win32/ 2> /dev/null
     zip -9 -qr $PROJECT_NAME-win32.zip love-$LOVE_VERSION-win32
     rm -rf love-$LOVE_VERSION-win32.zip love-$LOVE_VERSION-win32
   else
@@ -344,7 +344,7 @@ if [ $RELEASE_WIN_32 = true ]; then
     rm -rf $PROJECT_NAME-win-x86.zip 2> /dev/null
     cat love-$LOVE_VERSION-win-x86/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win-x86/$PROJECT_NAME.exe
     rm love-$LOVE_VERSION-win-x86/love.exe
-    /bin/cp $GAME_ICO love-$LOVE_VERSION-win-x86/
+    /bin/cp $GAME_ICO love-$LOVE_VERSION-win-x86/ 2> /dev/null
     zip -9 -qr $PROJECT_NAME-win-x86.zip love-$LOVE_VERSION-win-x86
     rm -rf love-$LOVE_VERSION-win-x86.zip love-$LOVE_VERSION-win-x86
   fi
@@ -363,7 +363,7 @@ if [ $RELEASE_WIN_64 = true ] && [ $LOVE_GT_080 = "1" ]; then
     rm -rf $PROJECT_NAME-win64.zip 2> /dev/null
     cat love-$LOVE_VERSION-win64/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win64/$PROJECT_NAME.exe
     rm love-$LOVE_VERSION-win64/love.exe
-    /bin/cp $GAME_ICO love-$LOVE_VERSION-win64/
+    /bin/cp $GAME_ICO love-$LOVE_VERSION-win64/ 2> /dev/null
     zip -9 -qr $PROJECT_NAME-win64.zip love-$LOVE_VERSION-win64
     rm -rf love-$LOVE_VERSION-win64.zip love-$LOVE_VERSION-win64
   else
@@ -376,7 +376,7 @@ if [ $RELEASE_WIN_64 = true ] && [ $LOVE_GT_080 = "1" ]; then
     rm -rf $PROJECT_NAME-win-x64.zip 2> /dev/null
     cat love-$LOVE_VERSION-win-x64/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win-x64/$PROJECT_NAME.exe
     rm love-$LOVE_VERSION-win-x64/love.exe
-    /bin/cp $GAME_ICO love-$LOVE_VERSION-win-x64/
+    /bin/cp $GAME_ICO love-$LOVE_VERSION-win-x64/ 2> /dev/null
     zip -9 -qr $PROJECT_NAME-win-x64.zip love-$LOVE_VERSION-win-x64
     rm -rf love-$LOVE_VERSION-win-x64.zip love-$LOVE_VERSION-win-x64
   fi
