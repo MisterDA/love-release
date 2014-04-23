@@ -36,7 +36,7 @@ DESCRIPTION
      It needs an Internet connection to download Love files, and relies on curl, zip and unzip commands.
      To set the default Love version to use, you can edit the very beginning of the script.
      If a conf.lua file is provided, the script will try to detect the right version of Love to use.
-     If a game.ico file is provided, the script will use it to set the game icon on Windows.
+     If a ProjectName.icns file is provided, the script will use it to set the game icon on MacOS.
 
 OPTIONS
      -h     Print a short help
@@ -202,12 +202,6 @@ LOVE_GT_090=`echo "$LOVE_VERSION_MAJOR>=0.9" | bc`
 DEBUG=false
 CACHE_DIR=~/.cache/love-release
 
-if [ -f $PWD/game.ico ]; then
-  GAME_ICO=$PWD/game.ico
-else
-  GAME_ICO=
-fi
-
 
 ## Debug function ##
 function debug()
@@ -227,7 +221,7 @@ LOVE_VERSION=$LOVE_VERSION
 LOVE_VERSION_CONF=$LOVE_VERSION_CONF
 LOVE_VERSION_MAJOR=$LOVE_VERSION_MAJOR
 CACHE_DIR=$CACHE_DIR
-GAME_ICO=$GAME_ICO"
+PROJECT_ICNS=$PROJECT_ICNS"
 }
 
 
@@ -297,6 +291,11 @@ fi
 MAIN_RELEASE_DIR=${RELEASE_DIR##/*/}
 RELEASE_DIR=$RELEASE_DIR/$LOVE_VERSION
 CACHE_DIR=$CACHE_DIR/$LOVE_VERSION
+if [ -f $PWD/$PROJECT_NAME.icns ]; then
+    PROJECT_ICNS=$PWD/$PROJECT_FILES.icns
+else
+    PROJECT_ICNS=
+fi
 
 
 ## Debug log ##
@@ -310,9 +309,9 @@ fi
 mkdir -p $RELEASE_DIR $CACHE_DIR
 rm -rf $RELEASE_DIR/$PROJECT_NAME.love 2> /dev/null
 if [ -z $PROJECT_FILES ]; then
-  zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* ${GAME_ICO##/*/} @ *
+  zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* ${PROJECT_ICNS##/*/} @ *
 else
-  zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* ${GAME_ICO##/*/} @ $PROJECT_FILES
+  zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* ${PROJECT_ICNS##/*/} @ $PROJECT_FILES
 fi
 cd $RELEASE_DIR
 
@@ -330,7 +329,6 @@ if [ $RELEASE_WIN_32 = true ]; then
     rm -rf $PROJECT_NAME-win32.zip 2> /dev/null
     cat love-$LOVE_VERSION-win32/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win32/$PROJECT_NAME.exe
     rm love-$LOVE_VERSION-win32/love.exe
-    /bin/cp $GAME_ICO love-$LOVE_VERSION-win32/ 2> /dev/null
     zip -9 -qr $PROJECT_NAME-win32.zip love-$LOVE_VERSION-win32
     rm -rf love-$LOVE_VERSION-win32.zip love-$LOVE_VERSION-win32
   else
@@ -344,7 +342,6 @@ if [ $RELEASE_WIN_32 = true ]; then
     rm -rf $PROJECT_NAME-win-x86.zip 2> /dev/null
     cat love-$LOVE_VERSION-win-x86/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win-x86/$PROJECT_NAME.exe
     rm love-$LOVE_VERSION-win-x86/love.exe
-    /bin/cp $GAME_ICO love-$LOVE_VERSION-win-x86/ 2> /dev/null
     zip -9 -qr $PROJECT_NAME-win-x86.zip love-$LOVE_VERSION-win-x86
     rm -rf love-$LOVE_VERSION-win-x86.zip love-$LOVE_VERSION-win-x86
   fi
@@ -363,7 +360,6 @@ if [ $RELEASE_WIN_64 = true ] && [ $LOVE_GT_080 = "1" ]; then
     rm -rf $PROJECT_NAME-win64.zip 2> /dev/null
     cat love-$LOVE_VERSION-win64/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win64/$PROJECT_NAME.exe
     rm love-$LOVE_VERSION-win64/love.exe
-    /bin/cp $GAME_ICO love-$LOVE_VERSION-win64/ 2> /dev/null
     zip -9 -qr $PROJECT_NAME-win64.zip love-$LOVE_VERSION-win64
     rm -rf love-$LOVE_VERSION-win64.zip love-$LOVE_VERSION-win64
   else
@@ -376,7 +372,6 @@ if [ $RELEASE_WIN_64 = true ] && [ $LOVE_GT_080 = "1" ]; then
     rm -rf $PROJECT_NAME-win-x64.zip 2> /dev/null
     cat love-$LOVE_VERSION-win-x64/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win-x64/$PROJECT_NAME.exe
     rm love-$LOVE_VERSION-win-x64/love.exe
-    /bin/cp $GAME_ICO love-$LOVE_VERSION-win-x64/ 2> /dev/null
     zip -9 -qr $PROJECT_NAME-win-x64.zip love-$LOVE_VERSION-win-x64
     rm -rf love-$LOVE_VERSION-win-x64.zip love-$LOVE_VERSION-win-x64
   fi
@@ -397,6 +392,7 @@ if [ $RELEASE_OSX = true ]; then
     rm -rf $PROJECT_NAME-macosx-x64.zip 2> /dev/null
     mv love.app $PROJECT_NAME.app
     cp $PROJECT_NAME.love $PROJECT_NAME.app/Contents/Resources
+    cp $PROJECT_ICNS $PROJECT_NAME.app/Contents/Resources 2> /dev/null
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
 <plist version=\"1.0\">
@@ -437,7 +433,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     <key>CFBundleExecutable</key>
     <string>love</string>
     <key>CFBundleIconFile</key>
-    <string>Love.icns</string>
+    <string>${PROJECT_ICNS##/*/}</string>
     <key>CFBundleIdentifier</key>
     <string>org.$COMPANY_NAME.$PROJECT_NAME</string>
     <key>CFBundleInfoDictionaryVersion</key>
@@ -487,6 +483,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     rm -rf $PROJECT_NAME-macosx-ub.zip 2> /dev/null
     mv love.app $PROJECT_NAME.app
     cp $PROJECT_NAME.love $PROJECT_NAME.app/Contents/Resources
+    cp $PROJECT_ICNS $PROJECT_NAME.app/Contents/Resources 2> /dev/null
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
 <plist version=\"1.0\">
@@ -527,7 +524,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     <key>CFBundleExecutable</key>
     <string>love</string>
     <key>CFBundleIconFile</key>
-    <string>Love.icns</string>
+    <string>${PROJECT_ICNS##/*/}</string>
     <key>CFBundleIdentifier</key>
     <string>com.$COMPANY_NAME.$PROJECT_NAME</string>
     <key>CFBundleInfoDictionaryVersion</key>

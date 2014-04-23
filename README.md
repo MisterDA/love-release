@@ -10,7 +10,7 @@ The script fully supports Windows, MacOS either on x86 or x64.
 It needs an Internet connection to download Love files, and relies on curl, zip and unzip commands.  
 To set the default Love version to use, you can edit the very beginning of the script.  
 If a `conf.lua` file is provided, the script will try to detect the right version of Love to use.  
-If a `game.ico` file is provided, the script will use it to set the game icon on Windows.  
+If a `ProjectName.icns` file is provided, the script will use it to set the game icon on MacOS.  
 
 ### OPTIONS
 `-h`     Print a short help  
@@ -24,7 +24,7 @@ If a `game.ico` file is provided, the script will use it to set the game icon on
      Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
      If you are targeting one of these, your project must be developped with Love 0.8.0 or lower.
      Depending on the Love version used, the script will choose which one, between x64 only or Universal Build to create.
-    
+
 `-w` Create Windows application.
      Starting with Love 0.8.0, a release is specially available for Windows x64.
      If you are targeting one of these, your project must be developped with Love 0.8.0 or newer.
