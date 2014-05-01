@@ -82,7 +82,7 @@ SEE ALSO
 
 
 ## Test if requirements are installed ##
-command -v curl -L  >/dev/null 2>&1 || { echo "curl -L is not installed. Aborting." >&2; exit 1; }
+command -v curl  >/dev/null 2>&1 || { echo "curl is not installed. Aborting." >&2; exit 1; }
 command -v zip   >/dev/null 2>&1 || { echo "zip is not installed. Aborting." >&2; exit 1; }
 command -v unzip >/dev/null 2>&1 || { echo "unzip is not installed. Aborting." >&2; exit 1; }
 
@@ -182,9 +182,9 @@ RELEASE_LOVE=false
 RELEASE_OSX=false
 RELEASE_WIN_32=false
 RELEASE_WIN_64=false
-LOVE_VERSION_MAJOR=`echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*'`
-LOVE_GT_080=`echo "$LOVE_VERSION_MAJOR>=0.8" | bc`
-LOVE_GT_090=`echo "$LOVE_VERSION_MAJOR>=0.9" | bc`
+LOVE_VERSION_MAJOR=$(echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*')
+LOVE_GT_080=$(echo "$LOVE_VERSION_MAJOR>=0.8" | bc)
+LOVE_GT_090=$(echo "$LOVE_VERSION_MAJOR>=0.9" | bc)
 
 PROJECT_FILES=
 PROJECT_NAME=${PWD##/*/}
@@ -193,6 +193,7 @@ RELEASE_DIR=$PWD/releases
 
 DEBUG=false
 CACHE_DIR=~/.cache/love-release
+EXCLUDE_FILES=$(/bin/ls -A | grep "^[.]" | tr '\n' ' ')
 
 
 ## Debug function ##
@@ -212,7 +213,9 @@ RELEASE_DIR=$RELEASE_DIR
 LOVE_VERSION=$LOVE_VERSION
 LOVE_VERSION_MAJOR=$LOVE_VERSION_MAJOR
 CACHE_DIR=$CACHE_DIR
-PROJECT_ICNS=$PROJECT_ICNS"
+PROJECT_ICNS=$PROJECT_ICNS
+EXCLUDE_FILES=$EXCLUDE_FILES
+"
 }
 
 
@@ -243,9 +246,9 @@ do
     COMPANY_NAME=$OPTARG
   elif [ $OPTOPT = "v" ]; then
     LOVE_VERSION=$OPTARG
-    LOVE_VERSION_MAJOR=`echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*'`
-    LOVE_GT_080=`echo "$LOVE_VERSION_MAJOR>=0.8" | bc`
-    LOVE_GT_090=`echo "$LOVE_VERSION_MAJOR>=0.9" | bc`
+    LOVE_VERSION_MAJOR=$(echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*')
+    LOVE_GT_080=$(echo "$LOVE_VERSION_MAJOR>=0.8" | bc)
+    LOVE_GT_090=$(echo "$LOVE_VERSION_MAJOR>=0.9" | bc)
   elif [ $OPTOPT = "debug" ]; then
     DEBUG=true
   elif [ $OPTOPT = "help" ]; then
@@ -287,9 +290,9 @@ fi
 mkdir -p $RELEASE_DIR $CACHE_DIR
 rm -rf $RELEASE_DIR/$PROJECT_NAME.love 2> /dev/null
 if [ -z $PROJECT_FILES ]; then
-  zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* ${PROJECT_ICNS##/*/} @ *
+  zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* ${PROJECT_ICNS##/*/} $EXCLUDE_FILES @ *
 else
-  zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* ${PROJECT_ICNS##/*/} @ $PROJECT_FILES
+  zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* ${PROJECT_ICNS##/*/} $EXCLUDE_FILES @ $PROJECT_FILES
 fi
 cd $RELEASE_DIR
 
