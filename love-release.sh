@@ -155,7 +155,7 @@ function getoptex()
             return 0
           ;;
           "-$OPTOPT"*)
-            if [ $opttype = ";" ]
+            if [ "$opttype" = ";" ]
             then # an option with no argument is in a chain of options
               OPTOFS="$OPTOFS?" # move to the next option in the chain
               OPTIND=$[OPTIND-1] # the chain still has other options
@@ -186,7 +186,7 @@ RELEASE_WIN_64=false
 
 LOVE_VERSION_AUTO=$(grep -Eo "t.version = \"[0-9]+.[0-9]+.[0-9]+\"" conf.lua 2> /dev/null | tail -1 | grep -Eo "[0-9]+.[0-9]+.[0-9]")
 if [ -n "$LOVE_VERSION_AUTO" ]; then
-    LOVE_VERSION=$LOVE_VERSION_AUTO
+  LOVE_VERSION=$LOVE_VERSION_AUTO
 fi
 LOVE_VERSION_MAJOR=$(echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*')
 LOVE_GT_080=$(echo "$LOVE_VERSION_MAJOR>=0.8" | bc)
@@ -210,15 +210,15 @@ RELEASE_LOVE=$RELEASE_LOVE
 RELEASE_OSX=$RELEASE_OSX
 RELEASE_WIN_32=$RELEASE_WIN_32
 RELEASE_WIN_64=$RELEASE_WIN_64
+LOVE_VERSION=$LOVE_VERSION
+LOVE_VERSION_MAJOR=$LOVE_VERSION_MAJOR
+LOVE_VERSION_AUTO=$LOVE_VERSION_AUTO
 LOVE_GT_080=$LOVE_GT_080
 LOVE_GT_090=$LOVE_GT_090
 PROJECT_FILES=$PROJECT_FILES
 PROJECT_NAME=$PROJECT_NAME
 COMPANY_NAME=$COMPANY_NAME
 RELEASE_DIR=$RELEASE_DIR
-LOVE_VERSION=$LOVE_VERSION
-LOVE_VERSION_MAJOR=$LOVE_VERSION_MAJOR
-LOVE_VERSION_AUTO=$LOVE_VERSION_AUTO
 CACHE_DIR=$CACHE_DIR
 PROJECT_ICNS=$PROJECT_ICNS
 EXCLUDE_FILES=$EXCLUDE_FILES
@@ -229,39 +229,39 @@ EXCLUDE_FILES=$EXCLUDE_FILES
 ## Parsing options ##
 while getoptex "h; l; m; w. n: r: u: v: debug help refresh" "$@"
 do
-  if [ $OPTOPT = "h" ]; then
+  if [ "$OPTOPT" = "h" ]; then
     short_help
     exit
-  elif [ $OPTOPT = "l" ]; then
+  elif [ "$OPTOPT" = "l" ]; then
     RELEASE_LOVE=true
-  elif [ $OPTOPT = "m" ]; then
+  elif [ "$OPTOPT" = "m" ]; then
     RELEASE_OSX=true
-  elif [ $OPTOPT = "w" ]; then
-    if [ $OPTARG = "32" ]; then
+  elif [ "$OPTOPT" = "w" ]; then
+    if [ "$OPTARG" = "32" ]; then
       RELEASE_WIN_32=true
-    elif [ $OPTARG = "64" ]; then
+    elif [ "$OPTARG" = "64" ]; then
       RELEASE_WIN_64=true
     else
       RELEASE_WIN_32=true
       RELEASE_WIN_64=true
     fi
-  elif [ $OPTOPT = "n" ]; then
+  elif [ "$OPTOPT" = "n" ]; then
     PROJECT_NAME=$OPTARG
-  elif [ $OPTOPT = "r" ]; then
+  elif [ "$OPTOPT" = "r" ]; then
     RELEASE_DIR=$OPTARG
-  elif [ $OPTOPT = "u" ]; then
+  elif [ "$OPTOPT" = "u" ]; then
     COMPANY_NAME=$OPTARG
-  elif [ $OPTOPT = "v" ]; then
+  elif [ "$OPTOPT" = "v" ]; then
     LOVE_VERSION=$OPTARG
     LOVE_VERSION_MAJOR=$(echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*')
     LOVE_GT_080=$(echo "$LOVE_VERSION_MAJOR>=0.8" | bc)
     LOVE_GT_090=$(echo "$LOVE_VERSION_MAJOR>=0.9" | bc)
-  elif [ $OPTOPT = "debug" ]; then
+  elif [ "$OPTOPT" = "debug" ]; then
     DEBUG=true
-  elif [ $OPTOPT = "help" ]; then
+  elif [ "$OPTOPT" = "help" ]; then
     long_help
     exit
-  elif [ $OPTOPT = "refresh" ]; then
+  elif [ "$OPTOPT" = "refresh" ]; then
     rm -rf $CACHE_DIR
   fi
 done
@@ -270,7 +270,7 @@ for file in "$@"
 do
   PROJECT_FILES="$PROJECT_FILES $file"
 done
-if [ $RELEASE_LOVE = false ] && [ $RELEASE_OSX = false ] && [ $RELEASE_WIN_32 = false ] && [ $RELEASE_WIN_64 = false ]; then
+if [ "$RELEASE_LOVE" = false ] && [ "$RELEASE_OSX" = false ] && [ "$RELEASE_WIN_32" = false ] && [ "$RELEASE_WIN_64" = false ]; then
   RELEASE_LOVE=true
   RELEASE_OSX=true
   RELEASE_WIN_32=true
@@ -279,7 +279,7 @@ fi
 MAIN_RELEASE_DIR=${RELEASE_DIR##/*/}
 RELEASE_DIR=$RELEASE_DIR/$LOVE_VERSION
 CACHE_DIR=$CACHE_DIR/$LOVE_VERSION
-if [ -f $PWD/$PROJECT_NAME.icns ]; then
+if [ -f "$PWD/$PROJECT_NAME.icns" ]; then
     PROJECT_ICNS=$PWD/$PROJECT_NAME.icns
 else
     PROJECT_ICNS=
@@ -287,7 +287,7 @@ fi
 
 
 ## Debug log ##
-if [ $DEBUG = true ]; then
+if [ "$DEBUG" = true ]; then
   debug
   exit
 fi
@@ -296,7 +296,7 @@ fi
 ## Zipping ##
 mkdir -p $RELEASE_DIR $CACHE_DIR
 rm -rf $RELEASE_DIR/$PROJECT_NAME.love 2> /dev/null
-if [ -z $PROJECT_FILES ]; then
+if [ -z "$PROJECT_FILES" ]; then
   zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* ${PROJECT_ICNS##/*/} $EXCLUDE_FILES @ *
 else
   zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* ${PROJECT_ICNS##/*/} $EXCLUDE_FILES @ $PROJECT_FILES
@@ -305,9 +305,9 @@ cd $RELEASE_DIR
 
 
 ## Windows 32-bits ##
-if [ $RELEASE_WIN_32 = true ]; then
-  if [ $LOVE_GT_090 = "1" ]; then
-    if [ -f $CACHE_DIR/love-$LOVE_VERSION-win32.zip ]; then
+if [ "$RELEASE_WIN_32" = true ]; then
+  if [ "$LOVE_GT_090" = "1" ]; then
+    if [ -f "$CACHE_DIR/love-$LOVE_VERSION-win32.zip" ]; then
       cp $CACHE_DIR/love-$LOVE_VERSION-win32.zip ./
     else
       curl -L -C - -o $CACHE_DIR/love-$LOVE_VERSION-win32.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win32.zip
@@ -320,7 +320,7 @@ if [ $RELEASE_WIN_32 = true ]; then
     zip -9 -qr $PROJECT_NAME-win32.zip love-$LOVE_VERSION-win32
     rm -rf love-$LOVE_VERSION-win32.zip love-$LOVE_VERSION-win32
   else
-    if [ -f $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ]; then
+    if [ -f "$CACHE_DIR/love-$LOVE_VERSION-win-x86.zip" ]; then
       cp $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ./
     else
       curl -L -C - -o $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x86.zip
@@ -336,9 +336,9 @@ if [ $RELEASE_WIN_32 = true ]; then
 fi
 
 ## Windows 64-bits ##
-if [ $RELEASE_WIN_64 = true ] && [ $LOVE_GT_080 = "1" ]; then
-  if [ $LOVE_GT_090 = "1" ]; then
-    if [ -f $CACHE_DIR/love-$LOVE_VERSION-win64.zip ]; then
+if [ "$RELEASE_WIN_64" = true ] && [ "$LOVE_GT_080" = "1" ]; then
+  if [ "$LOVE_GT_090" = "1" ]; then
+    if [ -f "$CACHE_DIR/love-$LOVE_VERSION-win64.zip" ]; then
       cp $CACHE_DIR/love-$LOVE_VERSION-win64.zip ./
     else
       curl -L -C - -o $CACHE_DIR/love-$LOVE_VERSION-win64.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win64.zip
@@ -351,7 +351,7 @@ if [ $RELEASE_WIN_64 = true ] && [ $LOVE_GT_080 = "1" ]; then
     zip -9 -qr $PROJECT_NAME-win64.zip love-$LOVE_VERSION-win64
     rm -rf love-$LOVE_VERSION-win64.zip love-$LOVE_VERSION-win64
   else
-    if [ -f $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ]; then
+    if [ -f "$CACHE_DIR/love-$LOVE_VERSION-win-x64.zip" ]; then
       cp $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ./
     else
       curl -L -C - -o $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x64.zip
@@ -366,11 +366,11 @@ if [ $RELEASE_WIN_64 = true ] && [ $LOVE_GT_080 = "1" ]; then
 fi
 
 ## MacOS ##
-if [ $RELEASE_OSX = true ]; then
+if [ "$RELEASE_OSX" = true ]; then
 
   ## MacOS 64-bits ##
-  if [ $LOVE_GT_090 = "1" ]; then
-    if [ -f $CACHE_DIR/love-$LOVE_VERSION-macosx-x64.zip ]; then
+  if [ "$LOVE_GT_090" = "1" ]; then
+    if [ -f "$CACHE_DIR/love-$LOVE_VERSION-macosx-x64.zip" ]; then
       cp $CACHE_DIR/love-$LOVE_VERSION-macosx-x64.zip ./
     else
       curl -L -C - -o $CACHE_DIR/love-$LOVE_VERSION-macosx-x64.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-macosx-x64.zip
@@ -461,7 +461,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 
   ## MacOS 32-bits ##
   else
-    if [ -f $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ]; then
+    if [ -f "$CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip" ]; then
       cp $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ./
     else
       curl -L -C - -o $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-macosx-ub.zip
@@ -553,7 +553,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 fi
 
 ## Love file ##
-if [ $RELEASE_LOVE = false ]; then
+if [ "$RELEASE_LOVE" = false ]; then
   rm $PROJECT_NAME.love
 fi
 
