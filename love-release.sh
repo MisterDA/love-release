@@ -43,16 +43,16 @@ OPTIONS
 
   OPERATING SYSTEMS
      -l     Create a plain Love file. It is just a zip of your sources, renamed in *.love.
-            Mostly aimed at Linux players or developpers and the most common distribution process.
+            Mostly aimed at Linux players or developers and the most common distribution process.
 
      -m     Create MacOS application.
             Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
-            If you are targeting one of these, your project must be developped with Love 0.8.0 or lower.
+            If you are targeting one of these, your project must be developed with Love 0.8.0 or lower.
             Depending on the Love version used, the script will choose which one, between x64 only or Universal Build to create.
 
      -w     Create Windows application.
             Starting with Love 0.8.0, a release is specially available for Windows x64.
-            If you are targeting one of these, your project must be developped with Love 0.8.0 or newer.
+            If you are targeting one of these, your project must be developed with Love 0.8.0 or newer.
             Remember that x86 is always backwards compatible with x64.
             Depending on the Love version used, the script will choose which one, between x64 and x86 or x86 only to create.
        -w32  Create Windows x86 executable only
@@ -114,7 +114,7 @@ function getoptex()
             if [ "$opttype" != ":" ]; then return 0; fi
             OPTARG="$2"
             if [ -z "$OPTARG" ];
-            then # error: must have an agrument
+            then # error: must have an argument
               let OPTERR && echo "$0: error: $OPTOPT must have an argument" >&2
               exit
               # OPTARG="$OPTOPT";
