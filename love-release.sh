@@ -65,7 +65,8 @@ OPTIONS
 
      -u     Set the company name. Provide it for MacOS CFBundleIdentifier.
 
-     -v     Love version. Default is 0.9.0.
+     -v     Love version. Default is 0.9.1.
+            The script should normally be able to detect which version of Love you are using by parsing conf.lua.
             Starting with Love 0.8.0, a release is specially available for Windows x64.
             Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
 
@@ -182,6 +183,11 @@ RELEASE_LOVE=false
 RELEASE_OSX=false
 RELEASE_WIN_32=false
 RELEASE_WIN_64=false
+
+LOVE_VERSION_AUTO=$(grep -Eo "t.version = \"[0-9]+.[0-9]+.[0-9]+\"" conf.lua 2> /dev/null | tail -1 | grep -Eo "[0-9]+.[0-9]+.[0-9]")
+if [ -n "$LOVE_VERSION_AUTO" ]; then
+    LOVE_VERSION=$LOVE_VERSION_AUTO
+fi
 LOVE_VERSION_MAJOR=$(echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*')
 LOVE_GT_080=$(echo "$LOVE_VERSION_MAJOR>=0.8" | bc)
 LOVE_GT_090=$(echo "$LOVE_VERSION_MAJOR>=0.9" | bc)
@@ -212,6 +218,7 @@ COMPANY_NAME=$COMPANY_NAME
 RELEASE_DIR=$RELEASE_DIR
 LOVE_VERSION=$LOVE_VERSION
 LOVE_VERSION_MAJOR=$LOVE_VERSION_MAJOR
+LOVE_VERSION_AUTO=$LOVE_VERSION_AUTO
 CACHE_DIR=$CACHE_DIR
 PROJECT_ICNS=$PROJECT_ICNS
 EXCLUDE_FILES=$EXCLUDE_FILES

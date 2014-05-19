@@ -39,7 +39,8 @@ If a `ProjectName.icns` file is provided, the script will use it to set the game
 
 `-u`  Set the company name. Provide it for MacOS CFBundleIdentifier.
 
-`-v`  Love version. Default is 0.9.0.
+`-v`  Love version. Default is 0.9.1.
+      The script should normally be able to detect wich version of Love you are using by parsing `conf.lua`.
       Starting with Love 0.8.0, a release is specially available for Windows x64.
       Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
 
