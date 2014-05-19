@@ -293,6 +293,9 @@ if [ "$DEBUG" = true ]; then
 fi
 
 
+echo "Generating $PROJECT_NAME with Love $LOVE_VERSION..."
+
+
 ## Zipping ##
 mkdir -p $RELEASE_DIR $CACHE_DIR
 rm -rf $RELEASE_DIR/$PROJECT_NAME.love 2> /dev/null
