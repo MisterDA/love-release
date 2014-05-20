@@ -35,6 +35,7 @@ DESCRIPTION
      The script fully supports Windows, MacOS either on x86 or x64.
      It needs an Internet connection to download Love files, and relies on curl, zip and unzip commands.
      To set the default Love version to use, you can edit the very beginning of the script.
+     If lua and a conf.lua file are found, it will automatically detect which version your project uses.
      If a ProjectName.icns file is provided, the script will use it to set the game icon on MacOS.
 
 OPTIONS
@@ -66,7 +67,6 @@ OPTIONS
      -u     Set the company name. Provide it for MacOS CFBundleIdentifier.
 
      -v     Love version. Default is 0.9.1.
-            The script should normally be able to detect which version of Love you are using by parsing conf.lua.
             Starting with Love 0.8.0, a release is specially available for Windows x64.
             Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
 
@@ -86,6 +86,8 @@ SEE ALSO
 command -v curl  >/dev/null 2>&1 || { echo "curl is not installed. Aborting." >&2; exit 1; }
 command -v zip   >/dev/null 2>&1 || { echo "zip is not installed. Aborting." >&2; exit 1; }
 command -v unzip >/dev/null 2>&1 || { echo "unzip is not installed. Aborting." >&2; exit 1; }
+
+command -v lua   >/dev/null 2>&1 || { FOUND_LUA=true; }
 
 
 ## Parsing function ##
@@ -184,7 +186,11 @@ RELEASE_OSX=false
 RELEASE_WIN_32=false
 RELEASE_WIN_64=false
 
-LOVE_VERSION_AUTO=$(grep -Eo "t.version = \"[0-9]+.[0-9]+.[0-9]+\"" conf.lua 2> /dev/null | tail -1 | grep -Eo "[0-9]+.[0-9]+.[0-9]")
+if [ "$FOUND_LUA" = true ]; then
+    LOVE_VERSION_AUTO=$(lua -e 'f = loadfile("conf.lua"); t, love = {window = {}, modules = {}}, {}; f(); love.conf(t); print(t.version)')
+else
+    LOVE_VERSION_AUTO=$(grep -Eo -m 1 "t.version = \"[0-9]+.[0-9]+.[0-9]+\"" conf.lua 2> /dev/null |  grep -Eo "[0-9]+.[0-9]+.[0-9]")
+fi
 if [ -n "$LOVE_VERSION_AUTO" ]; then
   LOVE_VERSION=$LOVE_VERSION_AUTO
 fi
