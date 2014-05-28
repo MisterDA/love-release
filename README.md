@@ -11,6 +11,7 @@ It needs an Internet connection to download Love files, and relies on curl, zip 
 To set the default Love version to use, you can edit the very beginning of the script.  
 If `lua` and a `conf.lua` file are found, it will automatically detect which version your project uses.  
 If a `ProjectName.icns` file is provided, the script will use it to set the game icon on MacOS.  
+If a `ProjectName.ico` file is provided, and that Wine and Resource Hacker are installed, the script will use them to set the game icon on Windows.
 
 ### OPTIONS
 `-h`     Print a short help  

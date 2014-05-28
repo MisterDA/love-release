@@ -37,6 +37,7 @@ DESCRIPTION
      To set the default Love version to use, you can edit the very beginning of the script.
      If lua and a conf.lua file are found, it will automatically detect which version your project uses.
      If a ProjectName.icns file is provided, the script will use it to set the game icon on MacOS.
+     If a ProjectName.ico file is provided, and that Wine and Resource Hacker are installed, the script will use them to set the game icon on Windows.
 
 OPTIONS
      -h     Print a short help
@@ -226,6 +227,7 @@ PROJECT_NAME=$PROJECT_NAME
 COMPANY_NAME=$COMPANY_NAME
 RELEASE_DIR=$RELEASE_DIR
 CACHE_DIR=$CACHE_DIR
+PROJECT_ICO=$PROJECT_ICO
 PROJECT_ICNS=$PROJECT_ICNS
 EXCLUDE_FILES=$EXCLUDE_FILES
 "
@@ -286,9 +288,14 @@ MAIN_RELEASE_DIR=${RELEASE_DIR##/*/}
 RELEASE_DIR=$RELEASE_DIR/$LOVE_VERSION
 CACHE_DIR=$CACHE_DIR/$LOVE_VERSION
 if [ -f "$PWD/$PROJECT_NAME.icns" ]; then
-    PROJECT_ICNS=$PWD/$PROJECT_NAME.icns
+  PROJECT_ICNS=$PWD/$PROJECT_NAME.icns
 else
-    PROJECT_ICNS=
+  PROJECT_ICNS=
+fi
+if [ -f "$PWD/$PROJECT_NAME.ico" ]; then
+  PROJECT_ICO=$PWD/$PROJECT_NAME.ico
+else
+  PROJECT_ICO=
 fi
 
 
@@ -306,9 +313,9 @@ echo "Generating $PROJECT_NAME with Love $LOVE_VERSION..."
 mkdir -p $RELEASE_DIR $CACHE_DIR
 rm -rf $RELEASE_DIR/$PROJECT_NAME.love 2> /dev/null
 if [ -z "$PROJECT_FILES" ]; then
-  zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* ${PROJECT_ICNS##/*/} $EXCLUDE_FILES @ *
+  zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* ${PROJECT_ICNS##/*/} ${PROJECT_ICO##/*/} $EXCLUDE_FILES @ *
 else
-  zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* ${PROJECT_ICNS##/*/} $EXCLUDE_FILES @ $PROJECT_FILES
+  zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* ${PROJECT_ICNS##/*/} ${PROJECT_ICO##/*/} $EXCLUDE_FILES @ $PROJECT_FILES
 fi
 cd $RELEASE_DIR
 
@@ -324,6 +331,7 @@ if [ "$RELEASE_WIN_32" = true ]; then
     fi
     unzip -qq love-$LOVE_VERSION-win32.zip
     rm -rf $PROJECT_NAME-win32.zip 2> /dev/null
+    wine ~/.wine/drive_c/Program\ Files\ \(x86\)/Resource\ Hacker/ResHacker.exe -addoverwrite "love-$LOVE_VERSION-win32/love.exe,love-$LOVE_VERSION-win32/love.exe,$PROJECT_ICO,ICONGROUP,MAINICON,0"
     cat love-$LOVE_VERSION-win32/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win32/$PROJECT_NAME.exe
     rm love-$LOVE_VERSION-win32/love.exe
     zip -9 -qr $PROJECT_NAME-win32.zip love-$LOVE_VERSION-win32
@@ -337,6 +345,7 @@ if [ "$RELEASE_WIN_32" = true ]; then
     fi
     unzip -qq love-$LOVE_VERSION-win-x86.zip
     rm -rf $PROJECT_NAME-win-x86.zip 2> /dev/null
+    wine ~/.wine/drive_c/Program\ Files\ \(x86\)/Resource\ Hacker/ResHacker.exe -addoverwrite "love-$LOVE_VERSION-win-x86/love.exe,love-$LOVE_VERSION-win-x86/love.exe,$PROJECT_ICO,ICONGROUP,MAINICON,0"
     cat love-$LOVE_VERSION-win-x86/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win-x86/$PROJECT_NAME.exe
     rm love-$LOVE_VERSION-win-x86/love.exe
     zip -9 -qr $PROJECT_NAME-win-x86.zip love-$LOVE_VERSION-win-x86
@@ -355,6 +364,7 @@ if [ "$RELEASE_WIN_64" = true ] && [ "$LOVE_GT_080" = "1" ]; then
     fi
     unzip -qq love-$LOVE_VERSION-win64.zip
     rm -rf $PROJECT_NAME-win64.zip 2> /dev/null
+    wine ~/.wine/drive_c/Program\ Files\ \(x86\)/Resource\ Hacker/ResHacker.exe -addoverwrite "love-$LOVE_VERSION-win64/love.exe,love-$LOVE_VERSION-win64/love.exe,$PROJECT_ICO,ICONGROUP,MAINICON,0"
     cat love-$LOVE_VERSION-win64/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win64/$PROJECT_NAME.exe
     rm love-$LOVE_VERSION-win64/love.exe
     zip -9 -qr $PROJECT_NAME-win64.zip love-$LOVE_VERSION-win64
@@ -367,6 +377,7 @@ if [ "$RELEASE_WIN_64" = true ] && [ "$LOVE_GT_080" = "1" ]; then
     fi
     unzip -qq love-$LOVE_VERSION-win-x64.zip
     rm -rf $PROJECT_NAME-win-x64.zip 2> /dev/null
+    wine ~/.wine/drive_c/Program\ Files\ \(x86\)/Resource\ Hacker/ResHacker.exe -addoverwrite "love-$LOVE_VERSION-win64/love.exe,love-$LOVE_VERSION-win64/love.exe,$PROJECT_ICO,ICONGROUP,MAINICON,0"
     cat love-$LOVE_VERSION-win-x64/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win-x64/$PROJECT_NAME.exe
     rm love-$LOVE_VERSION-win-x64/love.exe
     zip -9 -qr $PROJECT_NAME-win-x64.zip love-$LOVE_VERSION-win-x64
