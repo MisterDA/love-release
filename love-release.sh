@@ -88,7 +88,8 @@ command -v curl  >/dev/null 2>&1 || { echo "curl is not installed. Aborting." >&
 command -v zip   >/dev/null 2>&1 || { echo "zip is not installed. Aborting." >&2; exit 1; }
 command -v unzip >/dev/null 2>&1 || { echo "unzip is not installed. Aborting." >&2; exit 1; }
 
-command -v lua   >/dev/null 2>&1 || { FOUND_LUA=true; }
+FOUND_LUA=true
+command -v lua   >/dev/null 2>&1 || { FOUND_LUA=false; }
 
 
 ## Parsing function ##
@@ -329,28 +330,21 @@ if [ "$RELEASE_WIN_32" = true ]; then
       curl -L -C - -o $CACHE_DIR/love-$LOVE_VERSION-win32.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win32.zip
       cp $CACHE_DIR/love-$LOVE_VERSION-win32.zip ./
     fi
-    unzip -qq love-$LOVE_VERSION-win32.zip
-    rm -rf $PROJECT_NAME-win32.zip 2> /dev/null
-    wine ~/.wine/drive_c/Program\ Files\ \(x86\)/Resource\ Hacker/ResHacker.exe -addoverwrite "love-$LOVE_VERSION-win32/love.exe,love-$LOVE_VERSION-win32/love.exe,$PROJECT_ICO,ICONGROUP,MAINICON,0"
-    cat love-$LOVE_VERSION-win32/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win32/$PROJECT_NAME.exe
-    rm love-$LOVE_VERSION-win32/love.exe
-    zip -9 -qr $PROJECT_NAME-win32.zip love-$LOVE_VERSION-win32
-    rm -rf love-$LOVE_VERSION-win32.zip love-$LOVE_VERSION-win32
   else
     if [ -f "$CACHE_DIR/love-$LOVE_VERSION-win-x86.zip" ]; then
-      cp $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ./
+      cp $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ./love-$LOVE_VERSION-win32.zip
     else
       curl -L -C - -o $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x86.zip
-      cp $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ./
+      cp $CACHE_DIR/love-$LOVE_VERSION-win-x86.zip ./love-$LOVE_VERSION-win32.zip
     fi
-    unzip -qq love-$LOVE_VERSION-win-x86.zip
-    rm -rf $PROJECT_NAME-win-x86.zip 2> /dev/null
-    wine ~/.wine/drive_c/Program\ Files\ \(x86\)/Resource\ Hacker/ResHacker.exe -addoverwrite "love-$LOVE_VERSION-win-x86/love.exe,love-$LOVE_VERSION-win-x86/love.exe,$PROJECT_ICO,ICONGROUP,MAINICON,0"
-    cat love-$LOVE_VERSION-win-x86/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win-x86/$PROJECT_NAME.exe
-    rm love-$LOVE_VERSION-win-x86/love.exe
-    zip -9 -qr $PROJECT_NAME-win-x86.zip love-$LOVE_VERSION-win-x86
-    rm -rf love-$LOVE_VERSION-win-x86.zip love-$LOVE_VERSION-win-x86
   fi
+  unzip -qq love-$LOVE_VERSION-win32.zip
+  rm -rf $PROJECT_NAME-win32.zip 2> /dev/null
+  wine ~/.wine/drive_c/Program\ Files\ \(x86\)/Resource\ Hacker/ResHacker.exe -addoverwrite "love-$LOVE_VERSION-win32/love.exe,love-$LOVE_VERSION-win32/love.exe,$PROJECT_ICO,ICONGROUP,MAINICON,0"
+  cat love-$LOVE_VERSION-win32/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win32/$PROJECT_NAME.exe
+  rm love-$LOVE_VERSION-win32/love.exe
+  zip -9 -qr $PROJECT_NAME-win32.zip love-$LOVE_VERSION-win32
+  rm -rf love-$LOVE_VERSION-win32.zip love-$LOVE_VERSION-win32
 fi
 
 ## Windows 64-bits ##
@@ -362,27 +356,21 @@ if [ "$RELEASE_WIN_64" = true ] && [ "$LOVE_GT_080" = "1" ]; then
       curl -L -C - -o $CACHE_DIR/love-$LOVE_VERSION-win64.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win64.zip
       cp $CACHE_DIR/love-$LOVE_VERSION-win64.zip ./
     fi
-    unzip -qq love-$LOVE_VERSION-win64.zip
-    rm -rf $PROJECT_NAME-win64.zip 2> /dev/null
-    wine ~/.wine/drive_c/Program\ Files\ \(x86\)/Resource\ Hacker/ResHacker.exe -addoverwrite "love-$LOVE_VERSION-win64/love.exe,love-$LOVE_VERSION-win64/love.exe,$PROJECT_ICO,ICONGROUP,MAINICON,0"
-    cat love-$LOVE_VERSION-win64/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win64/$PROJECT_NAME.exe
-    rm love-$LOVE_VERSION-win64/love.exe
-    zip -9 -qr $PROJECT_NAME-win64.zip love-$LOVE_VERSION-win64
-    rm -rf love-$LOVE_VERSION-win64.zip love-$LOVE_VERSION-win64
   else
     if [ -f "$CACHE_DIR/love-$LOVE_VERSION-win-x64.zip" ]; then
-      cp $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ./
+      cp $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ./love-$LOVE_VERSION-win64.zip
     else
       curl -L -C - -o $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x64.zip
+      cp $CACHE_DIR/love-$LOVE_VERSION-win-x64.zip ./love-$LOVE_VERSION-win64.zip
     fi
-    unzip -qq love-$LOVE_VERSION-win-x64.zip
-    rm -rf $PROJECT_NAME-win-x64.zip 2> /dev/null
-    wine ~/.wine/drive_c/Program\ Files\ \(x86\)/Resource\ Hacker/ResHacker.exe -addoverwrite "love-$LOVE_VERSION-win64/love.exe,love-$LOVE_VERSION-win64/love.exe,$PROJECT_ICO,ICONGROUP,MAINICON,0"
-    cat love-$LOVE_VERSION-win-x64/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win-x64/$PROJECT_NAME.exe
-    rm love-$LOVE_VERSION-win-x64/love.exe
-    zip -9 -qr $PROJECT_NAME-win-x64.zip love-$LOVE_VERSION-win-x64
-    rm -rf love-$LOVE_VERSION-win-x64.zip love-$LOVE_VERSION-win-x64
   fi
+  unzip -qq love-$LOVE_VERSION-win64.zip
+  rm -rf $PROJECT_NAME-win64.zip 2> /dev/null
+  wine ~/.wine/drive_c/Program\ Files\ \(x86\)/Resource\ Hacker/ResHacker.exe -addoverwrite "love-$LOVE_VERSION-win64/love.exe,love-$LOVE_VERSION-win64/love.exe,$PROJECT_ICO,ICONGROUP,MAINICON,0"
+  cat love-$LOVE_VERSION-win64/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win64/$PROJECT_NAME.exe
+  rm love-$LOVE_VERSION-win64/love.exe
+  zip -9 -qr $PROJECT_NAME-win64.zip love-$LOVE_VERSION-win64
+  rm -rf love-$LOVE_VERSION-win64.zip love-$LOVE_VERSION-win64
 fi
 
 ## MacOS ##
