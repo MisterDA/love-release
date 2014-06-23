@@ -211,7 +211,7 @@ LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
 PROJECT_FILES=
 PROJECT_NAME=${PWD##/*/}
 COMPANY_NAME=love2d
-RELEASE_DIR=$PWD/releases
+RELEASE_DIR="$PWD"/releases
 
 DEBUG=false
 CACHE_DIR=~/.cache/love-release
@@ -294,15 +294,15 @@ if [ "$RELEASE_LOVE" = false ] && [ "$RELEASE_OSX" = false ] && [ "$RELEASE_WIN_
   RELEASE_WIN_64=true
 fi
 MAIN_RELEASE_DIR=${RELEASE_DIR##/*/}
-RELEASE_DIR=$RELEASE_DIR/$LOVE_VERSION
+RELEASE_DIR="$RELEASE_DIR"/$LOVE_VERSION
 CACHE_DIR=$CACHE_DIR/$LOVE_VERSION
-if [ -f "$PWD/$PROJECT_NAME.icns" ]; then
-  PROJECT_ICNS=$PWD/$PROJECT_NAME.icns
+if [ -f "$PWD"/"$PROJECT_NAME".icns ]; then
+  PROJECT_ICNS="$PWD"/"$PROJECT_NAME".icns
 else
   PROJECT_ICNS=
 fi
-if [ -f "$PWD/$PROJECT_NAME.ico" ]; then
-  PROJECT_ICO=$PWD/$PROJECT_NAME.ico
+if [ -f "$PWD"/"$PROJECT_NAME".ico ]; then
+  PROJECT_ICO="$PWD"/"$PROJECT_NAME".ico
 else
   PROJECT_ICO=
 fi
@@ -315,18 +315,18 @@ if [ "$DEBUG" = true ]; then
 fi
 
 
-echo "Generating $PROJECT_NAME with Love $LOVE_VERSION..."
+echo "Generating "$PROJECT_NAME" with Love $LOVE_VERSION..."
 
 
 ## Zipping ##
-mkdir -p $RELEASE_DIR $CACHE_DIR
-rm -rf $RELEASE_DIR/$PROJECT_NAME.love 2> /dev/null
+mkdir -p "$RELEASE_DIR" $CACHE_DIR
+rm -rf "$RELEASE_DIR"/"$PROJECT_NAME".love 2> /dev/null
 if [ -z "$PROJECT_FILES" ]; then
-  zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* ${PROJECT_ICNS##/*/} ${PROJECT_ICO##/*/} $EXCLUDE_FILES @ *
+  zip -9 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x $0 "$MAIN_RELEASE_DIR"/\* ${PROJECT_ICNS##/*/} ${PROJECT_ICO##/*/} $EXCLUDE_FILES @ *
 else
-  zip -9 -r $RELEASE_DIR/$PROJECT_NAME.love -x $0 $MAIN_RELEASE_DIR/\* ${PROJECT_ICNS##/*/} ${PROJECT_ICO##/*/} $EXCLUDE_FILES @ $PROJECT_FILES
+  zip -9 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x $0 "$MAIN_RELEASE_DIR"/\* ${PROJECT_ICNS##/*/} ${PROJECT_ICO##/*/} $EXCLUDE_FILES @ $PROJECT_FILES
 fi
-cd $RELEASE_DIR
+cd "$RELEASE_DIR"
 
 
 ## Windows 32-bits ##
@@ -347,11 +347,11 @@ if [ "$RELEASE_WIN_32" = true ]; then
     fi
   fi
   unzip -qq love-$LOVE_VERSION-win32.zip
-  rm -rf $PROJECT_NAME-win32.zip 2> /dev/null
-  wine ~/.wine/drive_c/Program\ Files\ \(x86\)/Resource\ Hacker/ResHacker.exe -addoverwrite "love-$LOVE_VERSION-win32/love.exe,love-$LOVE_VERSION-win32/love.exe,$PROJECT_ICO,ICONGROUP,MAINICON,0"
-  cat love-$LOVE_VERSION-win32/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win32/$PROJECT_NAME.exe
+  rm -rf "$PROJECT_NAME"-win32.zip 2> /dev/null
+  wine ~/.wine/drive_c/Program\ Files\ \(x86\)/Resource\ Hacker/ResHacker.exe -addoverwrite "love-$LOVE_VERSION-win32/love.exe,love-$LOVE_VERSION-win32/love.exe,"$PROJECT_ICO",ICONGROUP,MAINICON,0"
+  cat love-$LOVE_VERSION-win32/love.exe "$PROJECT_NAME".love > love-$LOVE_VERSION-win32/"$PROJECT_NAME".exe
   rm love-$LOVE_VERSION-win32/love.exe
-  zip -9 -qr $PROJECT_NAME-win32.zip love-$LOVE_VERSION-win32
+  zip -9 -qr "$PROJECT_NAME"-win32.zip love-$LOVE_VERSION-win32
   rm -rf love-$LOVE_VERSION-win32.zip love-$LOVE_VERSION-win32
 fi
 
@@ -373,11 +373,11 @@ if [ "$RELEASE_WIN_64" = true ] && [ "$LOVE_GT_080" = true ]; then
     fi
   fi
   unzip -qq love-$LOVE_VERSION-win64.zip
-  rm -rf $PROJECT_NAME-win64.zip 2> /dev/null
-  wine ~/.wine/drive_c/Program\ Files\ \(x86\)/Resource\ Hacker/ResHacker.exe -addoverwrite "love-$LOVE_VERSION-win64/love.exe,love-$LOVE_VERSION-win64/love.exe,$PROJECT_ICO,ICONGROUP,MAINICON,0"
-  cat love-$LOVE_VERSION-win64/love.exe $PROJECT_NAME.love > love-$LOVE_VERSION-win64/$PROJECT_NAME.exe
+  rm -rf "$PROJECT_NAME"-win64.zip 2> /dev/null
+  wine ~/.wine/drive_c/Program\ Files\ \(x86\)/Resource\ Hacker/ResHacker.exe -addoverwrite "love-$LOVE_VERSION-win64/love.exe,love-$LOVE_VERSION-win64/love.exe,"$PROJECT_ICO",ICONGROUP,MAINICON,0"
+  cat love-$LOVE_VERSION-win64/love.exe "$PROJECT_NAME".love > love-$LOVE_VERSION-win64/"$PROJECT_NAME".exe
   rm love-$LOVE_VERSION-win64/love.exe
-  zip -9 -qr $PROJECT_NAME-win64.zip love-$LOVE_VERSION-win64
+  zip -9 -qr "$PROJECT_NAME"-win64.zip love-$LOVE_VERSION-win64
   rm -rf love-$LOVE_VERSION-win64.zip love-$LOVE_VERSION-win64
 fi
 
@@ -393,10 +393,10 @@ if [ "$RELEASE_OSX" = true ]; then
       cp $CACHE_DIR/love-$LOVE_VERSION-macosx-x64.zip ./
     fi
     unzip -qq love-$LOVE_VERSION-macosx-x64.zip
-    rm -rf $PROJECT_NAME-macosx-x64.zip 2> /dev/null
-    mv love.app $PROJECT_NAME.app
-    cp $PROJECT_NAME.love $PROJECT_NAME.app/Contents/Resources
-    cp $PROJECT_ICNS $PROJECT_NAME.app/Contents/Resources 2> /dev/null
+    rm -rf "$PROJECT_NAME"-macosx-x64.zip 2> /dev/null
+    mv love.app "$PROJECT_NAME".app
+    cp "$PROJECT_NAME".love "$PROJECT_NAME".app/Contents/Resources
+    cp "$PROJECT_ICNS" "$PROJECT_NAME".app/Contents/Resources 2> /dev/null
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
 <plist version=\"1.0\">
@@ -439,11 +439,11 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     <key>CFBundleIconFile</key>
     <string>${PROJECT_ICNS##/*/}</string>
     <key>CFBundleIdentifier</key>
-    <string>org.$COMPANY_NAME.$PROJECT_NAME</string>
+    <string>org.$COMPANY_NAME."$PROJECT_NAME"</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>$PROJECT_NAME</string>
+    <string>"$PROJECT_NAME"</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
@@ -471,9 +471,9 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
 </dict>
-</plist>" > $PROJECT_NAME.app/Contents/Info.plist
-    zip -9 -qr $PROJECT_NAME-macosx-x64.zip $PROJECT_NAME.app
-    rm -rf love-$LOVE_VERSION-macosx-x64.zip $PROJECT_NAME.app
+</plist>" > "$PROJECT_NAME".app/Contents/Info.plist
+    zip -9 -qr "$PROJECT_NAME"-macosx-x64.zip "$PROJECT_NAME".app
+    rm -rf love-$LOVE_VERSION-macosx-x64.zip "$PROJECT_NAME".app
 
   ## MacOS 32-bits ##
   else
@@ -484,10 +484,10 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
       cp $CACHE_DIR/love-$LOVE_VERSION-macosx-ub.zip ./
     fi
     unzip -qq love-$LOVE_VERSION-macosx-ub.zip
-    rm -rf $PROJECT_NAME-macosx-ub.zip 2> /dev/null
-    mv love.app $PROJECT_NAME.app
-    cp $PROJECT_NAME.love $PROJECT_NAME.app/Contents/Resources
-    cp $PROJECT_ICNS $PROJECT_NAME.app/Contents/Resources 2> /dev/null
+    rm -rf "$PROJECT_NAME"-macosx-ub.zip 2> /dev/null
+    mv love.app "$PROJECT_NAME".app
+    cp "$PROJECT_NAME".love "$PROJECT_NAME".app/Contents/Resources
+    cp "$PROJECT_ICNS" "$PROJECT_NAME".app/Contents/Resources 2> /dev/null
 echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 <!DOCTYPE plist PUBLIC \"-//Apple//DTD PLIST 1.0//EN\" \"http://www.apple.com/DTDs/PropertyList-1.0.dtd\">
 <plist version=\"1.0\">
@@ -530,11 +530,11 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     <key>CFBundleIconFile</key>
     <string>${PROJECT_ICNS##/*/}</string>
     <key>CFBundleIdentifier</key>
-    <string>com.$COMPANY_NAME.$PROJECT_NAME</string>
+    <string>com.$COMPANY_NAME."$PROJECT_NAME"</string>
     <key>CFBundleInfoDictionaryVersion</key>
     <string>6.0</string>
     <key>CFBundleName</key>
-    <string>$PROJECT_NAME</string>
+    <string>"$PROJECT_NAME"</string>
     <key>CFBundlePackageType</key>
     <string>APPL</string>
     <key>CFBundleShortVersionString</key>
@@ -562,15 +562,15 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
     <key>NSPrincipalClass</key>
     <string>NSApplication</string>
 </dict>
-</plist>" > $PROJECT_NAME.app/Contents/Info.plist
-    zip -9 -qr $PROJECT_NAME-macosx-ub.zip $PROJECT_NAME.app
-    rm -rf love-$LOVE_VERSION-macosx-ub.zip $PROJECT_NAME.app
+</plist>" > "$PROJECT_NAME".app/Contents/Info.plist
+    zip -9 -qr "$PROJECT_NAME"-macosx-ub.zip "$PROJECT_NAME".app
+    rm -rf love-$LOVE_VERSION-macosx-ub.zip "$PROJECT_NAME".app
   fi
 fi
 
 ## Love file ##
 if [ "$RELEASE_LOVE" = false ]; then
-  rm $PROJECT_NAME.love
+  rm "$PROJECT_NAME".love
 fi
 
 echo "Done !"
