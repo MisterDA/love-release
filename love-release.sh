@@ -181,6 +181,14 @@ function getoptex()
   return 1
 }
 
+float_test() {
+    a=$(echo | awk 'END { exit ( !( '"$1"')); }' && echo "true")
+    if [ "$a" != "true" ]; then
+        a=false
+    fi
+    echo $a
+}
+
 
 ## Set defaults ##
 RELEASE_LOVE=false
@@ -197,8 +205,8 @@ if [ -n "$LOVE_VERSION_AUTO" ]; then
   LOVE_VERSION=$LOVE_VERSION_AUTO
 fi
 LOVE_VERSION_MAJOR=$(echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*')
-LOVE_GT_080=$(echo "$LOVE_VERSION_MAJOR>=0.8" | bc)
-LOVE_GT_090=$(echo "$LOVE_VERSION_MAJOR>=0.9" | bc)
+LOVE_GT_080=$(float_test "$LOVE_VERSION_MAJOR >= 0.8")
+LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
 
 PROJECT_FILES=
 PROJECT_NAME=${PWD##/*/}
@@ -263,8 +271,8 @@ do
   elif [ "$OPTOPT" = "v" ]; then
     LOVE_VERSION=$OPTARG
     LOVE_VERSION_MAJOR=$(echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*')
-    LOVE_GT_080=$(echo "$LOVE_VERSION_MAJOR>=0.8" | bc)
-    LOVE_GT_090=$(echo "$LOVE_VERSION_MAJOR>=0.9" | bc)
+    LOVE_GT_080=$(float_test "$LOVE_VERSION_MAJOR >= 0.8")
+    LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
   elif [ "$OPTOPT" = "debug" ]; then
     DEBUG=true
   elif [ "$OPTOPT" = "help" ]; then
@@ -323,7 +331,7 @@ cd $RELEASE_DIR
 
 ## Windows 32-bits ##
 if [ "$RELEASE_WIN_32" = true ]; then
-  if [ "$LOVE_GT_090" = "1" ]; then
+  if [ "$LOVE_GT_090" = true ]; then
     if [ -f "$CACHE_DIR/love-$LOVE_VERSION-win32.zip" ]; then
       cp $CACHE_DIR/love-$LOVE_VERSION-win32.zip ./
     else
@@ -348,8 +356,8 @@ if [ "$RELEASE_WIN_32" = true ]; then
 fi
 
 ## Windows 64-bits ##
-if [ "$RELEASE_WIN_64" = true ] && [ "$LOVE_GT_080" = "1" ]; then
-  if [ "$LOVE_GT_090" = "1" ]; then
+if [ "$RELEASE_WIN_64" = true ] && [ "$LOVE_GT_080" = true ]; then
+  if [ "$LOVE_GT_090" = true ]; then
     if [ -f "$CACHE_DIR/love-$LOVE_VERSION-win64.zip" ]; then
       cp $CACHE_DIR/love-$LOVE_VERSION-win64.zip ./
     else
@@ -377,7 +385,7 @@ fi
 if [ "$RELEASE_OSX" = true ]; then
 
   ## MacOS 64-bits ##
-  if [ "$LOVE_GT_090" = "1" ]; then
+  if [ "$LOVE_GT_090" = true ]; then
     if [ -f "$CACHE_DIR/love-$LOVE_VERSION-macosx-x64.zip" ]; then
       cp $CACHE_DIR/love-$LOVE_VERSION-macosx-x64.zip ./
     else
