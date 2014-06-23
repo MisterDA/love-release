@@ -473,7 +473,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 </dict>
 </plist>" > "$PROJECT_NAME".app/Contents/Info.plist
     zip -9 -qr "$PROJECT_NAME"-macosx-x64.zip "$PROJECT_NAME".app
-    rm -rf love-$LOVE_VERSION-macosx-x64.zip "$PROJECT_NAME".app
+    rm -rf love-$LOVE_VERSION-macosx-x64.zip "$PROJECT_NAME".app __MACOSX
 
   ## MacOS 32-bits ##
   else
@@ -564,7 +564,7 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 </dict>
 </plist>" > "$PROJECT_NAME".app/Contents/Info.plist
     zip -9 -qr "$PROJECT_NAME"-macosx-ub.zip "$PROJECT_NAME".app
-    rm -rf love-$LOVE_VERSION-macosx-ub.zip "$PROJECT_NAME".app
+    rm -rf love-$LOVE_VERSION-macosx-ub.zip "$PROJECT_NAME".app __MACOSX
   fi
 fi
 
