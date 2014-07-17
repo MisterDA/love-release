@@ -11,6 +11,7 @@ echo "Usage: love-release.sh [options...] [files...]
 Options:
  -h, --help  Prints short or long help
  -l    Create a plain Love file
+ -d    Create a deb package
  -m    Create a MacOS application
  -w,   Create a Windows application
     -w32  Create a Windows x86 application
@@ -28,11 +29,11 @@ function long_help()
 echo "NAME
      love-release.sh -- Bash script to generate Love 2D game releases
 SYNOPSIS
-     love-release.sh [-lmw] [-n project_name] [-r release_dir] [-u company_name] [-v love_version] [FILES...]
+     love-release.sh [-dlmw] [-n project_name] [-r release_dir] [-u company_name] [-v love_version] [FILES...]
 
 DESCRIPTION
      You can use love-release.sh to generate Love 2D game applications and get over the fastidious zipping commands you had to do.
-     The script fully supports Windows, MacOS either on x86 or x64.
+     The script fully supports Windows, MacOS either on x86 or x64, and Debian packages.
      It needs an Internet connection to download Love files, and relies on curl, zip and unzip commands.
      To set the default Love version to use, you can edit the very beginning of the script.
      If lua and a conf.lua file are found, it will automatically detect which version your project uses.
@@ -46,6 +47,10 @@ OPTIONS
   OPERATING SYSTEMS
      -l     Create a plain Love file. It is just a zip of your sources, renamed in *.love.
             Mostly aimed at Linux players or developers and the most common distribution process.
+
+     -d     Create a deb package. Aimed at Debian and Ubuntu derivatives.
+            In order to create a Debian package, you must provide more informations about it.
+            See the DEBIAN section below.
 
      -m     Create MacOS application.
             Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
@@ -70,6 +75,15 @@ OPTIONS
      -v     Love version. Default is 0.9.1.
             Starting with Love 0.8.0, a release is specially available for Windows x64.
             Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
+
+  DEBIAN
+     --version          Set the version of your package.
+     --maintainer-name  Set the maintainer's name. The company name is used by default.
+     --maintainer-email Set the maintainer's email.
+     --homepage         Set the homepage of your project.
+     --description      Set the description of your project.
+     --package-name     Set the name of the package and the command that will be use to launch your game.
+                        By default, it is the name of your project converted to lowercase, with eventual spaces replaced by dashes.
 
   OTHERS
      --refresh   Refresh the cache located in ~/.cache/love-release. One can replace the Love files there.
@@ -192,6 +206,7 @@ float_test() {
 
 ## Set defaults ##
 RELEASE_LOVE=false
+RELEASE_DEB=false
 RELEASE_OSX=false
 RELEASE_WIN_32=false
 RELEASE_WIN_64=false
@@ -210,7 +225,13 @@ LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
 
 PROJECT_FILES=
 PROJECT_NAME=${PWD##/*/}
+PACKAGE_NAME=${PROJECT_NAME,,}; PACKAGE_NAME=${PACKAGE_NAME// /-}
+PROJECT_VERSION=
+PROJECT_HOMEPAGE=
+PROJECT_DESCRIPTION=
 COMPANY_NAME=love2d
+MAINTAINER_NAME=$COMPANY_NAME
+MAINTAINER_EMAIL=
 RELEASE_DIR="$PWD"/releases
 
 DEBUG=false
@@ -223,6 +244,7 @@ function debug()
 {
 echo "DEBUG=$DEBUG
 RELEASE_LOVE=$RELEASE_LOVE
+RELEASE_DEB=$RELEASE_DEB
 RELEASE_OSX=$RELEASE_OSX
 RELEASE_WIN_32=$RELEASE_WIN_32
 RELEASE_WIN_64=$RELEASE_WIN_64
@@ -233,7 +255,13 @@ LOVE_GT_080=$LOVE_GT_080
 LOVE_GT_090=$LOVE_GT_090
 PROJECT_FILES=$PROJECT_FILES
 PROJECT_NAME=$PROJECT_NAME
+PACKAGE_NAME=$PACKAGE_NAME
+PROJECT_VERSION=$PROJECT_VERSION
+PROJECT_HOMEPAGE=$PROJECT_HOMEPAGE
+PROJECT_DESCRIPTION=$PROJECT_DESCRIPTION
 COMPANY_NAME=$COMPANY_NAME
+MAINTAINER_NAME=$MAINTAINER_NAME
+MAINTAINER_EMAIL=$MAINTAINER_EMAIL
 RELEASE_DIR=$RELEASE_DIR
 CACHE_DIR=$CACHE_DIR
 PROJECT_ICO=$PROJECT_ICO
@@ -244,11 +272,13 @@ EXCLUDE_FILES=$EXCLUDE_FILES
 
 
 ## Parsing options ##
-while getoptex "h; l; m; w. n: r: u: v: debug help refresh" "$@"
+while getoptex "h; d; l; m; w. n: r: u: v: version: maintainer-name: maintainer-email: homepage: description: package-name: debug help refresh" "$@"
 do
   if [ "$OPTOPT" = "h" ]; then
     short_help
     exit
+  elif [ "$OPTOPT" = "d" ]; then
+    RELEASE_DEB=true
   elif [ "$OPTOPT" = "l" ]; then
     RELEASE_LOVE=true
   elif [ "$OPTOPT" = "m" ]; then
@@ -273,6 +303,18 @@ do
     LOVE_VERSION_MAJOR=$(echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*')
     LOVE_GT_080=$(float_test "$LOVE_VERSION_MAJOR >= 0.8")
     LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
+  elif [ "$OPTOPT" = "version" ]; then
+    PROJECT_VERSION=$OPTARG
+  elif [ "$OPTOPT" = "homepage" ]; then
+    PROJECT_HOMEPAGE=$OPTARG
+  elif [ "$OPTOPT" = "description" ]; then
+    PROJECT_DESCRIPTION=$OPTARG
+  elif [ "$OPTOPT" = "maintainer-name" ]; then
+    MAINTAINER_NAME=$OPTARG
+  elif [ "$OPTOPT" = "maintainer-email" ]; then
+    MAINTAINER_EMAIL=$OPTARG
+  elif [ "$OPTOPT" = "package-name" ]; then
+    PACKAGE_NAME=$OPTARG
   elif [ "$OPTOPT" = "debug" ]; then
     DEBUG=true
   elif [ "$OPTOPT" = "help" ]; then
@@ -287,8 +329,9 @@ for file in "$@"
 do
   PROJECT_FILES="$PROJECT_FILES $file"
 done
-if [ "$RELEASE_LOVE" = false ] && [ "$RELEASE_OSX" = false ] && [ "$RELEASE_WIN_32" = false ] && [ "$RELEASE_WIN_64" = false ]; then
+if [ "$RELEASE_LOVE" = false ] && [ "$RELEASE_DEB" = false ] && [ "$RELEASE_OSX" = false ] && [ "$RELEASE_WIN_32" = false ] && [ "$RELEASE_WIN_64" = false ]; then
   RELEASE_LOVE=true
+  RELEASE_DEB=true
   RELEASE_OSX=true
   RELEASE_WIN_32=true
   RELEASE_WIN_64=true
@@ -565,6 +608,58 @@ echo "<?xml version=\"1.0\" encoding=\"UTF-8\"?>
 </plist>" > "$PROJECT_NAME".app/Contents/Info.plist
     zip -9 -qr "$PROJECT_NAME"-macosx-ub.zip "$PROJECT_NAME".app
     rm -rf love-$LOVE_VERSION-macosx-ub.zip "$PROJECT_NAME".app __MACOSX
+  fi
+fi
+
+## Debian package ##
+if [ "$RELEASE_DEB" = true ]; then
+  if [ -z "$PROJECT_VERSION" ] || [ -z "$PROJECT_HOMEPAGE" ] || [ -z "$PROJECT_DESCRIPTION" ] || [ -z "$MAINTAINER_NAME" ] || [ -z "$MAINTAINER_EMAIL" ]; then
+    echo "Could not build a Debian package. Missing informations."
+  else
+    TEMP=`mktemp -d`
+    mkdir -p $TEMP/DEBIAN
+
+    echo "Package: $PACKAGE_NAME"    >  $TEMP/DEBIAN/control
+    echo "Version: $PROJECT_VERSION" >> $TEMP/DEBIAN/control
+    echo "Architecture: all"         >> $TEMP/DEBIAN/control
+    echo "Maintainer: $MAINTAINER_NAME <$MAINTAINER_EMAIL>" >> $TEMP/DEBIAN/control
+    echo "Installed-Size: $(echo "$(stat -c %s "$PROJECT_NAME".love) / 1024" | bc)" >> $TEMP/DEBIAN/control
+    echo "Depends: love (>= $LOVE_VERSION)"   >> $TEMP/DEBIAN/control
+    echo "Priority: extra"                    >> $TEMP/DEBIAN/control
+    echo "Homepage: $PROJECT_HOMEPAGE"        >> $TEMP/DEBIAN/control
+    echo "Description: $PROJECT_DESCRIPTION"  >> $TEMP/DEBIAN/control
+
+    cat $TEMP/DEBIAN/control
+
+    chmod 0644 $TEMP/DEBIAN/control
+
+    PACKAGE_DIR=/usr/share/games/"$PACKAGE_NAME"/
+    PACKAGE_LOC=$PACKAGE_NAME-$PROJECT_VERSION.love
+
+    mkdir -p $TEMP"$PACKAGE_DIR"
+    cp "$PROJECT_NAME".love $TEMP"$PACKAGE_DIR""$PACKAGE_LOC"
+    chmod 0644 $TEMP"$PACKAGE_DIR""$PACKAGE_LOC"
+
+    BIN_LOC=/usr/bin/
+    mkdir -p $TEMP/$BIN_LOC
+    echo "#!/usr/bin/env bash" >  $TEMP$BIN_LOC"$PACKAGE_NAME"
+    echo "set -e"              >> $TEMP$BIN_LOC"$PACKAGE_NAME"
+    echo "love $PACKAGE_DIR$PACKAGE_LOC" >> $TEMP$BIN_LOC"$PACKAGE_NAME"
+    chmod 0755 $TEMP$BIN_LOC"$PACKAGE_NAME"
+
+    cd $TEMP
+    for line in $(find usr/ -type f); do
+      md5sum $line >> $TEMP/DEBIAN/md5sums
+    done
+    chmod 0644 $TEMP/DEBIAN/md5sums
+
+    for line in $(find usr/ -type d); do
+      chmod 0755 $line
+    done
+
+    fakeroot dpkg-deb -b $TEMP "$RELEASE_DIR"/"$PACKAGE_NAME"-"$PROJECT_VERSION"_all.deb
+    cd "$RELEASE_DIR"
+    rm -rf $TEMP
   fi
 fi
 

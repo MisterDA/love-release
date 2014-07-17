@@ -2,11 +2,11 @@
 `love-release.sh` -- Bash script to generate Love 2D game releases
 
 ### SYNOPSIS
-`love-release.sh [-lmw] [-n project_name] [-r release_dir] [-u company_name] [-v love_version] [FILES...]`
+`love-release.sh [-dlmw] [-n project_name] [-r release_dir] [-u company_name] [-v love_version] [FILES...]`
 
 ### DESCRIPTION
 You can use love-release.sh to generate Love 2D game applications and get over the fastidious zipping commands you had to do.  
-The script fully supports Windows, MacOS either on x86 or x64.  
+The script fully supports Windows, MacOS either on x86 or x64, and Debian packages.  
 It needs an Internet connection to download Love files, and relies on curl, zip and unzip commands.  
 To set the default Love version to use, you can edit the very beginning of the script.  
 If `lua` and a `conf.lua` file are found, it will automatically detect which version your project uses.  
@@ -20,6 +20,10 @@ If a `ProjectName.ico` file is provided, and that Wine and Resource Hacker are i
 #### OPERATING SYSTEMS
 `-l` Create a plain Love file. It is just a zip of your sources, renamed in \*.love.
      Mostly aimed at Linux players or developers and the most common distribution process.
+
+`-d` Create a deb package. Aimed at Debian and Ubuntu derivatives
+     In order to create a Debian package, you must provide more informations about it.
+     See the DEBIAN section below.
 
 `-m` Create MacOS application.
      Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
@@ -45,6 +49,15 @@ If a `ProjectName.ico` file is provided, and that Wine and Resource Hacker are i
       Starting with Love 0.8.0, a release is specially available for Windows x64.
       Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
 
+#### DEBIAN
+`--version`          Set the version of your package.  
+`--maintainer-name`  Set the maintainer’s name. The company name is used by default.  
+`--maintainer-email` Set the maintainer’s email.  
+`--homepage`         Set the homepage of your project.  
+`--description`      Set the description of your project.  
+`--package-name`     Set the name of the package and the command that will be used to launch your game.
+                     By default, it is the name of your project converted to lowercase, with eventual spaces replaced by dashes.
+
 #### ICONS
 A note on icons:
 - if you want to create MacOS icons (.icns), and you are
@@ -64,3 +77,7 @@ The script doesn’t yet handle the process of creating icons, but if provided i
 [https://www.love2d.org](https://www.love2d.org)  
 [https://www.love2d.org/wiki/Game_Distribution](https://www.love2d.org/wiki/Game_Distribution)  
 [https://www.github.org/MisterDA/love-release](https://www.github.org/MisterDA/love-release)
+
+### THANKS
+The work done on Debian packaging is highly inspired by what [josefnpat](http://josefnpat.com/) did. Thanks to him.
+
