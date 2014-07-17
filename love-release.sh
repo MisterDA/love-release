@@ -628,10 +628,18 @@ if [ "$RELEASE_DEB" = true ]; then
     echo "Priority: extra"                    >> $TEMP/DEBIAN/control
     echo "Homepage: $PROJECT_HOMEPAGE"        >> $TEMP/DEBIAN/control
     echo "Description: $PROJECT_DESCRIPTION"  >> $TEMP/DEBIAN/control
-
-    cat $TEMP/DEBIAN/control
-
     chmod 0644 $TEMP/DEBIAN/control
+
+    DESKTOP=$TEMP/usr/share/applications/"$PACKAGE_NAME".desktop
+    mkdir -p $TEMP/usr/share/applications
+    echo "[Desktop Entry]"              > $DESKTOP
+    echo "Name=$PROJECT_NAME"           >> $DESKTOP
+    echo "Comment=$PROJECT_DESCRIPTION" >> $DESKTOP
+    echo "Exec=$PACKAGE_NAME"           >> $DESKTOP
+    echo "Type=Application"             >> $DESKTOP
+    echo "Categories=Game;"             >> $DESKTOP
+    echo "Icon=love"                    >> $DESKTOP
+    chmod 0644 $DESKTOP
 
     PACKAGE_DIR=/usr/share/games/"$PACKAGE_NAME"/
     PACKAGE_LOC=$PACKAGE_NAME-$PROJECT_VERSION.love
@@ -641,7 +649,7 @@ if [ "$RELEASE_DEB" = true ]; then
     chmod 0644 $TEMP"$PACKAGE_DIR""$PACKAGE_LOC"
 
     BIN_LOC=/usr/bin/
-    mkdir -p $TEMP/$BIN_LOC
+    mkdir -p $TEMP$BIN_LOC
     echo "#!/usr/bin/env bash" >  $TEMP$BIN_LOC"$PACKAGE_NAME"
     echo "set -e"              >> $TEMP$BIN_LOC"$PACKAGE_NAME"
     echo "love $PACKAGE_DIR$PACKAGE_LOC" >> $TEMP$BIN_LOC"$PACKAGE_NAME"
