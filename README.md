@@ -2,39 +2,51 @@
 `love-release.sh` -- Bash script to generate Love 2D game releases
 
 ### SYNOPSIS
-`love-release.sh [-dlmw] [-n project_name] [-r release_dir] [-u company_name] [-v love_version] [FILES...]`
+`love-release.sh [-dlmw] [-n project_name] [-r release_dir]
+[-u company_name] [-v love_version] [FILES...]`
 
 ### DESCRIPTION
-You can use love-release.sh to generate Love 2D game applications and get over the fastidious zipping commands you had to do.  
-The script fully supports Windows, MacOS either on x86 or x64, and Debian packages.  
-It needs an Internet connection to download Love files, and relies on curl, zip and unzip commands.  
-To set the default Love version to use, you can edit the very beginning of the script.  
-If `lua` and a `conf.lua` file are found, it will automatically detect which version your project uses.  
-If a `ProjectName.icns` file is provided, the script will use it to set the game icon on MacOS.  
-If a `ProjectName.ico` file is provided, and that Wine and Resource Hacker are installed, the script will use them to set the game icon on Windows.
+love-release.sh can be used to generate Love 2D game applications
+and get over the fastidious zipping commands you had to do.  
+
+The script fully supports Windows, MacOS either on x86 or x64,
+and Debian packages.  
+It needs an Internet connection to download Love files,
+and relies on `curl`, `zip` and `unzip` commands.  
+To set the default Love version to use,
+you can edit the very beginning of the script.  
+If `lua` and a `conf.lua` file are found,
+it will automatically detect which version your project uses.  
+If a `ProjectName.icns` file is provided,
+the script will use it to set the game icon on MacOS.  
+If a `ProjectName.ico` file is provided, and that Wine
+and Resource Hacker are installed, the script will use them
+to set the game icon on Windows.
 
 ### OPTIONS
 `-h`     Print a short help  
 `--help` Print this longer help
 
 #### OPERATING SYSTEMS
-`-l` Create a plain Love file. It is just a zip of your sources, renamed in \*.love.
-     Mostly aimed at Linux players or developers and the most common distribution process.
-
-`-d` Create a deb package. Aimed at Debian and Ubuntu derivatives
+`-d` Create a deb package. Aimed at Debian and Ubuntu derivatives.
      In order to create a Debian package, you must provide more informations about it.
      See the DEBIAN section below.
+
+`-l` Create a plain Love file. It is just a zip of your sources, renamed in \*.love.
+     Mostly aimed at Linux players or developers and the most common distribution process.
 
 `-m` Create MacOS application.
      Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
      If you are targeting one of these, your project must be developped with Love 0.8.0 or lower.
-     Depending on the Love version used, the script will choose which one, between x64 only or Universal Build to create.
+     Depending on the Love version used, the script will choose which one,
+     between x64 only or Universal Build to create.
 
 `-w` Create Windows application.
      Starting with Love 0.8.0, a release is specially available for Windows x64.
      If you are targeting one of these, your project must be developed with Love 0.8.0 or newer.
      Remember that x86 is always backwards compatible with x64.
-     Depending on the Love version used, the script will choose which one, between x64 and x86 or x86 only to create.  
+     Depending on the Love version used, the script will choose which one,
+     between x64 and x86 or x86 only to create.  
 `-w32`  Create Windows x86 executable only  
 `-w64`  Create Windows x64 executable only
 
@@ -50,28 +62,37 @@ If a `ProjectName.ico` file is provided, and that Wine and Resource Hacker are i
       Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
 
 #### DEBIAN
-`--version`          Set the version of your package.  
-`--maintainer-name`  Set the maintainer’s name. The company name is used by default.  
-`--maintainer-email` Set the maintainer’s email.  
-`--homepage`         Set the homepage of your project.  
 `--description`      Set the description of your project.  
+`--homepage`         Set the homepage of your project.  
+`--maintainer-email` Set the maintainer’s email.  
+`--maintainer-name`  Set the maintainer’s name. The company name is used by default.  
 `--package-name`     Set the name of the package and the command that will be used to launch your game.
-                     By default, it is the name of your project converted to lowercase, with eventual spaces replaced by dashes.
+                     By default, it is the name of your project converted to lowercase, with eventual spaces replaced by dashes.  
+`--version`          Set the version of your package.  
+
+#### OTHERS
+`--refresh`   Refresh the cache located in `~/.cache/love-release`.
+              One can replace the Love files there.  
+`--debug`     Dump the scripts variables without making releases.
 
 #### ICONS
-A note on icons:
+The script doesn’t yet handle the process of creating icons,
+but if provided it can use them.
+
 - if you want to create MacOS icons (.icns), and you are
   - running MacOS, then check [iconutil](https://developer.apple.com/library/mac/documentation/userexperience/conceptual/applehiguidelines/IconsImages/IconsImages.html).
   - running GNU/Linux, then check [libicns](http://icns.sourceforge.net/).
 - if you want to create Windows icons (.ico), you can
   - use [icoutils](http://www.nongnu.org/icoutils/) to create the icon,
   - then [Wine](http://www.winehq.org/) and [Resource Hacker](http://www.angusj.com/resourcehacker/) to set the icon.
+    This last step can be automatically done, assuming Wine and Resource Hacker are installed.
 
-The script doesn’t yet handle the process of creating icons, but if provided it can use them, assuming Wine and Resource Hacker are installed.
-
-#### OTHERS
-`--refresh`   Refresh the cache located in `~/.cache/love-release`. One can replace the Love files there.  
-`--debug`     Dump the scripts variables without making releases.
+If you want to add icons in the debian package,
+open it and put the icons in `/usr/share/icons/hicolor/YYxYY/apps/`,
+where YY is the width of the icon.
+You also have to edit  the  line  `Icon=love`  in
+`/usr/share/applications/yourgame.desktop`  to  match  the  icon's  name.
+See [developer.gnome.org](https://developer.gnome.org/integration-guide/stable/basic-integration.html.en) for more informations.
 
 ### SEE ALSO
 [https://www.love2d.org](https://www.love2d.org)  
@@ -79,5 +100,6 @@ The script doesn’t yet handle the process of creating icons, but if provided i
 [https://www.github.org/MisterDA/love-release](https://www.github.org/MisterDA/love-release)
 
 ### THANKS
-The work done on Debian packaging is highly inspired by what [josefnpat](http://josefnpat.com/) did. Thanks to him.
+The work done on Debian packaging is highly inspired by what [josefnpat](http://josefnpat.com/) did.
+Thanks to him !
 
