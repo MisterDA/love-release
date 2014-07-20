@@ -756,6 +756,7 @@ if [ "$RELEASE_APK" = true ]; then
   if [ -d "$LOVE_ANDROID_DIR" ]; then
     cd "$LOVE_ANDROID_DIR"
     git checkout -- .
+    rm -rf src/com
     LOCAL=$(git rev-parse @)
     REMOTE=$(git rev-parse @{u})
     BASE=$(git merge-base @ @{u})
