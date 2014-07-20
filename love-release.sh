@@ -755,11 +755,23 @@ if [ "$RELEASE_APK" = true ]; then
   LOVE_ANDROID_DIR="$CACHE_DIR"/love-android-sdl2
   if [ -d "$LOVE_ANDROID_DIR" ]; then
     cd "$LOVE_ANDROID_DIR"
-    git checkout
-    git pull
+    git checkout -- .
+    LOCAL=$(git rev-parse @)
+    REMOTE=$(git rev-parse @{u})
+    BASE=$(git merge-base @ @{u})
+    if [ $LOCAL = $REMOTE ]; then
+      :
+    elif [ $LOCAL = $BASE ]; then
+      git pull
+      ndk-build --jobs $(( $(nproc) + 1))
+    fi
     cd "$RELEASE_DIR"
   else
-    git clone https://bitbucket.org/MartinFelis/love-android-sdl2.git "$CACHE_DIR"/love-android-sdl2
+    cd "$CACHE_DIR"
+    git clone https://bitbucket.org/MartinFelis/love-android-sdl2.git
+    cd "$LOVE_ANDROID_DIR"
+    ndk-build --jobs $(( $(nproc) + 1))
+    cd "$RELEASE_DIR"
   fi
 
   mkdir -p "$LOVE_ANDROID_DIR"/assets
