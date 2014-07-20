@@ -278,6 +278,7 @@ RELEASE_DEB=false
 RELEASE_OSX=false
 RELEASE_WIN_32=false
 RELEASE_WIN_64=false
+RELEASE_APK=false
 
 if [ "$FOUND_LUA" = true ] && [ -f "conf.lua" ]; then
     LOVE_VERSION_AUTO=$(lua -e 'f = loadfile("conf.lua"); t, love = {window = {}, modules = {}}, {}; f(); love.conf(t); print(t.version)')
@@ -316,6 +317,7 @@ RELEASE_DEB=$RELEASE_DEB
 RELEASE_OSX=$RELEASE_OSX
 RELEASE_WIN_32=$RELEASE_WIN_32
 RELEASE_WIN_64=$RELEASE_WIN_64
+RELEASE_APK=$RELEASE_APK
 LOVE_VERSION=$LOVE_VERSION
 LOVE_VERSION_MAJOR=$LOVE_VERSION_MAJOR
 LOVE_VERSION_AUTO=$LOVE_VERSION_AUTO
@@ -340,11 +342,13 @@ EXCLUDE_FILES=$EXCLUDE_FILES
 
 
 ## Parsing options ##
-while getoptex "h; d; l; m; w. n: r: u: v: version: maintainer-name: maintainer-email: homepage: description: package-name: debug help refresh" "$@"
+while getoptex "a; h; d; l; m; w. n: r: u: v: version: maintainer-name: maintainer-email: homepage: description: package-name: debug help refresh" "$@"
 do
   if [ "$OPTOPT" = "h" ]; then
     short_help
     exit
+  elif [ "$OPTOPT" = "a" ]; then
+    RELEASE_APK=true
   elif [ "$OPTOPT" = "d" ]; then
     RELEASE_DEB=true
   elif [ "$OPTOPT" = "l" ]; then
@@ -397,12 +401,19 @@ for file in "$@"
 do
   PROJECT_FILES="$PROJECT_FILES $file"
 done
-if [ "$RELEASE_LOVE" = false ] && [ "$RELEASE_DEB" = false ] && [ "$RELEASE_OSX" = false ] && [ "$RELEASE_WIN_32" = false ] && [ "$RELEASE_WIN_64" = false ]; then
+if [ "$RELEASE_LOVE" = false ] && [ "$RELEASE_DEB" = false ] && [ "$RELEASE_OSX" = false ] && [ "$RELEASE_WIN_32" = false ] && [ "$RELEASE_WIN_64" = false ] && [ "$RELEASE_APK" = false ]; then
   RELEASE_LOVE=true
   RELEASE_DEB=true
   RELEASE_OSX=true
   RELEASE_WIN_32=true
   RELEASE_WIN_64=true
+fi
+if [ "$RELEASE_APK" = true ]; then
+  RELEASE_LOVE=false
+  RELEASE_DEB=false
+  RELEASE_OSX=false
+  RELEASE_WIN_32=false
+  RELEASE_WIN_64=false
 fi
 MAIN_RELEASE_DIR=${RELEASE_DIR##/*/}
 RELEASE_DIR="$RELEASE_DIR"/$LOVE_VERSION
@@ -737,6 +748,108 @@ if [ "$RELEASE_DEB" = true ]; then
     cd "$RELEASE_DIR"
     rm -rf $TEMP
   fi
+fi
+
+## Android apk ##
+if [ "$RELEASE_APK" = true ]; then
+  LOVE_ANDROID_DIR="$CACHE_DIR"/love-android-sdl2
+  if [ -d "$LOVE_ANDROID_DIR" ]; then
+    cd "$LOVE_ANDROID_DIR"
+    git checkout
+    git pull
+    cd "$RELEASE_DIR"
+  else
+    git clone https://bitbucket.org/MartinFelis/love-android-sdl2.git "$CACHE_DIR"/love-android-sdl2
+  fi
+
+  mkdir -p "$LOVE_ANDROID_DIR"/assets
+  cp "$PROJECT_NAME".love "$LOVE_ANDROID_DIR"/assets/game.love
+  cd "$LOVE_ANDROID_DIR"
+  MAINTAINER_USERNAME=${MAINTAINER_NAME// /-}
+  ACTIVITY=${PROJECT_NAME// /_}Activity
+
+echo "
+<?xml version=\"1.0\" encoding=\"utf-8\"?>
+<manifest package=\"com.${MAINTAINER_USERNAME}.${PACKAGE_NAME}\"
+      android:versionCode=\"13\"
+      android:versionName=\"0.9.1a-${PACKAGE_NAME}-v${PROJECT_VERSION}\"
+      android:installLocation=\"auto\" xmlns:android=\"http://schemas.android.com/apk/res/android\">
+    <uses-permission android:name=\"android.permission.INTERNET\"/>
+    <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\"/>
+    <!-- Allow writing to external storage -->
+    <uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />
+
+    <application
+      android:allowBackup=\"true\"
+      android:icon=\"@drawable/ic_launcher\"
+      android:label=\"$PROJECT_NAME $PROJECT_VERSION\"
+      android:theme=\"@android:style/Theme.NoTitleBar.Fullscreen\" >
+      <service android:name=\".DownloadService\" />
+      <activity
+        android:name=\"$ACTIVITY\"
+        android:configChanges=\"orientation|screenSize\"
+        android:label=\"$PROJECT_NAME\"
+        android:screenOrientation=\"landscape\" >
+        <intent-filter>
+          <action android:name=\"android.intent.action.MAIN\" />
+          <category android:name=\"android.intent.category.LAUNCHER\" />
+          <category android:name=\"tv.ouya.intent.category.GAME\"/>
+        </intent-filter>
+        <intent-filter>
+          <action android:name=\"android.intent.action.VIEW\" />
+          <category android:name=\"android.intent.category.DEFAULT\" />
+          <data android:scheme=\"file\" />
+          <data android:scheme=\"content\" />
+          <data android:mimeType=\"application/x-love-game\" />
+        </intent-filter>
+        <intent-filter>
+          <action android:name=\"android.intent.action.VIEW\" />
+          <category android:name=\"android.intent.category.DEFAULT\" />
+          <data android:scheme=\"file\" />
+          <data android:mimeType=\"*/*\" />
+          <data android:pathPattern=\".*\\.love\" />
+          <data android:host=\"*\" />
+        </intent-filter>
+      </activity>
+      <activity
+        android:name=\"DownloadActivity\"
+        android:noHistory=\"true\" >
+        <intent-filter>
+          <action android:name=\"android.intent.action.VIEW\" />
+          <category android:name=\"android.intent.category.DEFAULT\" />
+          <category android:name=\"android.intent.category.BROWSABLE\" />
+          <data android:scheme=\"http\"
+            android:host=\"*\"
+            android:pathPrefix=\"*\"
+            android:mimeType=\"*/*\"
+            android:pathPattern=\".*\\.love\" />
+          <data android:scheme=\"https\"
+            android:host=\"*\"
+            android:pathPrefix=\"*\"
+            android:mimeType=\"*/*\"
+            android:pathPattern=\".*\\.love\" />
+        </intent-filter>
+      </activity>
+    </application>
+
+    <!-- Android 2.3.3 -->
+    <uses-sdk android:minSdkVersion=\"10\" android:targetSdkVersion=\"18\" />
+
+    <!-- OpenGL ES 2.0 -->
+    <uses-feature android:glEsVersion=\"0x00020000\" />
+</manifest>
+" > AndroidManifest.xml
+
+mkdir -p src/com/$MAINTAINER_USERNAME/$PACKAGE_NAME
+echo "
+package com.${MAINTAINER_USERNAME}.${PACKAGE_NAME};
+import org.love2d.android.GameActivity;
+
+public class $ACTIVITY extends GameActivity {}
+" > src/com/$MAINTAINER_USERNAME/$PACKAGE_NAME/${ACTIVITY}.java
+
+  ant debug
+  cd "$RELEASE_DIR"
 fi
 
 ## Love file ##
