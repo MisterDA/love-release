@@ -428,6 +428,9 @@ if [ -f "$PWD"/"$PROJECT_NAME".ico ]; then
 else
   PROJECT_ICO=
 fi
+if [ -z "$PROJECT_VERSION" ]; then
+  PROJECT_VERSION=1
+fi
 
 
 ## Debug log ##
@@ -775,28 +778,33 @@ if [ "$RELEASE_APK" = true ]; then
     cd "$RELEASE_DIR"
   fi
 
-  mkdir -p "$LOVE_ANDROID_DIR"/assets
-  cp "$PROJECT_NAME".love "$LOVE_ANDROID_DIR"/assets/game.love
-  cd "$LOVE_ANDROID_DIR"
   MAINTAINER_USERNAME=${MAINTAINER_NAME// /_}
   ACTIVITY=${PROJECT_NAME// /_}Activity
-  ANDROID_VERSION=$(grep -Eo -m 1 "[0-9]+.[0-9]+.[0-9]+[a-z]*" AndroidManifest.xml)
-  sed -i "s/org.love2d.android/com.${MAINTAINER_USERNAME}.${PACKAGE_NAME}/" AndroidManifest.xml
-  sed -i "s/$ANDROID_VERSION/${ANDROID_VERSION}-${PACKAGE_NAME}-v${PROJECT_VERSION}/" AndroidManifest.xml
-  sed -i "0,/LÖVE for Android/s//$PROJECT_NAME $PROJECT_VERSION/" AndroidManifest.xml
-  sed -i "s/LÖVE for Android/$PROJECT_NAME/" AndroidManifest.xml
-  sed -i "s/GameActivity/$ACTIVITY/" AndroidManifest.xml
+  ANDROID_VERSION=$(grep -Eo -m 1 "[0-9]+.[0-9]+.[0-9]+[a-z]*" "$LOVE_ANDROID_DIR"/AndroidManifest.xml)
+  ANDROID_LOVE_VERSION=$(echo "$ANDROID_VERSION" | grep -Eo "[0-9]+.[0-9]+.[0-9]+")
+  if [ "$LOVE_VERSION" != "$ANDROID_LOVE_VERSION" ]; then
+    echo "Love version ($LOVE_VERSION) differs from love-android-sdl2 version ($ANDROID_LOVE_VERSION). Could not create package."
+  else
+    mkdir -p "$LOVE_ANDROID_DIR"/assets
+    cp "$PROJECT_NAME".love "$LOVE_ANDROID_DIR"/assets/game.love
+    cd "$LOVE_ANDROID_DIR"
+    sed -i "s/org.love2d.android/com.${MAINTAINER_USERNAME}.${PACKAGE_NAME}/" AndroidManifest.xml
+    sed -i "s/$ANDROID_VERSION/${ANDROID_VERSION}-${PACKAGE_NAME}-v${PROJECT_VERSION}/" AndroidManifest.xml
+    sed -i "0,/LÖVE for Android/s//$PROJECT_NAME $PROJECT_VERSION/" AndroidManifest.xml
+    sed -i "s/LÖVE for Android/$PROJECT_NAME/" AndroidManifest.xml
+    sed -i "s/GameActivity/$ACTIVITY/" AndroidManifest.xml
 
-  mkdir -p src/com/$MAINTAINER_USERNAME/$PACKAGE_NAME
+    mkdir -p src/com/$MAINTAINER_USERNAME/$PACKAGE_NAME
 echo "package com.${MAINTAINER_USERNAME}.${PACKAGE_NAME};
 import org.love2d.android.GameActivity;
 
 public class $ACTIVITY extends GameActivity {}
 " > src/com/$MAINTAINER_USERNAME/$PACKAGE_NAME/${ACTIVITY}.java
 
-  ant debug
-  cp bin/love_android_sdl2-debug.apk "$RELEASE_DIR"
-  cd "$RELEASE_DIR"
+    ant debug
+    cp bin/love_android_sdl2-debug.apk "$RELEASE_DIR"
+    cd "$RELEASE_DIR"
+  fi
 fi
 
 ## Love file ##
