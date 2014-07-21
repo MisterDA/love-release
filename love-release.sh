@@ -756,7 +756,7 @@ if [ "$RELEASE_APK" = true ]; then
   if [ -d "$LOVE_ANDROID_DIR" ]; then
     cd "$LOVE_ANDROID_DIR"
     git checkout -- .
-    rm -rf src/com
+    rm -rf src/com bin gen
     LOCAL=$(git rev-parse @)
     REMOTE=$(git rev-parse @{u})
     BASE=$(git merge-base @ @{u})
@@ -778,82 +778,17 @@ if [ "$RELEASE_APK" = true ]; then
   mkdir -p "$LOVE_ANDROID_DIR"/assets
   cp "$PROJECT_NAME".love "$LOVE_ANDROID_DIR"/assets/game.love
   cd "$LOVE_ANDROID_DIR"
-  MAINTAINER_USERNAME=${MAINTAINER_NAME// /-}
+  MAINTAINER_USERNAME=${MAINTAINER_NAME// /_}
   ACTIVITY=${PROJECT_NAME// /_}Activity
+  ANDROID_VERSION=$(grep -Eo -m 1 "[0-9]+.[0-9]+.[0-9]+[a-z]*" AndroidManifest.xml)
+  sed -i "s/org.love2d.android/com.${MAINTAINER_USERNAME}.${PACKAGE_NAME}/" AndroidManifest.xml
+  sed -i "s/$ANDROID_VERSION/${ANDROID_VERSION}-${PACKAGE_NAME}-v${PROJECT_VERSION}/" AndroidManifest.xml
+  sed -i "0,/LÖVE for Android/s//$PROJECT_NAME $PROJECT_VERSION/" AndroidManifest.xml
+  sed -i "s/LÖVE for Android/$PROJECT_NAME/" AndroidManifest.xml
+  sed -i "s/GameActivity/$ACTIVITY/" AndroidManifest.xml
 
-echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>
-<manifest package=\"com.${MAINTAINER_USERNAME}.${PACKAGE_NAME}\"
-      android:versionCode=\"13\"
-      android:versionName=\"0.9.1a-${PACKAGE_NAME}-v${PROJECT_VERSION}\"
-      android:installLocation=\"auto\" xmlns:android=\"http://schemas.android.com/apk/res/android\">
-    <uses-permission android:name=\"android.permission.INTERNET\"/>
-    <uses-permission android:name=\"android.permission.READ_EXTERNAL_STORAGE\"/>
-    <!-- Allow writing to external storage -->
-    <uses-permission android:name=\"android.permission.WRITE_EXTERNAL_STORAGE\" />
-
-    <application
-      android:allowBackup=\"true\"
-      android:icon=\"@drawable/ic_launcher\"
-      android:label=\"$PROJECT_NAME $PROJECT_VERSION\"
-      android:theme=\"@android:style/Theme.NoTitleBar.Fullscreen\" >
-      <service android:name=\".DownloadService\" />
-      <activity
-        android:name=\"$ACTIVITY\"
-        android:configChanges=\"orientation|screenSize\"
-        android:label=\"$PROJECT_NAME\"
-        android:screenOrientation=\"landscape\" >
-        <intent-filter>
-          <action android:name=\"android.intent.action.MAIN\" />
-          <category android:name=\"android.intent.category.LAUNCHER\" />
-          <category android:name=\"tv.ouya.intent.category.GAME\"/>
-        </intent-filter>
-        <intent-filter>
-          <action android:name=\"android.intent.action.VIEW\" />
-          <category android:name=\"android.intent.category.DEFAULT\" />
-          <data android:scheme=\"file\" />
-          <data android:scheme=\"content\" />
-          <data android:mimeType=\"application/x-love-game\" />
-        </intent-filter>
-        <intent-filter>
-          <action android:name=\"android.intent.action.VIEW\" />
-          <category android:name=\"android.intent.category.DEFAULT\" />
-          <data android:scheme=\"file\" />
-          <data android:mimeType=\"*/*\" />
-          <data android:pathPattern=\".*\\.love\" />
-          <data android:host=\"*\" />
-        </intent-filter>
-      </activity>
-      <activity
-        android:name=\"DownloadActivity\"
-        android:noHistory=\"true\" >
-        <intent-filter>
-          <action android:name=\"android.intent.action.VIEW\" />
-          <category android:name=\"android.intent.category.DEFAULT\" />
-          <category android:name=\"android.intent.category.BROWSABLE\" />
-          <data android:scheme=\"http\"
-            android:host=\"*\"
-            android:pathPrefix=\"*\"
-            android:mimeType=\"*/*\"
-            android:pathPattern=\".*\\.love\" />
-          <data android:scheme=\"https\"
-            android:host=\"*\"
-            android:pathPrefix=\"*\"
-            android:mimeType=\"*/*\"
-            android:pathPattern=\".*\\.love\" />
-        </intent-filter>
-      </activity>
-    </application>
-
-    <!-- Android 2.3.3 -->
-    <uses-sdk android:minSdkVersion=\"10\" android:targetSdkVersion=\"18\" />
-
-    <!-- OpenGL ES 2.0 -->
-    <uses-feature android:glEsVersion=\"0x00020000\" />
-</manifest>" > AndroidManifest.xml
-
-mkdir -p src/com/$MAINTAINER_USERNAME/$PACKAGE_NAME
-echo "
-package com.${MAINTAINER_USERNAME}.${PACKAGE_NAME};
+  mkdir -p src/com/$MAINTAINER_USERNAME/$PACKAGE_NAME
+echo "package com.${MAINTAINER_USERNAME}.${PACKAGE_NAME};
 import org.love2d.android.GameActivity;
 
 public class $ACTIVITY extends GameActivity {}
