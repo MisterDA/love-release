@@ -10,6 +10,7 @@ function short_help()
 echo "Usage: love-release.sh [options...] [files...]
 Options:
  -h, --help  Prints short or long help
+ -a    Create an Android package
  -d    Create a deb package
  -l    Create a plain Love file
  -m    Create a MacOS application
@@ -40,7 +41,7 @@ can be used to generate Love 2D game applications
 and get over the fastidious zipping commands you had to do.
 .PP
 The script fully supports Windows, MacOS either on x86 or x64,
-and Debian packages.
+Debian and Android packages.
 It needs an Internet connection to download Love files,
 and relies on \fBcurl\fR, \fBzip\fR and \fBunzip\fR commands.
 To set the default Love version to use,
@@ -60,6 +61,14 @@ Print a short help
 .B \-\-help
 Print this longer help
 .SH OPERATING SYSTEMS
+.TP
+.B \-a
+Create an Android package.
+In order to create an Android package, you must have installed the Android SDK,
+but there is no need to install the LÖVE port to Android,
+as the script will handle this by itself.
+You also might want to provide more informations about it.
+See the ANDROID section below.
 .TP
 .B \-d
 Create a deb package. Aimed at Debian and Ubuntu derivatives.
@@ -123,6 +132,20 @@ Set the maintainer's name. The company name is used by default.
 Set the name of the package and the command that will be use to launch your game.
 By default, it is the name of your project converted to lowercase,
 with eventual spaces replaced by dashes.
+.TP
+.B \-\-version \fIversion\fR
+Set the version of your package.
+.SH ANDROID
+Note that every argument passed to the options should be alphanumerical,
+with eventual underscores (i.e. [a-zA-Z0-9_]), otherwise you'll get errors.
+.TP
+.B \-\-maintainer\-name \fIname\fR
+Set the maintainer’s name. The company name is used by default.
+It must be only alphanumerical characters, with eventual underscores.
+.TP
+.B \-\-package\-name \fIname\fR
+Set the name of the package.
+By default, it is the name of your project, with eventual spaces replaced by underscores.
 .TP
 .B \-\-version \fIversion\fR
 Set the version of your package.
@@ -779,6 +802,7 @@ if [ "$RELEASE_APK" = true ]; then
   fi
 
   MAINTAINER_USERNAME=${MAINTAINER_NAME// /_}
+  PACKAGE_NAME=${PACKAGE_NAME//-/_}
   ACTIVITY=${PROJECT_NAME// /_}Activity
   ANDROID_VERSION=$(grep -Eo -m 1 "[0-9]+.[0-9]+.[0-9]+[a-z]*" "$LOVE_ANDROID_DIR"/AndroidManifest.xml)
   ANDROID_LOVE_VERSION=$(echo "$ANDROID_VERSION" | grep -Eo "[0-9]+.[0-9]+.[0-9]+")

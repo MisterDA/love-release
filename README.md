@@ -10,7 +10,7 @@ love-release.sh can be used to generate Love 2D game applications
 and get over the fastidious zipping commands you had to do.  
 
 The script fully supports Windows, MacOS either on x86 or x64,
-and Debian packages.  
+Debian and Android packages.  
 It needs an Internet connection to download Love files,
 and relies on `curl`, `zip` and `unzip` commands.  
 To set the default Love version to use,
@@ -28,6 +28,14 @@ to set the game icon on Windows.
 `--help` Print this longer help
 
 #### OPERATING SYSTEMS
+`-a` Create an Android package.
+     In order to create an Android package, you must have installed the Android SDK.
+     See [Building LÖVE for Android](https://bitbucket.org/MartinFelis/love-android-sdl2/wiki/Building_L%C3%96VE_for_Android_-_Linux),
+     but there is no need to install the [LÖVE port to Android](https://bitbucket.org/MartinFelis/love-android-sdl2),
+     as the script will handle this by itself.
+     You also might want to provide more informations about it.
+     See the ANDROID section below.
+
 `-d` Create a deb package. Aimed at Debian and Ubuntu derivatives.
      In order to create a Debian package, you must provide more informations about it.
      See the DEBIAN section below.
@@ -67,8 +75,18 @@ to set the game icon on Windows.
 `--maintainer-email` Set the maintainer’s email.  
 `--maintainer-name`  Set the maintainer’s name. The company name is used by default.  
 `--package-name`     Set the name of the package and the command that will be used to launch your game.
-                     By default, it is the name of your project converted to lowercase, with eventual spaces replaced by dashes.  
+                     By default, it is the name of your project converted to lowercase,
+                     with eventual spaces replaced by dashes.  
 `--version`          Set the version of your package.  
+
+#### ANDROID
+Note that every argument passed to the options should be alphanumerical,
+with eventual underscores (i.e. [a-zA-Z0-9\_]), otherwise you'll get errors.  
+`--maintainer-name` Set the maintainer’s name. The company name is used by default.
+                    It must be only alphanumerical characters, with eventual underscores.  
+`--package-name`    Set the name of the package.
+                    By default, it is the name of your project, with eventual spaces replaced by underscores.  
+`--version`         Set the version of your package.  
 
 #### OTHERS
 `--refresh`   Refresh the cache located in `~/.cache/love-release`.
