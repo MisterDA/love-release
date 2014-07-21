@@ -82,10 +82,14 @@ to set the game icon on Windows.
 #### ANDROID
 Note that every argument passed to the options should be alphanumerical,
 with eventual underscores (i.e. [a-zA-Z0-9\_]), otherwise you'll get errors.  
+`--activity`        The name of the class that extends GameActivity.
+                    By default it is the name of the project with ‘Activity’ appended,
+                    eventual spaces and dashes replaced by underscores.  
 `--maintainer-name` Set the maintainer’s name. The company name is used by default.
                     It must be only alphanumerical characters, with eventual underscores.  
 `--package-name`    Set the name of the package.
                     By default, it is the name of your project, with eventual spaces replaced by underscores.  
+`--update-repo`     Update the love-android-sdl2.git repository used in the cache.  
 `--version`         Set the version of your package.  
 
 #### OTHERS

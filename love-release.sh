@@ -139,6 +139,11 @@ Set the version of your package.
 Note that every argument passed to the options should be alphanumerical,
 with eventual underscores (i.e. [a-zA-Z0-9_]), otherwise you'll get errors.
 .TP
+.B \-\-activity \fIactivity\fR
+The name of the class that extends GameActivity.
+By default it is the name of the project with 'Activity' appended,
+eventual spaces and dashes replaced by underscores.
+.TP
 .B \-\-maintainer\-name \fIname\fR
 Set the maintainer’s name. The company name is used by default.
 It must be only alphanumerical characters, with eventual underscores.
@@ -146,6 +151,9 @@ It must be only alphanumerical characters, with eventual underscores.
 .B \-\-package\-name \fIname\fR
 Set the name of the package.
 By default, it is the name of your project, with eventual spaces replaced by underscores.
+.TP
+.B \-\-update\-repo
+Update the love-android-sdl2.git repository used in the cache.
 .TP
 .B \-\-version \fIversion\fR
 Set the version of your package.
@@ -325,6 +333,8 @@ COMPANY_NAME=love2d
 MAINTAINER_NAME=$COMPANY_NAME
 MAINTAINER_EMAIL=
 RELEASE_DIR="$PWD"/releases
+ACTIVITY=${PROJECT_NAME// /_}; ACTIVITY=${ACTIVITY//-/_}Activity
+UPDATE_ANDROID_REPO=false
 
 DEBUG=false
 CACHE_DIR=~/.cache/love-release
@@ -355,6 +365,7 @@ PROJECT_DESCRIPTION=$PROJECT_DESCRIPTION
 COMPANY_NAME=$COMPANY_NAME
 MAINTAINER_NAME=$MAINTAINER_NAME
 MAINTAINER_EMAIL=$MAINTAINER_EMAIL
+ACTIVITY=$ACTIVITY
 RELEASE_DIR=$RELEASE_DIR
 CACHE_DIR=$CACHE_DIR
 PROJECT_ICO=$PROJECT_ICO
@@ -365,7 +376,9 @@ EXCLUDE_FILES=$EXCLUDE_FILES
 
 
 ## Parsing options ##
-while getoptex "a; h; d; l; m; w. n: r: u: v: version: maintainer-name: maintainer-email: homepage: description: package-name: debug help refresh" "$@"
+activity_defined_by_user=false
+package_name_defined_by_user=false
+while getoptex "a; h; d; l; m; w. n: r: u: v: activity: version: maintainer-name: maintainer-email: homepage: description: package-name: update-repo debug help refresh" "$@"
 do
   if [ "$OPTOPT" = "h" ]; then
     short_help
@@ -389,6 +402,12 @@ do
     fi
   elif [ "$OPTOPT" = "n" ]; then
     PROJECT_NAME=$OPTARG
+    if [ "$activity_defined_by_user" = false ]; then
+      ACTIVITY=${PROJECT_NAME// /_}; ACTIVITY=${ACTIVITY//-/_}Activity
+    fi
+    if [ "$package_name_defined_by_user" = false ]; then
+      PACKAGE_NAME=${PROJECT_NAME,,}; PACKAGE_NAME=${PACKAGE_NAME// /-}
+    fi
   elif [ "$OPTOPT" = "r" ]; then
     RELEASE_DIR=$OPTARG
   elif [ "$OPTOPT" = "u" ]; then
@@ -398,6 +417,9 @@ do
     LOVE_VERSION_MAJOR=$(echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*')
     LOVE_GT_080=$(float_test "$LOVE_VERSION_MAJOR >= 0.8")
     LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
+  elif [ "$OPTOPT" = "activity" ]; then
+    ACTIVITY=$OPTARG
+    activity_defined_by_user=true
   elif [ "$OPTOPT" = "version" ]; then
     PROJECT_VERSION=$OPTARG
   elif [ "$OPTOPT" = "homepage" ]; then
@@ -410,6 +432,9 @@ do
     MAINTAINER_EMAIL=$OPTARG
   elif [ "$OPTOPT" = "package-name" ]; then
     PACKAGE_NAME=$OPTARG
+    package_name_defined_by_user=true
+  elif [ "$OPTOPT" = "update-repo" ]; then
+    UPDATE_ANDROID_REPO=true
   elif [ "$OPTOPT" = "debug" ]; then
     DEBUG=true
   elif [ "$OPTOPT" = "help" ]; then
@@ -783,14 +808,16 @@ if [ "$RELEASE_APK" = true ]; then
     cd "$LOVE_ANDROID_DIR"
     git checkout -- .
     rm -rf src/com bin gen
-    LOCAL=$(git rev-parse @)
-    REMOTE=$(git rev-parse @{u})
-    BASE=$(git merge-base @ @{u})
-    if [ $LOCAL = $REMOTE ]; then
-      :
-    elif [ $LOCAL = $BASE ]; then
-      git pull
-      ndk-build --jobs $(( $(nproc) + 1))
+    if [ "$UPDATE_ANDROID_REPO" = true ]; then
+      LOCAL=$(git rev-parse @)
+      REMOTE=$(git rev-parse @{u})
+      BASE=$(git merge-base @ @{u})
+      if [ $LOCAL = $REMOTE ]; then
+        echo "Already up-to-date."
+      elif [ $LOCAL = $BASE ]; then
+        git pull
+        ndk-build --jobs $(( $(nproc) + 1))
+      fi
     fi
     cd "$RELEASE_DIR"
   else
@@ -801,9 +828,6 @@ if [ "$RELEASE_APK" = true ]; then
     cd "$RELEASE_DIR"
   fi
 
-  MAINTAINER_USERNAME=${MAINTAINER_NAME// /_}
-  PACKAGE_NAME=${PACKAGE_NAME//-/_}
-  ACTIVITY=${PROJECT_NAME// /_}Activity
   ANDROID_VERSION=$(grep -Eo -m 1 "[0-9]+.[0-9]+.[0-9]+[a-z]*" "$LOVE_ANDROID_DIR"/AndroidManifest.xml)
   ANDROID_LOVE_VERSION=$(echo "$ANDROID_VERSION" | grep -Eo "[0-9]+.[0-9]+.[0-9]+")
   if [ "$LOVE_VERSION" != "$ANDROID_LOVE_VERSION" ]; then
@@ -812,18 +836,18 @@ if [ "$RELEASE_APK" = true ]; then
     mkdir -p "$LOVE_ANDROID_DIR"/assets
     cp "$PROJECT_NAME".love "$LOVE_ANDROID_DIR"/assets/game.love
     cd "$LOVE_ANDROID_DIR"
-    sed -i "s/org.love2d.android/com.${MAINTAINER_USERNAME}.${PACKAGE_NAME}/" AndroidManifest.xml
+    sed -i "s/org.love2d.android/com.${MAINTAINER_NAME}.${PACKAGE_NAME}/" AndroidManifest.xml
     sed -i "s/$ANDROID_VERSION/${ANDROID_VERSION}-${PACKAGE_NAME}-v${PROJECT_VERSION}/" AndroidManifest.xml
     sed -i "0,/LÖVE for Android/s//$PROJECT_NAME $PROJECT_VERSION/" AndroidManifest.xml
     sed -i "s/LÖVE for Android/$PROJECT_NAME/" AndroidManifest.xml
     sed -i "s/GameActivity/$ACTIVITY/" AndroidManifest.xml
 
-    mkdir -p src/com/$MAINTAINER_USERNAME/$PACKAGE_NAME
-echo "package com.${MAINTAINER_USERNAME}.${PACKAGE_NAME};
+    mkdir -p src/com/$MAINTAINER_NAME/$PACKAGE_NAME
+echo "package com.${MAINTAINER_NAME}.${PACKAGE_NAME};
 import org.love2d.android.GameActivity;
 
 public class $ACTIVITY extends GameActivity {}
-" > src/com/$MAINTAINER_USERNAME/$PACKAGE_NAME/${ACTIVITY}.java
+" > src/com/$MAINTAINER_NAME/$PACKAGE_NAME/${ACTIVITY}.java
 
     ant debug
     cp bin/love_android_sdl2-debug.apk "$RELEASE_DIR"
