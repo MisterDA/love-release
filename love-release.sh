@@ -860,6 +860,7 @@ public class $ACTIVITY extends GameActivity {}
 " > src/com/$MAINTAINER_USERNAME/$PACKAGE_NAME/${ACTIVITY}.java
 
   ant debug
+  cp bin/love_android_sdl2-debug.apk "$RELEASE_DIR"
   cd "$RELEASE_DIR"
 fi
 
