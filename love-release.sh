@@ -781,8 +781,7 @@ if [ "$RELEASE_APK" = true ]; then
   MAINTAINER_USERNAME=${MAINTAINER_NAME// /-}
   ACTIVITY=${PROJECT_NAME// /_}Activity
 
-echo "
-<?xml version=\"1.0\" encoding=\"utf-8\"?>
+echo "<?xml version=\"1.0\" encoding=\"utf-8\"?>
 <manifest package=\"com.${MAINTAINER_USERNAME}.${PACKAGE_NAME}\"
       android:versionCode=\"13\"
       android:versionName=\"0.9.1a-${PACKAGE_NAME}-v${PROJECT_VERSION}\"
@@ -850,8 +849,7 @@ echo "
 
     <!-- OpenGL ES 2.0 -->
     <uses-feature android:glEsVersion=\"0x00020000\" />
-</manifest>
-" > AndroidManifest.xml
+</manifest>" > AndroidManifest.xml
 
 mkdir -p src/com/$MAINTAINER_USERNAME/$PACKAGE_NAME
 echo "
