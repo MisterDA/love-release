@@ -1,11 +1,11 @@
-#!/bin/bash
+#!/usr/bin/env bash
 
 ## Edit this if you want to use another Löve version.
 LOVE_VERSION=0.9.1
 
 
 ## Short help ##
-function short_help()
+short_help ()
 {
 echo "Usage: love-release.sh [options...] [files...]
 Options:
@@ -25,7 +25,7 @@ Options:
 }
 
 ## Long help ##
-function long_help()
+long_help ()
 {
 echo "
 .TH LOVE-RELEASE.SH 1
@@ -206,7 +206,7 @@ command -v lua   >/dev/null 2>&1 || { FOUND_LUA=false; }
 
 
 ## Parsing function ##
-function getoptex()
+getoptex ()
 {
   let $# || return 1
   local optlist="${1#;}"
@@ -294,7 +294,7 @@ function getoptex()
   return 1
 }
 
-float_test() {
+float_test () {
     a=$(echo | awk 'END { exit ( !( '"$1"')); }' && echo "true")
     if [ "$a" != "true" ]; then
         a=false
