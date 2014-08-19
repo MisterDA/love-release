@@ -81,7 +81,7 @@ to set the game icon on Windows.
 `--package-name`     Set the name of the package and the command that will be used to launch your game.
                      By default, it is the name of your project converted to lowercase,
                      with eventual spaces replaced by dashes.  
-`--version`          Set the version of your package.  
+`--package-version`  Set the version of your package.  
 
 #### ANDROID
 Note that every argument passed to the options should be alphanumerical,

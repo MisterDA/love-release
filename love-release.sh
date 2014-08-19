@@ -14,15 +14,19 @@ LOVE_VERSION=0.9.1
 ## - a colon ":" if it requires an argument
 
 ## SCRIPT_ARGS="a; osname:"
-SCRIPT_ARGS="l; w."
+SCRIPT_ARGS="l; d; w."
 
 ## Windows
 SCRIPT_ARGS="icon: $SCRIPT_ARGS"
+## Debian
+SCRIPT_ARGS="package-version: maintainer-name: maintainer-email: homepage: description: package-name: $SCRIPT_ARGS"
+
 
 ## Add a short summary of your platform script here
 ## SHORT_HELP=" -a    Create an executable for a
 ##  --osname    Create an executable for osname"
 SHORT_HELP=" -l    Create a plain Love file
+ -d    Create a Debian package
  -w,   Create a Windows application
     -w32  Create a Windows x86 application
     -w64  Create a Windows x64 application"
@@ -184,6 +188,8 @@ do
 ##  fi
     if [ "$OPTOPT" = "l" ]; then
         source "$PLATFORMS_DIR"/love.sh
+    elif [ "$OPTOPT" = "d" ]; then
+        source "$PLATFORMS_DIR"/debian.sh
     elif [ "$OPTOPT" = "w" ]; then
         if [ "$OPTARG" = "32" ]; then
             RELEASE_WIN_32=true
