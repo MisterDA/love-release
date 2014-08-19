@@ -66,17 +66,18 @@ the script will use it to set the game icon on Windows.
 
 `-r`  Set the release directory. By default, a subdirectory called releases is created.
 
-`-u`  Set the company name. Provide it for MacOS CFBundleIdentifier.
-
 `-v`  Love version. Default is 0.9.1.
       Starting with Love 0.8.0, a release is specially available for Windows x64.
       Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
+
+#### MAC OS X
+`--maintainer-name`    Set the maintainer’s name. Provide it for OS X CFBundleIdentifier.
 
 #### DEBIAN
 `--description`      Set the description of your project.  
 `--homepage`         Set the homepage of your project.  
 `--maintainer-email` Set the maintainer’s email.  
-`--maintainer-name`  Set the maintainer’s name. The company name is used by default.  
+`--maintainer-name`  Set the maintainer’s name.  
 `--package-name`     Set the name of the package and the command that will be used to launch your game.
                      By default, it is the name of your project converted to lowercase,
                      with eventual spaces replaced by dashes.  
@@ -88,7 +89,7 @@ with eventual underscores (i.e. [a-zA-Z0-9\_]), otherwise you'll get errors.
 `--activity`        The name of the class that extends GameActivity.
                     By default it is the name of the project with ‘Activity’ appended,
                     eventual spaces and dashes replaced by underscores.  
-`--maintainer-name` Set the maintainer’s name. The company name is used by default.
+`--maintainer-name` Set the maintainer’s name.
                     It must be only alphanumerical characters, with eventual underscores.  
 `--package-name`    Set the name of the package.
                     By default, it is the name of your project, with eventual spaces replaced by underscores.  

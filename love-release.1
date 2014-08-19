@@ -76,13 +76,14 @@ Set the projects name. By default, the name of the current directory is used.
 .B \-r \fIrelease-dir\fR
 Set the release directory. By default, a subdirectory called releases is created.
 .TP
-.B \-u \fIcompany\fR
-Set the company name. Provide it for MacOS CFBundleIdentifier.
-.TP
 .B \-v \fIversion\fR
 Love version. Default is 0.9.1.
 Starting with Love 0.8.0, a release is specially available for Windows x64.
 Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
+.SH MAC OS X
+.TP
+.B \-\-maintainer\-name \fIname\fR
+Set the maintainer's name. Provide it for OS X CFBundleIdentifier.
 .SH DEBIAN
 .TP
 .B \-\-description \fIdescription\fR
@@ -95,7 +96,7 @@ Set the homepage of your project.
 Set the maintainer's email.
 .TP
 .B \-\-maintainer\-name \fIname\fR
-Set the maintainer's name. The company name is used by default.
+Set the maintainer's name.
 .TP
 .B \-\-package-name \fIname\fR
 Set the name of the package and the command that will be use to launch your game.
@@ -114,7 +115,7 @@ By default it is the name of the project with 'Activity' appended,
 eventual spaces and dashes replaced by underscores.
 .TP
 .B \-\-maintainer\-name \fIname\fR
-Set the maintainer’s name. The company name is used by default.
+Set the maintainer’s name.
 It must be only alphanumerical characters, with eventual underscores.
 .TP
 .B \-\-package\-name \fIname\fR

@@ -14,7 +14,7 @@ LOVE_VERSION=0.9.1
 ## - a colon ":" if it requires an argument
 
 ## SCRIPT_ARGS="a; osname:"
-SCRIPT_ARGS="l; d; g; w."
+SCRIPT_ARGS="l; d; g; m; w."
 
 ## Windows
 SCRIPT_ARGS="icon: $SCRIPT_ARGS"
@@ -22,6 +22,8 @@ SCRIPT_ARGS="icon: $SCRIPT_ARGS"
 SCRIPT_ARGS="package-version: maintainer-name: maintainer-email: homepage: description: package-name: $SCRIPT_ARGS"
 ## Android
 SCRIPT_ARGS="activity: package-version: maintainer-name: package-name: update-android; $SCRIPT_ARGS"
+## Mac OS X
+SCRIPT_ARGS="icon: maintainer-name: $SCRIPT_ARGS"
 
 
 ## Add a short summary of your platform script here
@@ -30,6 +32,7 @@ SCRIPT_ARGS="activity: package-version: maintainer-name: package-name: update-an
 SHORT_HELP=" -l    Create a plain Love file
  -d    Create a Debian package
  -g    Create an Android package
+ -m    Create a Mac OS X application
  -w,   Create a Windows application
     -w32  Create a Windows x86 application
     -w64  Create a Windows x64 application"
@@ -196,6 +199,8 @@ do
         source "$PLATFORMS_DIR"/debian.sh
     elif [ "$OPTOPT" = "g" ]; then
         source "$PLATFORMS_DIR"/android.sh
+    elif [ "$OPTOPT" = "m" ]; then
+        source "$PLATFORMS_DIR"/macosx.sh
     elif [ "$OPTOPT" = "w" ]; then
         if [ "$OPTARG" = "32" ]; then
             RELEASE_WIN_32=true
