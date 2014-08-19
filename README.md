@@ -92,8 +92,8 @@ with eventual underscores (i.e. [a-zA-Z0-9\_]), otherwise you'll get errors.
                     It must be only alphanumerical characters, with eventual underscores.  
 `--package-name`    Set the name of the package.
                     By default, it is the name of your project, with eventual spaces replaced by underscores.  
-`--update-repo`     Update the love-android-sdl2.git repository used in the cache.  
-`--version`         Set the version of your package.  
+`--update-android`     Update the love-android-sdl2.git repository used in the cache.  
+`--package-version`         Set the version of your package.  
 
 #### OTHERS
 `--refresh`   Refresh the cache located in `~/.cache/love-release`.
