@@ -72,7 +72,7 @@ LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
 
 # Global variables
 ARGS=( "$@" )
-SCRIPT_ARGS="$SCRIPT_ARGS h; v: refresh help"
+SCRIPT_ARGS="$SCRIPT_ARGS h; v: clean help"
 SCRIPT_ARGS=$(printf '%s\n' $SCRIPT_ARGS | sort -u)
 
 PROJECT_FILES=
@@ -117,7 +117,7 @@ do
         LOVE_VERSION_MAJOR=$(echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*')
         LOVE_GT_080=$(float_test "$LOVE_VERSION_MAJOR >= 0.8")
         LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
-    elif [ "$OPTOPT" = "refresh" ]; then
+    elif [ "$OPTOPT" = "clean" ]; then
         rm -rf "$MAIN_CACHE_DIR"
     fi
 done

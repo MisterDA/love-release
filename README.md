@@ -96,7 +96,7 @@ with eventual underscores (i.e. [a-zA-Z0-9\_]), otherwise you'll get errors.
 `--package-version`         Set the version of your package.  
 
 #### OTHERS
-`--refresh`   Refresh the cache located in `~/.cache/love-release`.
+`--clean`     Clean the cache located in `~/.cache/love-release`.
               One can replace the Love files there.  
 `--debug`     Dump the scripts variables without making releases.
 
