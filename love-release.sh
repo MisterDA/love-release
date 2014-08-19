@@ -14,12 +14,18 @@ LOVE_VERSION=0.9.1
 ## - a colon ":" if it requires an argument
 
 ## SCRIPT_ARGS="a; osname:"
-SCRIPT_ARGS="l; "
+SCRIPT_ARGS="l; w."
+
+## Windows
+SCRIPT_ARGS="icon: $SCRIPT_ARGS"
 
 ## Add a short summary of your platform script here
 ## SHORT_HELP=" -a    Create an executable for a
 ##  --osname    Create an executable for osname"
-SHORT_HELP=" -l    Create a plain Love file"
+SHORT_HELP=" -l    Create a plain Love file
+ -w,   Create a Windows application
+    -w32  Create a Windows x86 application
+    -w64  Create a Windows x64 application"
 
 ## Don't forget to source the corresponding file at the bottom of the script !
 
@@ -85,6 +91,7 @@ Options:
  -v    Set the Love version
 $SHORT_HELP"
 
+
 # Parsing options
 source "$INCLUDE_DIR"/getopt.sh
 while getoptex "$SCRIPT_ARGS" "$@"
@@ -133,11 +140,11 @@ init_module ()
 create_love_file ()
 {
     cd "$PROJECT_DIR"
-    rm -rf "$RELEASE_DIR"/"$PROJECT_NAME".love
+    rm -rf "$RELEASE_DIR"/"$PROJECT_NAME".love 2> /dev/null
     if [ -z "$PROJECT_FILES" ]; then
-        zip -9 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "$MAIN_RELEASE_DIR"/\* "$EXCLUDE_FILES" @ *
+        zip -9 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "$MAIN_RELEASE_DIR"/\* $EXCLUDE_FILES @ *
     else
-        zip -9 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "$MAIN_RELEASE_DIR"/\* "$EXCLUDE_FILES" @ "$PROJECT_FILES"
+        zip -9 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "$MAIN_RELEASE_DIR"/\* $EXCLUDE_FILES @ $PROJECT_FILES
     fi
     cd "$RELEASE_DIR"
     LOVE_FILE="$PROJECT_NAME".love
@@ -176,7 +183,17 @@ do
 ##      source "$PLATFORMS_DIR/os.sh"
 ##  fi
     if [ "$OPTOPT" = "l" ]; then
-        source $PLATFORMS_DIR/love.sh
+        source "$PLATFORMS_DIR"/love.sh
+    elif [ "$OPTOPT" = "w" ]; then
+        if [ "$OPTARG" = "32" ]; then
+            RELEASE_WIN_32=true
+        elif [ "$OPTARG" = "64" ]; then
+            RELEASE_WIN_64=true
+        else
+            RELEASE_WIN_32=true
+            RELEASE_WIN_64=true
+        fi
+        source "$PLATFORMS_DIR"/windows.sh
     fi
 done
 
