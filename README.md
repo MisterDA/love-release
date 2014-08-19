@@ -1,6 +1,10 @@
 ### NAME
 `love-release.sh` -- Bash script to generate Love 2D game releases
 
+### INSTALLATION
+Clone and run as root `install.sh`, or edit `install.sh` to choose
+locations in user-space.
+
 ### SYNOPSIS
 `love-release.sh [-dlmw] [-n project_name] [-r release_dir]
 [-u company_name] [-v love_version] [FILES...]`
