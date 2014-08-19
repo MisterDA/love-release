@@ -14,12 +14,12 @@ LOVE_VERSION=0.9.1
 ## - a colon ":" if it requires an argument
 
 ## SCRIPT_ARGS="a; osname:"
-SCRIPT_ARGS=""
+SCRIPT_ARGS="l; "
 
 ## Add a short summary of your platform script here
 ## SHORT_HELP=" -a    Create an executable for a
 ##  --osname    Create an executable for osname"
-SHORT_HELP=""
+SHORT_HELP=" -l    Create a plain Love file"
 
 ## Don't forget to source the corresponding file at the bottom of the script !
 
@@ -175,5 +175,15 @@ do
 ##      OSNAME=$OPTARG
 ##      source "$PLATFORMS_DIR/os.sh"
 ##  fi
+    if [ "$OPTOPT" = "l" ]; then
+        source $PLATFORMS_DIR/love.sh
+    fi
 done
+
+
+
+# Fallback if nothing is specified
+init_module "Love"
+create_love_file
+exit_module
 
