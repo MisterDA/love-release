@@ -70,6 +70,7 @@ LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
 # Global variables
 ARGS=( "$@" )
 SCRIPT_ARGS="$SCRIPT_ARGS h; v: refresh help"
+SCRIPT_ARGS=$(printf '%s\n' $SCRIPT_ARGS | sort -u)
 
 PROJECT_FILES=
 EXCLUDE_FILES=$(/bin/ls -A | grep "^[.]" | tr '\n' ' ')
@@ -161,10 +162,10 @@ remove_love_file ()
 
 exit_module ()
 {
-    if [ -z $2 ]; then
+    if [ -z "$2" ]; then
         echo "Done !"
     else
-        echo $2
+        echo -e "$2"
     fi
     exit $1
 }

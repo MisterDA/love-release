@@ -23,9 +23,8 @@ If `lua` and a `conf.lua` file are found,
 it will automatically detect which version your project uses.  
 If a `ProjectName.icns` file is provided,
 the script will use it to set the game icon on MacOS.  
-If a `ProjectName.ico` file is provided, and that Wine
-and Resource Hacker are installed, the script will use them
-to set the game icon on Windows.
+If a `ProjectName.ico` file is provided, and that Wine is installed,
+the script will use it to set the game icon on Windows.
 
 ### OPTIONS
 `-h`     Print a short help  
@@ -111,7 +110,7 @@ but if provided it can use them.
 - if you want to create Windows icons (.ico), you can
   - use [icoutils](http://www.nongnu.org/icoutils/) to create the icon,
   - then [Wine](http://www.winehq.org/) and [Resource Hacker](http://www.angusj.com/resourcehacker/) to set the icon.
-    This last step can be automatically done, assuming Wine and Resource Hacker are installed.
+    This last step can be automatically done, assuming Wine is installed.
 
 If you want to add icons in the debian package,
 open it and put the icons in `/usr/share/icons/hicolor/YYxYY/apps/`,
