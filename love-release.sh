@@ -13,17 +13,20 @@ LOVE_VERSION=0.9.1
 ## - a dot "." if it has an optional argument
 ## - a colon ":" if it requires an argument
 
-## SCRIPT_ARGS="a; osname:"
-SCRIPT_ARGS="l; d; g; m; w."
+## Love file
+SCRIPT_ARGS="l;"
 
 ## Windows
-SCRIPT_ARGS="icon: $SCRIPT_ARGS"
+SCRIPT_ARGS="w. icon: $SCRIPT_ARGS"
+
 ## Debian
-SCRIPT_ARGS="package-version: maintainer-name: maintainer-email: homepage: description: package-name: $SCRIPT_ARGS"
+SCRIPT_ARGS="d; package-version: maintainer-name: maintainer-email: homepage: description: package-name: $SCRIPT_ARGS"
+
 ## Android
-SCRIPT_ARGS="activity: package-version: maintainer-name: package-name: update-android; $SCRIPT_ARGS"
+SCRIPT_ARGS="g; activity: package-version: maintainer-name: package-name: update-android; $SCRIPT_ARGS"
+
 ## Mac OS X
-SCRIPT_ARGS="icon: maintainer-name: $SCRIPT_ARGS"
+SCRIPT_ARGS="m; icon: maintainer-name: $SCRIPT_ARGS"
 
 
 ## Add a short summary of your platform script here

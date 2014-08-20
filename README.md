@@ -99,6 +99,12 @@ with eventual underscores (i.e. [a-zA-Z0-9\_]), otherwise you'll get errors.
 `--clean`     Clean the cache located in `~/.cache/love-release`.
               One can replace the Love files there.  
 
+#### MODULES
+The script is modular.
+Each different platform is handled by a subscript stored in `scripts`.
+If you’d like to add the support of another platform,
+or your own build script, see `scripts/example.sh`.
+
 #### ICONS
 The script doesn’t yet handle the process of creating icons,
 but if provided it can use them.

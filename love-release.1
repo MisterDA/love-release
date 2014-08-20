@@ -131,6 +131,11 @@ Set the version of your package.
 .B \-\-clean
 Clean the cache located in \fI~/.cache/love-release\fR.
 One can replace the Love files there.
+.SH MODULES
+The script is modular.
+Each different platform is handled by a subscript stored in \fIscripts\fR.
+If you'd like to add the support of another platform,
+or your own build script, see \fIscripts/example.sh\fR.
 .SH ICONS
 The script doesn’t yet handle the process of creating icons,
 but if provided it can use them.

@@ -22,8 +22,9 @@ cp -r ./scripts "$INSTALL_DIR"
 cp -r ./include "$INSTALL_DIR"
 
 mkdir -p "$MANPAGE_DIR"
-gzip -9 -k love-release.1
-mv love-release.1.gz "$MANPAGE_DIR"
+cp love-release.1 "$MANPAGE_DIR"/love-release.1
+sed -i -e "s/scripts/${INSTALL_DIR//\//\\\/}\/scripts/g" "$MANPAGE_DIR"/love-release.1
+gzip -9 "$MANPAGE_DIR"/love-release.1
 
 echo "Done !"
 
