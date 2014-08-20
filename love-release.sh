@@ -75,7 +75,7 @@ LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
 
 # Global variables
 ARGS=( "$@" )
-SCRIPT_ARGS="$SCRIPT_ARGS h; v: clean help"
+SCRIPT_ARGS="$SCRIPT_ARGS h; n: r: v: clean help"
 SCRIPT_ARGS=$(printf '%s\n' $SCRIPT_ARGS | sort -u)
 
 PROJECT_FILES=
