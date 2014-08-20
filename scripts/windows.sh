@@ -27,7 +27,7 @@ if [ "$FOUND_WINE" = true ] && [ -n "$PROJECT_ICO" ]; then
 fi
 
 
-create_love_file
+create_love_file 9
 
 
 # Windows 32-bits

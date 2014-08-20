@@ -29,9 +29,6 @@ if [ "$activity_defined_argument" = false ]; then
 fi
 
 
-create_love_file
-
-
 # Android
 MISSING_INFO=0
 ERROR_MSG="Could not build Android package."
@@ -48,6 +45,10 @@ fi
 if [ "$MISSING_INFO" -eq 1  ]; then
     exit_module "$MISSING_INFO" "$ERROR_MSG"
 fi
+
+
+create_love_file 0
+
 
 LOVE_ANDROID_DIR="$CACHE_DIR"/love-android-sdl2
 if [ -d "$LOVE_ANDROID_DIR" ]; then

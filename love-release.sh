@@ -140,6 +140,7 @@ unset OPTOFS
 
 
 # Modules functions
+## $1: Module name
 init_module ()
 {
     unset OPTIND
@@ -152,14 +153,15 @@ init_module ()
     echo "Generating $PROJECT_NAME with Love $LOVE_VERSION for $1..."
 }
 
+## $1: Compression level 0-9
 create_love_file ()
 {
     cd "$PROJECT_DIR"
     rm -rf "$RELEASE_DIR"/"$PROJECT_NAME".love 2> /dev/null
     if [ -z "$PROJECT_FILES" ]; then
-        zip -9 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "$MAIN_RELEASE_DIR"/\* $EXCLUDE_FILES @ *
+        zip -$1 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "$MAIN_RELEASE_DIR"/\* $EXCLUDE_FILES @ *
     else
-        zip -9 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "$MAIN_RELEASE_DIR"/\* $EXCLUDE_FILES @ $PROJECT_FILES
+        zip -$1 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "$MAIN_RELEASE_DIR"/\* $EXCLUDE_FILES @ $PROJECT_FILES
     fi
     cd "$RELEASE_DIR"
     LOVE_FILE="$PROJECT_NAME".love
@@ -170,9 +172,11 @@ remove_love_file ()
     rm -rf "$LOVE_FILE"
 }
 
+## $1: exit code. 0 - success, other - failure
+## $2: error message
 exit_module ()
 {
-    if [ -z "$2" ]; then
+    if [ -z "$1" ] || [ "$1" = "0" ]; then
         echo "Done !"
     else
         echo -e "$2"

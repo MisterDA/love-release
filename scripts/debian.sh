@@ -26,9 +26,6 @@ if [ "$package_name_defined_argument" = false ]; then
 fi
 
 
-create_love_file
-
-
 # Debian
 MISSING_INFO=0
 ERROR_MSG="Could not build Debian package."
@@ -55,6 +52,9 @@ fi
 if [ "$MISSING_INFO" -eq 1  ]; then
     exit_module "$MISSING_INFO" "$ERROR_MSG"
 fi
+
+
+create_love_file 9
 
 
 TEMP=`mktemp -d`
