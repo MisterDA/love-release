@@ -159,17 +159,12 @@ create_love_file ()
     cd "$PROJECT_DIR"
     rm -rf "$RELEASE_DIR"/"$PROJECT_NAME".love 2> /dev/null
     if [ -z "$PROJECT_FILES" ]; then
-        zip -$1 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "$MAIN_RELEASE_DIR"/\* $EXCLUDE_FILES @ *
+        zip --filesync -$1 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "$MAIN_RELEASE_DIR"/\* $EXCLUDE_FILES @ *
     else
-        zip -$1 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "$MAIN_RELEASE_DIR"/\* $EXCLUDE_FILES @ $PROJECT_FILES
+        zip --filesync -$1 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "$MAIN_RELEASE_DIR"/\* $EXCLUDE_FILES @ $PROJECT_FILES
     fi
     cd "$RELEASE_DIR"
     LOVE_FILE="$PROJECT_NAME".love
-}
-
-remove_love_file ()
-{
-    rm -rf "$LOVE_FILE"
 }
 
 ## $1: exit code. 0 - success, other - failure

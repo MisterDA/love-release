@@ -104,6 +104,5 @@ else
 fi
 
 
-remove_love_file
 exit_module
 

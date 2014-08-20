@@ -111,6 +111,5 @@ cd "$RELEASE_DIR"
 rm -rf $TEMP
 
 
-remove_love_file
 exit_module
 

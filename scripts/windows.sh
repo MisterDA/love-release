@@ -94,6 +94,6 @@ if [ "$RELEASE_WIN_64" = true ] && [ "$LOVE_GT_080" = true ]; then
     rm -rf love-$LOVE_VERSION-win64.zip love-$LOVE_VERSION-win64
 fi
 
-remove_love_file
+
 exit_module
 

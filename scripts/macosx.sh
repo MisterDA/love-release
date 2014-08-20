@@ -136,6 +136,6 @@ else
     rm -rf love-$LOVE_VERSION-macosx-ub.zip "$PROJECT_NAME".app __MACOSX
 fi
 
-remove_love_file
+
 exit_module
 
