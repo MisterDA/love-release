@@ -23,7 +23,7 @@ SCRIPT_ARGS="w. icon: $SCRIPT_ARGS"
 SCRIPT_ARGS="d; package-version: maintainer-name: maintainer-email: homepage: description: package-name: $SCRIPT_ARGS"
 
 ## Android
-SCRIPT_ARGS="g; activity: package-version: maintainer-name: package-name: update-android; $SCRIPT_ARGS"
+SCRIPT_ARGS="a; activity: package-version: maintainer-name: package-name: update-android; $SCRIPT_ARGS"
 
 ## Mac OS X
 SCRIPT_ARGS="m; icon: maintainer-name: $SCRIPT_ARGS"
@@ -33,8 +33,8 @@ SCRIPT_ARGS="m; icon: maintainer-name: $SCRIPT_ARGS"
 ## SHORT_HELP=" -a    Create an executable for a
 ##  --osname    Create an executable for osname"
 SHORT_HELP=" -l    Create a plain Love file
+ -a     Create an Android package
  -d    Create a Debian package
- -g    Create an Android package
  -m    Create a Mac OS X application
  -w,   Create a Windows application
     -w32  Create a Windows x86 application
@@ -201,10 +201,10 @@ do
 ##  fi
     if [ "$OPTOPT" = "l" ]; then
         source "$PLATFORMS_DIR"/love.sh
+    elif [ "$OPTOPT" = "a" ]; then
+        source "$PLATFORMS_DIR"/android.sh
     elif [ "$OPTOPT" = "d" ]; then
         source "$PLATFORMS_DIR"/debian.sh
-    elif [ "$OPTOPT" = "g" ]; then
-        source "$PLATFORMS_DIR"/android.sh
     elif [ "$OPTOPT" = "m" ]; then
         source "$PLATFORMS_DIR"/macosx.sh
     elif [ "$OPTOPT" = "w" ]; then
@@ -224,7 +224,7 @@ done
 # Missing operands
 if [ "$missing_operands" = true ]; then
     >&2 echo "./love-release.sh: missing operands.
-love-release.sh [-dglmw] [-n project_name] [-r release_dir] [-v love_version] [FILES...]
+love-release.sh [-adlmw] [-n project_name] [-r release_dir] [-v love_version] [FILES...]
 Try 'love-release.sh --help' for more information."
     exit 1
 fi
