@@ -3,8 +3,7 @@
 love-release.sh \- Bash script to generate Love 2D game releases
 .SH SYNOPSIS
 .B love\-release.sh
-[\fB\-dlmw\fR] [\fB\-n\fR \fIproject_name\fR] [\fB\-r\fR \fIrelease_dir\fR]
-[\fB\-u\fR \fIcompany_name\fR] [\fB\-v\fR \fIlove_version\fR] [\fIFILES...\fR]
+[\fB\-dglmw\fR] [\fB\-n\fR \fIproject_name\fR] [\fB\-r\fR \fIrelease_dir\fR] [\fB\-v\fR \fIlove_version\fR] [\fIFILES...\fR]
 .SH DESCRIPTION
 .B love-release.sh
 can be used to generate Love 2D game applications
@@ -31,7 +30,7 @@ Print a short help
 Print this longer help
 .SH OPERATING SYSTEMS
 .TP
-.B \-a
+.B \-g
 Create an Android package.
 In order to create an Android package, you must have installed the Android SDK,
 but there is no need to install the LÖVE port to Android,
@@ -132,9 +131,6 @@ Set the version of your package.
 .B \-\-clean
 Clean the cache located in \fI~/.cache/love-release\fR.
 One can replace the Love files there.
-.TP
-.B \-\-debug
-Dump the scripts variables without making releases.
 .SH ICONS
 The script doesn’t yet handle the process of creating icons,
 but if provided it can use them.

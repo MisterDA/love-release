@@ -104,13 +104,16 @@ $SHORT_HELP"
 
 
 # Parsing options
+missing_operands=true
 source "$INCLUDE_DIR"/getopt.sh
 while getoptex "$SCRIPT_ARGS" "$@"
 do
     if [ "$OPTOPT" = "h" ]; then
         echo "$SHORT_HELP"
+        exit
     elif [ "$OPTOPT" = "help" ]; then
-        :
+        man love-release
+        exit
     elif [ "$OPTOPT" = "n" ]; then
         PROJECT_NAME=$OPTARG
     elif [ "$OPTOPT" = "r" ]; then
@@ -121,6 +124,7 @@ do
         LOVE_GT_080=$(float_test "$LOVE_VERSION_MAJOR >= 0.8")
         LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
     elif [ "$OPTOPT" = "clean" ]; then
+        missing_operands=false
         rm -rf "$MAIN_CACHE_DIR"
     fi
 done
@@ -215,9 +219,11 @@ do
 done
 
 
-
-# Fallback if nothing is specified
-init_module "Love"
-create_love_file
-exit_module
+# Missing operands
+if [ "$missing_operands" = true ]; then
+    >&2 echo "./love-release.sh: missing operands.
+love-release.sh [-dglmw] [-n project_name] [-r release_dir] [-v love_version] [FILES...]
+Try 'love-release.sh --help' for more information."
+    exit 1
+fi
 

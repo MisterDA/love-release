@@ -6,8 +6,7 @@ Clone and run as root `install.sh`, or edit `install.sh` to choose
 locations in user-space.
 
 ### SYNOPSIS
-`love-release.sh [-dlmw] [-n project_name] [-r release_dir]
-[-u company_name] [-v love_version] [FILES...]`
+`love-release.sh [-dglmw] [-n project_name] [-r release_dir] [-v love_version] [FILES...]`
 
 ### DESCRIPTION
 love-release.sh can be used to generate Love 2D game applications
@@ -31,7 +30,7 @@ the script will use it to set the game icon on Windows.
 `--help` Print this longer help
 
 #### OPERATING SYSTEMS
-`-a` Create an Android package.
+`-g` Create an Android package.
      In order to create an Android package, you must have installed the Android SDK.
      See [Building LÖVE for Android](https://bitbucket.org/MartinFelis/love-android-sdl2/wiki/Building_L%C3%96VE_for_Android_-_Linux),
      but there is no need to install the [LÖVE port to Android](https://bitbucket.org/MartinFelis/love-android-sdl2),
@@ -99,7 +98,6 @@ with eventual underscores (i.e. [a-zA-Z0-9\_]), otherwise you'll get errors.
 #### OTHERS
 `--clean`     Clean the cache located in `~/.cache/love-release`.
               One can replace the Love files there.  
-`--debug`     Dump the scripts variables without making releases.
 
 #### ICONS
 The script doesn’t yet handle the process of creating icons,
