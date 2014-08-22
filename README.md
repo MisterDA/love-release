@@ -98,6 +98,9 @@ with eventual underscores (i.e. [a-zA-Z0-9\_]), otherwise you'll get errors.
 #### OTHERS
 `--clean`     Clean the cache located in `~/.cache/love-release`.
               One can replace the Love files there.  
+`--config`    Pass a configuration file as argument.
+              It describes which build you want to make, with what options.
+              See `config.ini`.
 
 #### MODULES
 The script is modular.

@@ -2,6 +2,16 @@
 init_module "Windows"
 
 
+# Configuration
+if [ "$CONFIG" = true ]; then
+    RELEASE_WIN_32=true
+    RELEASE_WIN_64=true
+    if [ -n "${INI__windows__icon}" ]; then
+        PROJECT_ICO=${INI__windows__icon}
+    fi
+fi
+
+
 # Options
 while getoptex "$SCRIPT_ARGS" "$@"
 do
@@ -80,10 +90,10 @@ if [ "$RELEASE_WIN_64" = true ] && [ "$LOVE_GT_080" = true ]; then
             cp "$CACHE_DIR"/love-$LOVE_VERSION-win-x64.zip ./love-$LOVE_VERSION-win64.zip
         fi
     fi
-    
+
     unzip -qq love-$LOVE_VERSION-win64.zip
     rm -rf "$PROJECT_NAME"-win64.zip 2> /dev/null
-    
+
     if [ "$FOUND_WINE" = true ] && [ -n "$PROJECT_ICO" ]; then
         WINEPREFIX="$WINEPREFIX" wine "$RESHACKER" -addoverwrite "love-$LOVE_VERSION-win32/love.exe,love-$LOVE_VERSION-win32/love.exe,"$PROJECT_ICO",ICONGROUP,MAINICON,0" 2> /dev/null
     fi
@@ -95,5 +105,6 @@ if [ "$RELEASE_WIN_64" = true ] && [ "$LOVE_GT_080" = true ]; then
 fi
 
 
+unset PROJECT_ICO
 exit_module
 

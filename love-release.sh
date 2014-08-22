@@ -78,8 +78,10 @@ LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
 
 # Global variables
 ARGS=( "$@" )
-SCRIPT_ARGS="$SCRIPT_ARGS h; n: r: v: clean help"
+SCRIPT_ARGS="$SCRIPT_ARGS h; n: r: v: config: clean help"
 SCRIPT_ARGS=$(printf '%s\n' $SCRIPT_ARGS | sort -u)
+CONFIG=false
+CONFIG_FILE=config.ini
 
 PROJECT_FILES=
 EXCLUDE_FILES=$(/bin/ls -A | grep "^[.]" | tr '\n' ' ')
@@ -106,9 +108,39 @@ Options:
 $SHORT_HELP"
 
 
-# Parsing options
+# Read config
 missing_operands=true
 source "$INCLUDE_DIR"/getopt.sh
+while getoptex "$SCRIPT_ARGS" "$@"
+do
+    if [ "$OPTOPT" = "config" ]; then
+        source "$INCLUDE_DIR"/read_ini.sh
+        missing_operands=false
+        CONFIG_FILE=$OPTARG
+        read_ini "$CONFIG_FILE" || exit 1
+        CONFIG=true
+        SED_ARG=$(echo "$PLATFORMS_DIR" | sed -e 's/[\/&]/\\&/g')
+        PLATFORM_SCRIPTS=$(echo "${INI__ALL_SECTIONS}" | sed -r -e 's/[ ]*global[ ]*//g' -e "s/\<[^ ]+\>/$SED_ARG\/&.sh/g")
+        IFS=" " read -a PLATFORM_SCRIPTS <<< "$PLATFORM_SCRIPTS"
+        if [ -n "${INI__global__release_dir}" ]; then
+            RELEASE_DIR=${INI__global__release_dir}
+        fi
+        if [ -n "${INI__global__love_version}" ]; then
+            LOVE_VERSION=${INI__global__love_version}
+            LOVE_VERSION_MAJOR=$(echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*')
+            LOVE_GT_080=$(float_test "$LOVE_VERSION_MAJOR >= 0.8")
+            LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
+        fi
+        if [ -n "${INI__global__project_name}" ]; then
+            PROJECT_NAME=${INI__global__project_name}
+        fi
+    fi
+done
+unset OPTIND
+unset OPTOFS
+
+
+# Parsing options
 while getoptex "$SCRIPT_ARGS" "$@"
 do
     if [ "$OPTOPT" = "h" ]; then
@@ -146,10 +178,15 @@ unset OPTOFS
 ## $1: Module name
 init_module ()
 {
+    GLOBAL_OPTIND=$OPTIND
+    GLOBAL_OPTOFS=$OPTOFS
     unset OPTIND
     unset OPTOFS
-    MAIN_RELEASE_DIR="${RELEASE_DIR##/*/}"
-    RELEASE_DIR="$RELEASE_DIR"/$LOVE_VERSION
+    if [ -z "$MAIN_RELEASE_DIR" ]; then
+        MAIN_RELEASE_DIR=$(cd "$(dirname "$RELEASE_DIR")" && pwd)/$(basename "$RELEASE_DIR")
+        RELEASE_DIR="$MAIN_RELEASE_DIR"/$LOVE_VERSION
+    fi
+    missing_operands=false
     CACHE_DIR="$MAIN_CACHE_DIR"/$LOVE_VERSION
     mkdir -p "$RELEASE_DIR" "$CACHE_DIR"
     rm -rf "$RELEASE_DIR"/"$PROJECT_NAME".love 2> /dev/null
@@ -162,9 +199,9 @@ create_love_file ()
     cd "$PROJECT_DIR"
     rm -rf "$RELEASE_DIR"/"$PROJECT_NAME".love 2> /dev/null
     if [ -z "$PROJECT_FILES" ]; then
-        zip --filesync -$1 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "$MAIN_RELEASE_DIR"/\* $EXCLUDE_FILES @ *
+        zip --filesync -$1 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "${MAIN_RELEASE_DIR#$PWD/}/*" "$CONFIG_FILE" $EXCLUDE_FILES @ *
     else
-        zip --filesync -$1 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "$MAIN_RELEASE_DIR"/\* $EXCLUDE_FILES @ $PROJECT_FILES
+        zip --filesync -$1 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "${MAIN_RELEASE_DIR#$PWD/}/*" "$CONFIG_FILE" $EXCLUDE_FILES @ $PROJECT_FILES
     fi
     cd "$RELEASE_DIR"
     LOVE_FILE="$PROJECT_NAME".love
@@ -175,12 +212,22 @@ create_love_file ()
 exit_module ()
 {
     if [ -z "$1" ] || [ "$1" = "0" ]; then
+        OPTIND=$GLOBAL_OPTIND
+        OPTOFS=$GLOBAL_OPTOFS
         echo "Done !"
     else
         echo -e "$2"
+        exit $1
     fi
-    exit $1
 }
+
+if [ "$CONFIG" = true ]; then
+    for script in "${PLATFORM_SCRIPTS[@]}"
+    do
+        source "$script"
+    done
+    exit
+fi
 
 
 

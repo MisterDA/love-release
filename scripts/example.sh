@@ -12,6 +12,8 @@
 # To create a new module, you have to create a file in this directory,
 # and to edit the main love-release script.
 # If you wish to submit a new module, please also edit README.md and love-release.1
+# You could add configuration options in config.ini too,
+# but the name of the section must be the same as the name of the script.
 
 
 # Love-release script
@@ -31,7 +33,7 @@ SHORT_HELP=" -q    Create an Example application"
 while getoptex "$SCRIPT_ARGS" "$@"
 do
     if [ "$OPTOPT" = "q" ]; then
-        source "$PLATFORMS_DIR"/love.sh
+        source "$PLATFORMS_DIR"/example.sh
     fi
 done
 
@@ -52,7 +54,21 @@ done
 ### $1: Module name
 init_module "Example"
 
-## 2. Parse the options
+## 2. Read the configuration
+# Syntax is ${INI__section__variable}
+if [ "$CONFIG" = true ]; then
+    if [ -n "${INI__q__wer}" ]; then
+        WER=${INI__q__wer}
+    fi
+    if [ -n "${INI__q__ty}" ]; then
+        TY=${INI_q_ty}
+    fi
+    if [ -n "${INI__q__uiop}" ]; then
+        UIOP=true
+    fi
+fi
+
+## 3. Parse the options
 # $OPTOPT holds the option and $OPTARG holds the eventual argument passed to it.
 while getoptex "$SCRIPT_ARGS" "$@"
 do
@@ -65,13 +81,18 @@ do
     fi
 done
 
-## 3. Create the love file
+## 4. Create the love file
 ### $1: Compression level 0-9
 create_love_file 9
 
-## 4. Write your code
 
-## 5. Exit the module
+## 5. Write your code
+
+
+## 6. Unset every variable passed by configuration or command-line
+unset WER TY UIOP
+
+## 7. Exit the module
 ### $1: exit code. 0 - success, other - failure
 ### $2: error message
 exit_module

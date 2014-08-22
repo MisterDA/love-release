@@ -1,6 +1,28 @@
 # Debian package
 init_module "Debian"
 
+# Configuration
+if [ "$CONFIG" =  true ]; then
+    if [ -n "${INI__debian__package_version}" ]; then
+        PACKAGE_VERSION=${INI__debian__package_version}
+    fi
+    if [ -n "${INI__debian__homepage}" ]; then
+        PROJECT_HOMEPAGE=${INI__debian__homepage}
+    fi
+    if [ -n "${INI__debian__description}" ]; then
+        PROJECT_DESCRIPTION=${INI__debian__description}
+    fi
+    if [ -n "${INI__debian__maintainer_name}" ]; then
+        MAINTAINER_NAME=${INI__debian__maintainer_name}
+    fi
+    if [ -n "${INI__debian__maintainer_email}" ]; then
+        MAINTAINER_EMAIL=${INI__debian__maintainer_email}
+    fi
+    if [ -n "${INI__android__package_name}" ]; then
+        PACKAGE_NAME=${INI__debian__package_name}
+    fi
+fi
+
 
 # Options
 package_name_defined_argument=false
@@ -111,5 +133,6 @@ cd "$RELEASE_DIR"
 rm -rf $TEMP
 
 
+unset PROJECT_DESCRIPTION PROJECT_HOMEPAGE MAINTAINER_NAME MAINTAINER_EMAIL PACKAGE_NAME PACKAGE_VERSION
 exit_module
 

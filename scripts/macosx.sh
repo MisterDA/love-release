@@ -2,6 +2,17 @@
 init_module "Mac OS X"
 
 
+# Configuration
+if [ "$CONFIG" = true ]; then
+    if [ -n "${INI__macosx__maintainer_name}" ]; then
+        MAINTAINER_NAME=${INI__macosx__maintainer_name}
+    fi
+    if [ -n "${INI__macosx__icon}" ]; then
+        PROJECT_ICNS=${INI__macosx__icon}
+    fi
+fi
+
+
 # Options
 while getoptex "$SCRIPT_ARGS" "$@"
 do
@@ -137,5 +148,6 @@ else
 fi
 
 
+unset PROJECT_ICNS
 exit_module
 

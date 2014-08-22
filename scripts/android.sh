@@ -2,6 +2,23 @@
 init_module "Android"
 
 
+# Configuration
+if [ "$CONFIG" = true ]; then
+    if [ -n "${INI__android__activity}" ]; then
+        ACTIVITY=${INI__android__activity}
+    fi
+    if [ -n "${INI__android__package_name}" ]; then
+        PACKAGE_NAME=${INI__android__package_name}
+    fi
+    if [ -n "${INI__android__package_version}" ]; then
+        PACKAGE_VERSION=${INI__android__package_version}
+    fi
+    if [ -n "${INI__android__maintainer_name}" ]; then
+        MAINTAINER_NAME=${INI__android__maintainer_name}
+    fi
+fi
+
+
 # Options
 activity_defined_argument=false
 package_name_defined_argument=false
@@ -104,5 +121,6 @@ else
 fi
 
 
+unset ACTIVITY PACKAGE_NAME PACKAGE_VERSION MAINTAINER_NAME
 exit_module
 
