@@ -27,11 +27,11 @@ do
     if [ "$OPTOPT" = "activity" ]; then
         ACTIVITY=$OPTARG
         activity_defined_argument=true
-    elif [ "$OPTOPT" = "package-version" ]; then
+    elif [ "$OPTOPT" = "apk-package-version" ]; then
         PACKAGE_VERSION=$OPTARG
-    elif [ "$OPTOPT" = "maintainer-name" ]; then
+    elif [ "$OPTOPT" = "apk-maintainer-name" ]; then
         MAINTAINER_NAME=$OPTARG
-    elif [ "$OPTOPT" = "package-name" ]; then
+    elif [ "$OPTOPT" = "apk-package-name" ]; then
         PACKAGE_NAME=$OPTARG
         package_name_defined_argument=true
     elif [ "$OPTOPT" = "update-android" ]; then

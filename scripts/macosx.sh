@@ -16,9 +16,9 @@ fi
 # Options
 while getoptex "$SCRIPT_ARGS" "$@"
 do
-    if [ "$OPTOPT" = "icon" ]; then
+    if [ "$OPTOPT" = "osx-icon" ]; then
         PROJECT_ICNS=$OPTARG
-    elif [ "$OPTOPT" = "maintainer-name" ]; then
+    elif [ "$OPTOPT" = "osx-maintainer-name" ]; then
         MAINTAINER_NAME=$OPTARG
     fi
 done

@@ -28,17 +28,17 @@ fi
 package_name_defined_argument=false
 while getoptex "$SCRIPT_ARGS" "$@"
 do
-    if [ "$OPTOPT" = "package-version" ]; then
+    if [ "$OPTOPT" = "deb-package-version" ]; then
         PACKAGE_VERSION=$OPTARG
     elif [ "$OPTOPT" = "homepage" ]; then
         PROJECT_HOMEPAGE=$OPTARG
     elif [ "$OPTOPT" = "description" ]; then
         PROJECT_DESCRIPTION=$OPTARG
-    elif [ "$OPTOPT" = "maintainer-name" ]; then
+    elif [ "$OPTOPT" = "deb-maintainer-name" ]; then
         MAINTAINER_NAME=$OPTARG
     elif [ "$OPTOPT" = "maintainer-email" ]; then
         MAINTAINER_EMAIL=$OPTARG
-    elif [ "$OPTOPT" = "package-name" ]; then
+    elif [ "$OPTOPT" = "deb-package-name" ]; then
         PACKAGE_NAME=$OPTARG
         package_name_defined_argument=true
     fi

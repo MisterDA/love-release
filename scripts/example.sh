@@ -24,6 +24,7 @@
 # - a semicolon ";" if it doesn't require an argument
 # - a dot "." if it has an optional argument
 # - a colon ":" if it requires an argument
+# If you need options that might conflict by their names with already defined options, please prefix them.
 SCRIPT_ARGS="q; wer: ty. uiop  $SCRIPT_ARGS"
 
 ## 2. Add a short summary of your module

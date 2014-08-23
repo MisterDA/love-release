@@ -17,10 +17,6 @@ To set the default Love version to use,
 you can edit the very beginning of the script.
 If \fBlua\fR and a \fIconf.lua\fR file are found,
 it will automatically detect which version your project uses.
-If a \fIProjectName.icns\fR file is provided,
-the script will use it to set the game icon on MacOS.
-If a \fIProjectName.ico\fR file is provided, and that \fBWine\fR
-is installed, the script will use it to set the game icon on Windows.
 .SH OPTIONS
 .TP
 .B \-h
@@ -82,9 +78,16 @@ Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
 .TP
 .B \-x \fIfile\fR|\fIdirectory\fR
 Exclude file or directory.
+.SH WINDOWS
+.TP
+.B \-\-win\-icon \fIicon\fR
+Path to an ico file to use.
 .SH MAC OS X
 .TP
-.B \-\-maintainer\-name \fIname\fR
+.B \-\-osx\-icon \fIicon\fR
+Path to an icns file to use.
+.TP
+.B \-\-osx\-maintainer\-name \fIname\fR
 Set the maintainer's name. Provide it for OS X CFBundleIdentifier.
 .SH DEBIAN
 .TP
@@ -97,15 +100,15 @@ Set the homepage of your project.
 .B \-\-maintainer-email \fIemail\fR
 Set the maintainer's email.
 .TP
-.B \-\-maintainer\-name \fIname\fR
+.B \-\-deb\-maintainer\-name \fIname\fR
 Set the maintainer's name.
 .TP
-.B \-\-package-name \fIname\fR
+.B \-\-deb\-package-name \fIname\fR
 Set the name of the package and the command that will be use to launch your game.
 By default, it is the name of your project converted to lowercase,
 with eventual spaces replaced by dashes.
 .TP
-.B \-\-package\-version \fIversion\fR
+.B \-\-deb\-package\-version \fIversion\fR
 Set the version of your package.
 .SH ANDROID
 Note that every argument passed to the options should be alphanumerical,
@@ -116,19 +119,19 @@ The name of the class that extends GameActivity.
 By default it is the name of the project with 'Activity' appended,
 eventual spaces and dashes replaced by underscores.
 .TP
-.B \-\-maintainer\-name \fIname\fR
+.B \-\-apk\|maintainer\-name \fIname\fR
 Set the maintainer’s name.
 It must be only alphanumerical characters, with eventual underscores.
 .TP
-.B \-\-package\-name \fIname\fR
+.B \-\-apk\-package\-name \fIname\fR
 Set the name of the package.
 By default, it is the name of your project, with eventual spaces replaced by underscores.
 .TP
+.B \-\-apk\-package\-version \fIversion\fR
+Set the version of your package.
+.TP
 .B \-\-update\-android
 Update the love-android-sdl2.git repository used in the cache.
-.TP
-.B \-\-package\-version \fIversion\fR
-Set the version of your package.
 .SH OTHERS
 .TP
 .B \-\-clean

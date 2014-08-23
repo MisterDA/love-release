@@ -20,10 +20,6 @@ To set the default Love version to use,
 you can edit the very beginning of the script.  
 If `lua` and a `conf.lua` file are found,
 it will automatically detect which version your project uses.  
-If a `ProjectName.icns` file is provided,
-the script will use it to set the game icon on MacOS.  
-If a `ProjectName.ico` file is provided, and that Wine is installed,
-the script will use it to set the game icon on Windows.
 
 ### OPTIONS
 `-h`     Print a short help  
@@ -71,31 +67,35 @@ the script will use it to set the game icon on Windows.
 
 `-x`  Exclude file or directory.
 
+#### WINDOWS
+`--win-icon`    Path to an ico file to use.
+
 #### MAC OS X
-`--maintainer-name`    Set the maintainer’s name. Provide it for OS X CFBundleIdentifier.
+`--osx-icon`               Path to an icns file to use.
+`--osx-maintainer-name`    Set the maintainer’s name. Provide it for OS X CFBundleIdentifier.
 
 #### DEBIAN
 `--description`      Set the description of your project.  
 `--homepage`         Set the homepage of your project.  
 `--maintainer-email` Set the maintainer’s email.  
-`--maintainer-name`  Set the maintainer’s name.  
-`--package-name`     Set the name of the package and the command that will be used to launch your game.
-                     By default, it is the name of your project converted to lowercase,
-                     with eventual spaces replaced by dashes.  
-`--package-version`  Set the version of your package.  
+`--deb-maintainer-name`  Set the maintainer’s name.  
+`--deb-package-name`     Set the name of the package and the command that will be used to launch your game.
+                         By default, it is the name of your project converted to lowercase,
+                         with eventual spaces replaced by dashes.  
+`--deb-package-version`  Set the version of your package.  
 
 #### ANDROID
 Note that every argument passed to the options should be alphanumerical,
 with eventual underscores (i.e. [a-zA-Z0-9\_]), otherwise you'll get errors.  
-`--activity`        The name of the class that extends GameActivity.
-                    By default it is the name of the project with ‘Activity’ appended,
-                    eventual spaces and dashes replaced by underscores.  
-`--maintainer-name` Set the maintainer’s name.
-                    It must be only alphanumerical characters, with eventual underscores.  
-`--package-name`    Set the name of the package.
-                    By default, it is the name of your project, with eventual spaces replaced by underscores.  
-`--update-android`     Update the love-android-sdl2.git repository used in the cache.  
-`--package-version`         Set the version of your package.  
+`--activity`            The name of the class that extends GameActivity.
+                        By default it is the name of the project with ‘Activity’ appended,
+                        eventual spaces and dashes replaced by underscores.  
+`--apk-maintainer-name` Set the maintainer’s name.
+                        It must be only alphanumerical characters, with eventual underscores.  
+`--apk-package-name`    Set the name of the package.
+                        By default, it is the name of your project, with eventual spaces replaced by underscores. 
+`--apk-package-version` Set the version of your package.   
+`--update-android`      Update the love-android-sdl2.git repository used in the cache.  
 
 #### OTHERS
 `--clean`     Clean the cache located in `~/.cache/love-release`.

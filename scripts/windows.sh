@@ -15,7 +15,7 @@ fi
 # Options
 while getoptex "$SCRIPT_ARGS" "$@"
 do
-    if [ "$OPTOPT" = "icon" ]; then
+    if [ "$OPTOPT" = "win-icon" ]; then
         PROJECT_ICO=$OPTARG
     fi
 done
