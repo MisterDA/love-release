@@ -78,7 +78,7 @@ LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
 
 # Global variables
 ARGS=( "$@" )
-SCRIPT_ARGS="$SCRIPT_ARGS h; n: r: v: config: clean help"
+SCRIPT_ARGS="$SCRIPT_ARGS h; n: r: v: x: config: clean help"
 SCRIPT_ARGS=$(printf '%s\n' $SCRIPT_ARGS | sort -u)
 CONFIG=false
 CONFIG_FILE=config.ini
@@ -158,6 +158,8 @@ do
         LOVE_VERSION_MAJOR=$(echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*')
         LOVE_GT_080=$(float_test "$LOVE_VERSION_MAJOR >= 0.8")
         LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
+    elif [ "$OPTOPT" = "x" ]; then
+        EXCLUDE_FILES="$OPTARG $EXCLUDE_FILES"
     elif [ "$OPTOPT" = "clean" ]; then
         missing_operands=false
         rm -rf "$MAIN_CACHE_DIR"

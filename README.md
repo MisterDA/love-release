@@ -69,6 +69,8 @@ the script will use it to set the game icon on Windows.
       Starting with Love 0.8.0, a release is specially available for Windows x64.
       Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
 
+`-x`  Exclude file or directory.
+
 #### MAC OS X
 `--maintainer-name`    Set the maintainer’s name. Provide it for OS X CFBundleIdentifier.
 
