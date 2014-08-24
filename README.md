@@ -93,7 +93,7 @@ with eventual underscores (i.e. [a-zA-Z0-9\_]), otherwise you'll get errors.
 `--apk-maintainer-name` Set the maintainer’s name.
                         It must be only alphanumerical characters, with eventual underscores.  
 `--apk-package-name`    Set the name of the package.
-                        By default, it is the name of your project, with eventual spaces replaced by underscores. 
+                        By default, it is the name of your project, with eventual spaces replaced by underscores.  
 `--apk-package-version` Set the version of your package.   
 `--update-android`      Update the love-android-sdl2.git repository used in the cache.  
 
