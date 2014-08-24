@@ -22,7 +22,6 @@ do
         MAINTAINER_NAME=$OPTARG
     fi
 done
-EXCLUDE_FILES="$EXCLUDE_FILES $PROJECT_ICNS"
 PACKAGE_NAME=$(echo $PROJECT_NAME | sed -e 's/[^-a-zA-Z0-9_]/-/g')
 
 

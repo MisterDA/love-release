@@ -29,6 +29,11 @@ SCRIPT_ARGS="a; activity: apk-package-version: apk-maintainer-name: apk-package-
 SCRIPT_ARGS="m; osx-icon: osx-maintainer-name: $SCRIPT_ARGS"
 
 
+## List the options that require a file/directory that should be excluded by zip.
+EXCLUDE_OPTIONS=("win-icon" "osx-icon")
+EXCLUDE_CONFIG=("INI__windows__icon" "INI__macosx__icon")
+
+
 ## Add a short summary of your platform script here
 ## SHORT_HELP=" -a    Create an executable for a
 ##  --osname    Create an executable for osname"
@@ -84,7 +89,7 @@ CONFIG=false
 CONFIG_FILE=config.ini
 
 PROJECT_FILES=
-EXCLUDE_FILES=$(/bin/ls -A | grep "^[.]" | tr '\n' ' ')
+MAIN_EXCLUDE_FILES=
 
 PROJECT_NAME="${PWD##/*/}"
 PROJECT_DIR="$PWD"
@@ -134,6 +139,10 @@ do
         if [ -n "${INI__global__project_name}" ]; then
             PROJECT_NAME=${INI__global__project_name}
         fi
+        for option in "${EXCLUDE_CONFIG[@]}"
+        do
+            MAIN_EXCLUDE_FILES="${!option} $MAIN_EXCLUDE_FILES"
+        done
     fi
 done
 unset OPTIND
@@ -164,6 +173,12 @@ do
         missing_operands=false
         rm -rf "$MAIN_CACHE_DIR"
     fi
+    for option in "${EXCLUDE_OPTIONS[@]}"
+    do
+        if [ "$OPTOPT" = "$option" ]; then
+            MAIN_EXCLUDE_FILES="$OPTARG $MAIN_EXCLUDE_FILES"
+        fi
+    done
 done
 shift $((OPTIND-1))
 for file in "$@"
@@ -184,6 +199,7 @@ init_module ()
     GLOBAL_OPTOFS=$OPTOFS
     unset OPTIND
     unset OPTOFS
+    EXCLUDE_FILES=$MAIN_EXCLUDE_FILES
     if [ -z "$MAIN_RELEASE_DIR" ]; then
         MAIN_RELEASE_DIR=$(cd "$(dirname "$RELEASE_DIR")" && pwd)/$(basename "$RELEASE_DIR")
         RELEASE_DIR="$MAIN_RELEASE_DIR"/$LOVE_VERSION
@@ -201,9 +217,9 @@ create_love_file ()
     cd "$PROJECT_DIR"
     rm -rf "$RELEASE_DIR"/"$PROJECT_NAME".love 2> /dev/null
     if [ -z "$PROJECT_FILES" ]; then
-        zip --filesync -$1 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "${MAIN_RELEASE_DIR#$PWD/}/*" "$CONFIG_FILE" $EXCLUDE_FILES @ *
+        zip --filesync -$1 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "${MAIN_RELEASE_DIR#$PWD/}/*" "$CONFIG_FILE" $MAIN_EXCLUDE_FILES $EXCLUDE_FILES $(/bin/ls -A | grep "^[.]" | tr '\n' ' ') @ *
     else
-        zip --filesync -$1 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "${MAIN_RELEASE_DIR#$PWD/}/*" "$CONFIG_FILE" $EXCLUDE_FILES @ $PROJECT_FILES
+        zip --filesync -$1 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "${MAIN_RELEASE_DIR#$PWD/}/*" "$CONFIG_FILE" $MAIN_EXCLUDE_FILES $EXCLUDE_FILES $(/bin/ls -A | grep "^[.]" | tr '\n' ' ') @ $PROJECT_FILES
     fi
     cd "$RELEASE_DIR"
     LOVE_FILE="$PROJECT_NAME".love

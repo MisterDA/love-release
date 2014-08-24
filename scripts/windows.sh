@@ -19,7 +19,6 @@ do
         PROJECT_ICO=$OPTARG
     fi
 done
-EXCLUDE_FILES="$EXCLUDE_FILES $PROJECT_ICO"
 
 # Wine
 FOUND_WINE=true

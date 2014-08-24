@@ -25,7 +25,12 @@
 # - a dot "." if it has an optional argument
 # - a colon ":" if it requires an argument
 # If you need options that might conflict by their names with already defined options, please prefix them.
-SCRIPT_ARGS="q; wer: ty. uiop  $SCRIPT_ARGS"
+SCRIPT_ARGS="q; wer: ty. uiop $SCRIPT_ARGS"
+
+# If some options require a file or a directory as argument,
+# and this file should be excluded by zip, add the option.
+EXCLUDE_OPTIONS=("wer")
+EXCLUDE_CONFIG=("INI__q__wer")
 
 ## 2. Add a short summary of your module
 SHORT_HELP=" -q    Create an Example application"
@@ -45,7 +50,7 @@ done
 ## $MAIN_CACHE_DIR  - if you need to cache something independant from love version
 ## $CACHE_DIR       - if you need to cache something dependant from love version
 ## $PROJECT_FILES   - if empty, means *
-## $EXCLUDE_FILES   - every hidden file (.*) is excluded
+## $EXCLUDE_FILES   - add files to be excluded by zip.
 ## $PROJECT_NAME
 ## $PROJECT_DIR
 ## $RELEASE_DIR
