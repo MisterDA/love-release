@@ -132,7 +132,7 @@ See [developer.gnome.org](https://developer.gnome.org/integration-guide/stable/b
 ### SEE ALSO
 [https://www.love2d.org](https://www.love2d.org)  
 [https://www.love2d.org/wiki/Game_Distribution](https://www.love2d.org/wiki/Game_Distribution)  
-[https://www.github.org/MisterDA/love-release](https://www.github.org/MisterDA/love-release)
+[https://www.github.com/MisterDA/love-release](https://www.github.com/MisterDA/love-release)
 
 ### THANKS
 The work done on Debian packaging is highly inspired by what [josefnpat](http://josefnpat.com/) did.
