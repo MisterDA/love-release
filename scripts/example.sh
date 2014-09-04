@@ -25,6 +25,7 @@
 # - a dot "." if it has an optional argument
 # - a colon ":" if it requires an argument
 # If you need options that might conflict by their names with already defined options, please prefix them.
+# If you want automatic completion to be available, add them to completion.sh
 SCRIPT_ARGS="q; wer: ty. uiop $SCRIPT_ARGS"
 
 # If some options require a file or a directory as argument,
