@@ -2,6 +2,9 @@
 init_module "Android"
 
 
+PACKAGE_NAME=$(echo $PROJECT_NAME | sed -e 's/[^-a-zA-Z0-9_]/-/g' | tr '[:upper:]' '[:lower:]')
+ACTIVITY=$(echo $PROJECT_NAME | sed -e 's/[^a-zA-Z0-9_]/_/g')
+
 # Configuration
 if [ "$CONFIG" = true ]; then
     if [ -n "${INI__android__activity}" ]; then
@@ -20,8 +23,6 @@ fi
 
 
 # Options
-activity_defined_argument=false
-package_name_defined_argument=false
 while getoptex "$SCRIPT_ARGS" "$@"
 do
     if [ "$OPTOPT" = "activity" ]; then
@@ -38,12 +39,6 @@ do
         UPDATE_ANDROID_REPO=true
     fi
 done
-if [ "$package_name_defined_argument" = false ]; then
-    PACKAGE_NAME=$(echo $PROJECT_NAME | sed -e 's/[^-a-zA-Z0-9_]/-/g')
-fi
-if [ "$activity_defined_argument" = false ]; then
-    ACTIVITY=$(echo $PROJECT_NAME | sed -e 's/[^a-zA-Z0-9_]/_/g')
-fi
 
 
 # Android
@@ -52,12 +47,12 @@ ERROR_MSG="Could not build Android package."
 if [ -z "$PACKAGE_VERSION" ]; then
     MISSING_INFO=1
     ERROR_MSG="$ERROR_MSG
-    Missing project's version. Use --package-version."
+    Missing project's version. Use --apk-package-version."
 fi
 if [ -z "$MAINTAINER_NAME" ]; then
     MISSING_INFO=1
     ERROR_MSG="$ERROR_MSG
-    Missing maintainer's name. Use --maintainer-name."
+    Missing maintainer's name. Use --apk-maintainer-name."
 fi
 if [ "$MISSING_INFO" -eq 1  ]; then
     exit_module "$MISSING_INFO" "$ERROR_MSG"

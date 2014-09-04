@@ -67,16 +67,18 @@ it will automatically detect which version your project uses.
 
 `-x`  Exclude file or directory.
 
+`--description`      Set the description of your project.
+
+`--homepage`         Set the homepage of your project.
+
 #### WINDOWS
 `--win-icon`    Path to an ico file to use.
 
 #### MAC OS X
-`--osx-icon`               Path to an icns file to use.
+`--osx-icon`               Path to an icns file to use.  
 `--osx-maintainer-name`    Set the maintainer’s name. Provide it for OS X CFBundleIdentifier.
 
 #### DEBIAN
-`--description`      Set the description of your project.  
-`--homepage`         Set the homepage of your project.  
 `--maintainer-email` Set the maintainer’s email.  
 `--deb-maintainer-name`  Set the maintainer’s name.  
 `--deb-package-name`     Set the name of the package and the command that will be used to launch your game.

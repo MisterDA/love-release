@@ -1,16 +1,13 @@
 # Debian package
 init_module "Debian"
 
+
+PACKAGE_NAME=$(echo $PROJECT_NAME | sed -e 's/[^-a-zA-Z0-9_]/-/g' | tr '[:upper:]' '[:lower:]')
+
 # Configuration
 if [ "$CONFIG" =  true ]; then
     if [ -n "${INI__debian__package_version}" ]; then
         PACKAGE_VERSION=${INI__debian__package_version}
-    fi
-    if [ -n "${INI__debian__homepage}" ]; then
-        PROJECT_HOMEPAGE=${INI__debian__homepage}
-    fi
-    if [ -n "${INI__debian__description}" ]; then
-        PROJECT_DESCRIPTION=${INI__debian__description}
     fi
     if [ -n "${INI__debian__maintainer_name}" ]; then
         MAINTAINER_NAME=${INI__debian__maintainer_name}
@@ -25,15 +22,10 @@ fi
 
 
 # Options
-package_name_defined_argument=false
 while getoptex "$SCRIPT_ARGS" "$@"
 do
     if [ "$OPTOPT" = "deb-package-version" ]; then
         PACKAGE_VERSION=$OPTARG
-    elif [ "$OPTOPT" = "homepage" ]; then
-        PROJECT_HOMEPAGE=$OPTARG
-    elif [ "$OPTOPT" = "description" ]; then
-        PROJECT_DESCRIPTION=$OPTARG
     elif [ "$OPTOPT" = "deb-maintainer-name" ]; then
         MAINTAINER_NAME=$OPTARG
     elif [ "$OPTOPT" = "maintainer-email" ]; then
@@ -43,9 +35,6 @@ do
         package_name_defined_argument=true
     fi
 done
-if [ "$package_name_defined_argument" = false ]; then
-    PACKAGE_NAME=$(echo $PROJECT_NAME | sed -e 's/[^-a-zA-Z0-9_]/-/g')
-fi
 
 
 # Debian
@@ -53,7 +42,7 @@ MISSING_INFO=0
 ERROR_MSG="Could not build Debian package."
 if [ -z "$PACKAGE_VERSION" ]; then
     MISSING_INFO=1
-    ERROR_MSG="$ERROR_MSG\nMissing project's version. Use --package-version."
+    ERROR_MSG="$ERROR_MSG\nMissing project's version. Use --deb-package-version."
 fi
 if [ -z "$PROJECT_HOMEPAGE" ]; then
     MISSING_INFO=1
@@ -65,7 +54,7 @@ if [ -z "$PROJECT_DESCRIPTION" ]; then
 fi
 if [ -z "$MAINTAINER_NAME" ]; then
     MISSING_INFO=1
-    ERROR_MSG="$ERROR_MSG\nMissing maintainer's name. Use --maintainer-name."
+    ERROR_MSG="$ERROR_MSG\nMissing maintainer's name. Use --deb-maintainer-name."
 fi
 if [ -z "$MAINTAINER_EMAIL" ]; then
     MISSING_INFO=1
@@ -133,6 +122,6 @@ cd "$RELEASE_DIR"
 rm -rf $TEMP
 
 
-unset PROJECT_DESCRIPTION PROJECT_HOMEPAGE MAINTAINER_NAME MAINTAINER_EMAIL PACKAGE_NAME PACKAGE_VERSION
+unset MAINTAINER_NAME MAINTAINER_EMAIL PACKAGE_NAME PACKAGE_VERSION
 exit_module
 

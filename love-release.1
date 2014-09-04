@@ -78,6 +78,12 @@ Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
 .TP
 .B \-x \fIfile\fR|\fIdirectory\fR
 Exclude file or directory.
+.TP
+.B \-\-description \fIdescription\fR
+Set the description of your project.
+.TP
+.B \-\-homepage \fIurl\fR
+Set the homepage of your project.
 .SH WINDOWS
 .TP
 .B \-\-win\-icon \fIicon\fR
@@ -90,12 +96,6 @@ Path to an icns file to use.
 .B \-\-osx\-maintainer\-name \fIname\fR
 Set the maintainer's name. Provide it for OS X CFBundleIdentifier.
 .SH DEBIAN
-.TP
-.B \-\-description \fIdescription\fR
-Set the description of your project.
-.TP
-.B \-\-homepage \fIpage\fR
-Set the homepage of your project.
 .TP
 .B \-\-maintainer-email \fIemail\fR
 Set the maintainer's email.
@@ -119,7 +119,7 @@ The name of the class that extends GameActivity.
 By default it is the name of the project with 'Activity' appended,
 eventual spaces and dashes replaced by underscores.
 .TP
-.B \-\-apk\|maintainer\-name \fIname\fR
+.B \-\-apk\-maintainer\-name \fIname\fR
 Set the maintainer’s name.
 It must be only alphanumerical characters, with eventual underscores.
 .TP

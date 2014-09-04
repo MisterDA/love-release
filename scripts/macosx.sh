@@ -2,6 +2,8 @@
 init_module "Mac OS X"
 
 
+PACKAGE_NAME=$(echo $PROJECT_NAME | sed -e 's/[^-a-zA-Z0-9_]/-/g' | tr '[:upper:]' '[:lower:]')
+
 # Configuration
 if [ "$CONFIG" = true ]; then
     if [ -n "${INI__macosx__maintainer_name}" ]; then
@@ -22,7 +24,6 @@ do
         MAINTAINER_NAME=$OPTARG
     fi
 done
-PACKAGE_NAME=$(echo $PROJECT_NAME | sed -e 's/[^-a-zA-Z0-9_]/-/g')
 
 
 create_love_file 9

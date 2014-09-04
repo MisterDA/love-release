@@ -20,7 +20,7 @@ SCRIPT_ARGS="l;"
 SCRIPT_ARGS="w. win-icon: $SCRIPT_ARGS"
 
 ## Debian
-SCRIPT_ARGS="d; deb-package-version: deb-maintainer-name: maintainer-email: homepage: description: deb-package-name: $SCRIPT_ARGS"
+SCRIPT_ARGS="d; deb-package-version: deb-maintainer-name: maintainer-email: deb-package-name: $SCRIPT_ARGS"
 
 ## Android
 SCRIPT_ARGS="a; activity: apk-package-version: apk-maintainer-name: apk-package-name: update-android; $SCRIPT_ARGS"
@@ -83,7 +83,7 @@ LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
 
 # Global variables
 ARGS=( "$@" )
-SCRIPT_ARGS="$SCRIPT_ARGS h; n: r: v: x: config: clean help"
+SCRIPT_ARGS="$SCRIPT_ARGS h; n: r: v: x: config: homepage: description: clean help"
 SCRIPT_ARGS=$(printf '%s\n' $SCRIPT_ARGS | sort -u)
 CONFIG=false
 CONFIG_FILE=config.ini
@@ -139,6 +139,12 @@ do
         if [ -n "${INI__global__project_name}" ]; then
             PROJECT_NAME=${INI__global__project_name}
         fi
+        if [ -n "${INI__global__homepage}" ]; then
+            PROJECT_HOMEPAGE=${INI__global__homepage}
+        fi
+        if [ -n "${INI__global__description}" ]; then
+            PROJECT_DESCRIPTION=${INI__global__description}
+        fi
         for option in "${EXCLUDE_CONFIG[@]}"
         do
             MAIN_EXCLUDE_FILES="${!option} $MAIN_EXCLUDE_FILES"
@@ -169,6 +175,10 @@ do
         LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
     elif [ "$OPTOPT" = "x" ]; then
         EXCLUDE_FILES="$OPTARG $EXCLUDE_FILES"
+    elif [ "$OPTOPT" = "homepage" ]; then
+        PROJECT_HOMEPAGE=$OPTARG
+    elif [ "$OPTOPT" = "description" ]; then
+        PROJECT_DESCRIPTION=$OPTARG
     elif [ "$OPTOPT" = "clean" ]; then
         missing_operands=false
         rm -rf "$MAIN_CACHE_DIR"
