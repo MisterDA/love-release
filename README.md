@@ -4,7 +4,7 @@
 ### INSTALLATION
 Clone and run as root `install.sh`, or edit `install.sh` to choose
 locations in user-space.  
-Close and reopen your terminal to make completion available, or execute
+Close and reopen your terminal to make completion available, or execute :  
 `. /etc/bash_completion.d/love-release`
 
 ### SYNOPSIS

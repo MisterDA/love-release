@@ -196,7 +196,7 @@ do
     PROJECT_FILES="$PROJECT_FILES $file"
 done
 
-set -- ${ARGS[@]}
+set -- "${ARGS[@]}"
 unset OPTIND
 unset OPTOFS
 
