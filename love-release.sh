@@ -115,11 +115,11 @@ $SHORT_HELP"
 
 # Read config
 missing_operands=true
-source "$INCLUDE_DIR"/getopt.sh
+source "$INCLUDE_DIR"/getopt/getopt.sh
 while getoptex "$SCRIPT_ARGS" "$@"
 do
     if [ "$OPTOPT" = "config" ]; then
-        source "$INCLUDE_DIR"/read_ini.sh
+        source "$INCLUDE_DIR"/bash_ini_parser/read_ini.sh
         missing_operands=false
         CONFIG_FILE=$OPTARG
         read_ini "$CONFIG_FILE" || exit 1
