@@ -94,7 +94,7 @@ if [ "$RELEASE_WIN_64" = true ] && [ "$LOVE_GT_080" = true ]; then
     rm -rf "$PROJECT_NAME"-win64.zip 2> /dev/null
 
     if [ "$FOUND_WINE" = true ] && [ -n "$PROJECT_ICO" ]; then
-        WINEPREFIX="$WINEPREFIX" wine "$RESHACKER" -addoverwrite "love-$LOVE_VERSION-win32/love.exe,love-$LOVE_VERSION-win32/love.exe,"$PROJECT_ICO",ICONGROUP,MAINICON,0" 2> /dev/null
+        WINEPREFIX="$WINEPREFIX" wine "$RESHACKER" -addoverwrite "love-$LOVE_VERSION-win64/love.exe,love-$LOVE_VERSION-win64/love.exe,"$PROJECT_ICO",ICONGROUP,MAINICON,0" 2> /dev/null
     fi
 
     cat love-$LOVE_VERSION-win64/love.exe "$LOVE_FILE" > love-$LOVE_VERSION-win64/"$PROJECT_NAME".exe
