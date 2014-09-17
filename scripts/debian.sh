@@ -130,9 +130,6 @@ for line in $(find usr/ -type d); do
     chmod 0755 $line
 done
 
-echo fakeroot dpkg-deb -b $TEMP "$RELEASE_DIR"/"$PACKAGE_NAME"-"$PACKAGE_VERSION"_all.deb
-
-
 
 fakeroot dpkg-deb -b $TEMP "$RELEASE_DIR"/"$PACKAGE_NAME"-"$PACKAGE_VERSION"_all.deb
 cd "$RELEASE_DIR"
