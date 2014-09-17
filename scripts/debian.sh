@@ -18,6 +18,9 @@ if [ "$CONFIG" =  true ]; then
     if [ -n "${INI__android__package_name}" ]; then
         PACKAGE_NAME=${INI__debian__package_name}
     fi
+    if [-n "${INI__debian__icon_128}" ]; then
+    	ICON_128=${INI__debian__icon_128}
+   	fi
 fi
 
 
@@ -33,6 +36,8 @@ do
     elif [ "$OPTOPT" = "deb-package-name" ]; then
         PACKAGE_NAME=$OPTARG
         package_name_defined_argument=true
+    elif [ "$OPTOPT" = "deb-icon-128" ]; then
+    	ICON_128=$OPTARG
     fi
 done
 
@@ -59,6 +64,10 @@ fi
 if [ -z "$MAINTAINER_EMAIL" ]; then
     MISSING_INFO=1
     ERROR_MSG="$ERROR_MSG\nMissing maintainer's email. Use --maintainer-email."
+fi
+if [ -z "$ICON_128" ]; then
+    MISSING_INFO=1
+    ERROR_MSG="$ERROR_MSG\nMissing 128x128 icon. Use --deb-icon-128."
 fi
 if [ "$MISSING_INFO" -eq 1  ]; then
     exit_module "$MISSING_INFO" "$ERROR_MSG"
@@ -90,15 +99,19 @@ echo "Comment=$PROJECT_DESCRIPTION" >> $DESKTOP
 echo "Exec=$PACKAGE_NAME"           >> $DESKTOP
 echo "Type=Application"             >> $DESKTOP
 echo "Categories=Game;"             >> $DESKTOP
-echo "Icon=love"                    >> $DESKTOP
+echo "Icon=$PACKAGE_NAME"                    >> $DESKTOP
 chmod 0644 $DESKTOP
 
 PACKAGE_DIR=/usr/share/games/"$PACKAGE_NAME"/
 PACKAGE_LOC=$PACKAGE_NAME-$PACKAGE_VERSION.love
+ICON_DIR=/usr/share/icons/hicolor/128x128/apps/
 
 mkdir -p $TEMP"$PACKAGE_DIR"
+mkdir -p $TEMP"$ICON_DIR"
 cp "$LOVE_FILE" $TEMP"$PACKAGE_DIR""$PACKAGE_LOC"
 chmod 0644 $TEMP"$PACKAGE_DIR""$PACKAGE_LOC"
+cp "$ICON_128" $TEMP"$ICON_DIR""$PACKAGE_NAME".png
+chmod 0644 $TEMP"$ICON_DIR""$PACKAGE_NAME".png
 
 BIN_LOC=/usr/bin/
 mkdir -p $TEMP$BIN_LOC
@@ -116,6 +129,7 @@ chmod 0644 $TEMP/DEBIAN/md5sums
 for line in $(find usr/ -type d); do
     chmod 0755 $line
 done
+
 
 fakeroot dpkg-deb -b $TEMP "$RELEASE_DIR"/"$PACKAGE_NAME"-"$PACKAGE_VERSION"_all.deb
 cd "$RELEASE_DIR"

@@ -20,7 +20,7 @@ SCRIPT_ARGS="l;"
 SCRIPT_ARGS="w. win-icon: $SCRIPT_ARGS"
 
 ## Debian
-SCRIPT_ARGS="d; deb-package-version: deb-maintainer-name: maintainer-email: deb-package-name: $SCRIPT_ARGS"
+SCRIPT_ARGS="d; deb-package-version: deb-maintainer-name: maintainer-email: deb-package-name: deb-icon-128: $SCRIPT_ARGS"
 
 ## Android
 SCRIPT_ARGS="a; activity: apk-package-version: apk-maintainer-name: apk-package-name: update-android; $SCRIPT_ARGS"
