@@ -66,6 +66,24 @@ float_test () {
     echo $a
 }
 
+# Escape directory name for zip
+dir_escape () {
+    dir="$1"
+    if [ -d "$dir" ]; then
+        if [ "${dir::1}" != "/" ]; then
+            dir="/$dir"
+        fi
+        if [ "${dir: -1}" != "*" ]; then
+            if [ "${dir: -1}" != "/" ]; then
+                dir="$dir/*"
+            else
+                dir="$dir*"
+            fi
+        fi
+    fi
+    echo "$dir"
+}
+
 
 # Love version detection
 if [ "$FOUND_LUA" = true ] && [ -f "conf.lua" ]; then
@@ -147,7 +165,7 @@ do
         fi
         for option in "${EXCLUDE_CONFIG[@]}"
         do
-            MAIN_EXCLUDE_FILES="${!option} $MAIN_EXCLUDE_FILES"
+            MAIN_EXCLUDE_FILES=$(dir_escape "${!option}") $MAIN_EXCLUDE_FILES
         done
     fi
 done
@@ -174,7 +192,7 @@ do
         LOVE_GT_080=$(float_test "$LOVE_VERSION_MAJOR >= 0.8")
         LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
     elif [ "$OPTOPT" = "x" ]; then
-        EXCLUDE_FILES="$OPTARG $EXCLUDE_FILES"
+        MAIN_EXCLUDE_FILES="$(dir_escape "$OPTARG") $MAIN_EXCLUDE_FILES"
     elif [ "$OPTOPT" = "homepage" ]; then
         PROJECT_HOMEPAGE=$OPTARG
     elif [ "$OPTOPT" = "description" ]; then
@@ -186,7 +204,7 @@ do
     for option in "${EXCLUDE_OPTIONS[@]}"
     do
         if [ "$OPTOPT" = "$option" ]; then
-            MAIN_EXCLUDE_FILES="$OPTARG $MAIN_EXCLUDE_FILES"
+            MAIN_EXCLUDE_FILES=$(dir_escape "$OPTARG") $MAIN_EXCLUDE_FILES
         fi
     done
 done
@@ -227,9 +245,15 @@ create_love_file ()
     cd "$PROJECT_DIR"
     rm -rf "$RELEASE_DIR"/"$PROJECT_NAME".love 2> /dev/null
     if [ -z "$PROJECT_FILES" ]; then
-        zip --filesync -$1 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "${MAIN_RELEASE_DIR#$PWD/}/*" "$CONFIG_FILE" $MAIN_EXCLUDE_FILES $EXCLUDE_FILES $(/bin/ls -A | grep "^[.]" | tr '\n' ' ') @ *
+        zip --filesync -$1 -r "$RELEASE_DIR"/"$PROJECT_NAME".love \
+            -x "$0" "${MAIN_RELEASE_DIR#$PWD/}/*" "$CONFIG_FILE" $MAIN_EXCLUDE_FILES $EXCLUDE_FILES \
+            $(ls -Ap | grep "^\." | sed -e 's/^/\//g' -e 's/\/$/\/*/g') @ \
+            .
     else
-        zip --filesync -$1 -r "$RELEASE_DIR"/"$PROJECT_NAME".love -x "$0" "${MAIN_RELEASE_DIR#$PWD/}/*" "$CONFIG_FILE" $MAIN_EXCLUDE_FILES $EXCLUDE_FILES $(/bin/ls -A | grep "^[.]" | tr '\n' ' ') @ $PROJECT_FILES
+        zip --filesync -$1 -r "$RELEASE_DIR"/"$PROJECT_NAME".love \
+            -x "$0" "${MAIN_RELEASE_DIR#$PWD/}/*" "$CONFIG_FILE" $MAIN_EXCLUDE_FILES $EXCLUDE_FILES \
+            $(ls -Ap | grep "^\." | sed -e 's/^/\//g' -e 's/\/$/\/*/g') @ \
+            $PROJECT_FILES
     fi
     cd "$RELEASE_DIR"
     LOVE_FILE="$PROJECT_NAME".love
