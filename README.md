@@ -81,6 +81,11 @@ it will automatically detect which version your project uses.
 `--osx-maintainer-name`    Set the maintainer’s name. Provide it for OS X CFBundleIdentifier.
 
 #### DEBIAN
+`--deb-icon`             Path to a single folder where icons are stored.
+                         To be properly recognized, icons filename must contain `YYxYY`,
+                         where `YY` is the resolution of the icon.
+                         SVG files are recognized if suffixed with `.svg`.
+                         Other files will be ignored.  
 `--maintainer-email` Set the maintainer’s email.  
 `--deb-maintainer-name`  Set the maintainer’s name.  
 `--deb-package-name`     Set the name of the package and the command that will be used to launch your game.
@@ -125,13 +130,6 @@ but if provided it can use them.
   - use [icoutils](http://www.nongnu.org/icoutils/) to create the icon,
   - then [Wine](http://www.winehq.org/) and [Resource Hacker](http://www.angusj.com/resourcehacker/) to set the icon.
     This last step can be automatically done, assuming Wine is installed.
-
-If you want to add icons in the debian package,
-open it and put the icons in `/usr/share/icons/hicolor/YYxYY/apps/`,
-where YY is the width of the icon.
-You also have to edit  the  line  `Icon=love`  in
-`/usr/share/applications/yourgame.desktop`  to  match  the  icon's  name.
-See [developer.gnome.org](https://developer.gnome.org/integration-guide/stable/basic-integration.html.en) for more informations.
 
 ### SEE ALSO
 [https://www.love2d.org](https://www.love2d.org)  

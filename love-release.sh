@@ -20,7 +20,7 @@ SCRIPT_ARGS="l;"
 SCRIPT_ARGS="w. win-icon: $SCRIPT_ARGS"
 
 ## Debian
-SCRIPT_ARGS="d; deb-package-version: deb-maintainer-name: maintainer-email: deb-package-name: $SCRIPT_ARGS"
+SCRIPT_ARGS="d; deb-icon: deb-package-version: deb-maintainer-name: maintainer-email: deb-package-name: $SCRIPT_ARGS"
 
 ## Android
 SCRIPT_ARGS="a; activity: apk-package-version: apk-maintainer-name: apk-package-name: update-android; $SCRIPT_ARGS"
@@ -30,8 +30,8 @@ SCRIPT_ARGS="m; osx-icon: osx-maintainer-name: $SCRIPT_ARGS"
 
 
 ## List the options that require a file/directory that should be excluded by zip.
-EXCLUDE_OPTIONS=("win-icon" "osx-icon")
-EXCLUDE_CONFIG=("INI__windows__icon" "INI__macosx__icon")
+EXCLUDE_OPTIONS=("win-icon" "osx-icon" "deb-icon")
+EXCLUDE_CONFIG=("INI__windows__icon" "INI__macosx__icon" "INI__debian__icon")
 
 
 ## Add a short summary of your platform script here

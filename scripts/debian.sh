@@ -18,6 +18,11 @@ if [ "$CONFIG" =  true ]; then
     if [ -n "${INI__android__package_name}" ]; then
         PACKAGE_NAME=${INI__debian__package_name}
     fi
+    if [ -n "${INI__debian__icon}" ]; then
+        IFS=$'\n'
+        ICON_DIR=${INI__debian__icon}
+        ICON_FILES=( $(ls -AC1 "$ICON_DIR") )
+    fi
 fi
 
 
@@ -33,6 +38,10 @@ do
     elif [ "$OPTOPT" = "deb-package-name" ]; then
         PACKAGE_NAME=$OPTARG
         package_name_defined_argument=true
+    elif [ "$OPTOPT" = "deb-icon" ]; then
+        IFS=$'\n'
+        ICON_DIR=$OPTARG
+        ICON_FILES=( $(ls -AC1 "$ICON_DIR") )
     fi
 done
 
@@ -90,7 +99,6 @@ echo "Comment=$PROJECT_DESCRIPTION" >> $DESKTOP
 echo "Exec=$PACKAGE_NAME"           >> $DESKTOP
 echo "Type=Application"             >> $DESKTOP
 echo "Categories=Game;"             >> $DESKTOP
-echo "Icon=love"                    >> $DESKTOP
 chmod 0644 $DESKTOP
 
 PACKAGE_DIR=/usr/share/games/"$PACKAGE_NAME"/
@@ -106,6 +114,31 @@ echo "#!/usr/bin/env bash" >  $TEMP$BIN_LOC"$PACKAGE_NAME"
 echo "set -e"              >> $TEMP$BIN_LOC"$PACKAGE_NAME"
 echo "love $PACKAGE_DIR$PACKAGE_LOC" >> $TEMP$BIN_LOC"$PACKAGE_NAME"
 chmod 0755 $TEMP$BIN_LOC"$PACKAGE_NAME"
+
+ICON_LOC=/usr/share/icons/hicolor/
+mkdir -p $TEMP$ICON_LOC
+if [ -n "$ICON_DIR" ]; then
+    echo "Icon=$PACKAGE_NAME" >> $DESKTOP
+    for ICON in "${ICON_FILES[@]}"
+    do
+        RES=$(echo "$ICON" | grep -Eo "[0-9]+x[0-9]+")
+        EXT=$(echo "$ICON" | sed -e 's/.*\.//g')
+        if [ "$EXT" = "svg" ]; then
+            mkdir -p $TEMP${ICON_LOC}scalable/apps
+            cp "$PROJECT_DIR"/"$ICON_DIR"/"$ICON" $TEMP${ICON_LOC}scalable/apps/"$PACKAGE_NAME".$EXT
+            chmod 0644 $TEMP${ICON_LOC}scalable/apps/"$PACKAGE_NAME".EXT
+        else
+            if [ -n "$RES" ]; then
+                mkdir -p $TEMP$ICON_LOC$RES/apps
+                cp "$PROJECT_DIR"/"$ICON_DIR"/"$ICON" $TEMP$ICON_LOC$RES/apps/"$PACKAGE_NAME".$EXT
+                chmod 0644 $TEMP$ICON_LOC$RES/apps/"$PACKAGE_NAME".$EXT
+            fi
+        fi
+    done
+else
+    echo "Icon=love" >> $DESKTOP
+fi
+
 
 cd $TEMP
 for line in $(find usr/ -type f); do
