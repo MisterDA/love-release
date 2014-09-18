@@ -15,7 +15,7 @@ if [ "$CONFIG" =  true ]; then
     if [ -n "${INI__debian__maintainer_email}" ]; then
         MAINTAINER_EMAIL=${INI__debian__maintainer_email}
     fi
-    if [ -n "${INI__android__package_name}" ]; then
+    if [ -n "${INI__debian__package_name}" ]; then
         PACKAGE_NAME=${INI__debian__package_name}
     fi
     if [ -n "${INI__debian__icon}" ]; then
@@ -77,21 +77,22 @@ fi
 create_love_file 9
 
 
-TEMP=`mktemp -d`
+TEMP=$(mktemp -d)
+
+CONTROL=$TEMP/DEBIAN/control
 mkdir -p $TEMP/DEBIAN
+echo "Package: $PACKAGE_NAME"    >  $CONTROL
+echo "Version: $PACKAGE_VERSION" >> $CONTROL
+echo "Architecture: all"         >> $CONTROL
+echo "Maintainer: $MAINTAINER_NAME <$MAINTAINER_EMAIL>" >> $CONTROL
+echo "Installed-Size: $(echo "$(stat -c %s "$PROJECT_NAME".love) / 1024" | bc)" >> $CONTROL
+echo "Depends: love (>= $LOVE_VERSION)"   >> $CONTROL
+echo "Priority: extra"                    >> $CONTROL
+echo "Homepage: $PROJECT_HOMEPAGE"        >> $CONTROL
+echo "Description: $PROJECT_DESCRIPTION"  >> $CONTROL
+chmod 0644 $CONTROL
 
-echo "Package: $PACKAGE_NAME"    >  $TEMP/DEBIAN/control
-echo "Version: $PACKAGE_VERSION" >> $TEMP/DEBIAN/control
-echo "Architecture: all"         >> $TEMP/DEBIAN/control
-echo "Maintainer: $MAINTAINER_NAME <$MAINTAINER_EMAIL>" >> $TEMP/DEBIAN/control
-echo "Installed-Size: $(echo "$(stat -c %s "$PROJECT_NAME".love) / 1024" | bc)" >> $TEMP/DEBIAN/control
-echo "Depends: love (>= $LOVE_VERSION)"   >> $TEMP/DEBIAN/control
-echo "Priority: extra"                    >> $TEMP/DEBIAN/control
-echo "Homepage: $PROJECT_HOMEPAGE"        >> $TEMP/DEBIAN/control
-echo "Description: $PROJECT_DESCRIPTION"  >> $TEMP/DEBIAN/control
-chmod 0644 $TEMP/DEBIAN/control
-
-DESKTOP=$TEMP/usr/share/applications/"$PACKAGE_NAME".desktop
+DESKTOP=$TEMP/usr/share/applications/${PACKAGE_NAME}.desktop
 mkdir -p $TEMP/usr/share/applications
 echo "[Desktop Entry]"              >  $DESKTOP
 echo "Name=$PROJECT_NAME"           >> $DESKTOP
@@ -101,22 +102,22 @@ echo "Type=Application"             >> $DESKTOP
 echo "Categories=Game;"             >> $DESKTOP
 chmod 0644 $DESKTOP
 
-PACKAGE_DIR=/usr/share/games/"$PACKAGE_NAME"/
+PACKAGE_DIR=$TEMP/usr/share/games/$PACKAGE_NAME
 PACKAGE_LOC=$PACKAGE_NAME-$PACKAGE_VERSION.love
 
-mkdir -p $TEMP"$PACKAGE_DIR"
-cp "$LOVE_FILE" $TEMP"$PACKAGE_DIR""$PACKAGE_LOC"
-chmod 0644 $TEMP"$PACKAGE_DIR""$PACKAGE_LOC"
+mkdir -p $PACKAGE_DIR
+cp "$LOVE_FILE" $PACKAGE_DIR/$PACKAGE_LOC
+chmod 0644 $PACKAGE_DIR/$PACKAGE_LOC
 
-BIN_LOC=/usr/bin/
-mkdir -p $TEMP$BIN_LOC
-echo "#!/usr/bin/env bash" >  $TEMP$BIN_LOC"$PACKAGE_NAME"
-echo "set -e"              >> $TEMP$BIN_LOC"$PACKAGE_NAME"
-echo "love $PACKAGE_DIR$PACKAGE_LOC" >> $TEMP$BIN_LOC"$PACKAGE_NAME"
-chmod 0755 $TEMP$BIN_LOC"$PACKAGE_NAME"
+BIN_LOC=$TEMP/usr/bin
+mkdir -p $BIN_LOC
+echo "#!/usr/bin/env bash" >  $BIN_LOC/$PACKAGE_NAME
+echo "set -e"              >> $BIN_LOC/$PACKAGE_NAME
+echo "love $PACKAGE_DIR/$PACKAGE_LOC" >> $BIN_LOC/$PACKAGE_NAME
+chmod 0755 $BIN_LOC/$PACKAGE_NAME
 
-ICON_LOC=/usr/share/icons/hicolor/
-mkdir -p $TEMP$ICON_LOC
+ICON_LOC=$TEMP/usr/share/icons/hicolor
+mkdir -p $ICON_LOC
 if [ -n "$ICON_DIR" ]; then
     echo "Icon=$PACKAGE_NAME" >> $DESKTOP
     for ICON in "${ICON_FILES[@]}"
@@ -124,14 +125,14 @@ if [ -n "$ICON_DIR" ]; then
         RES=$(echo "$ICON" | grep -Eo "[0-9]+x[0-9]+")
         EXT=$(echo "$ICON" | sed -e 's/.*\.//g')
         if [ "$EXT" = "svg" ]; then
-            mkdir -p $TEMP${ICON_LOC}scalable/apps
-            cp "$PROJECT_DIR"/"$ICON_DIR"/"$ICON" $TEMP${ICON_LOC}scalable/apps/"$PACKAGE_NAME".$EXT
-            chmod 0644 $TEMP${ICON_LOC}scalable/apps/"$PACKAGE_NAME".EXT
+            mkdir -p $ICON_LOC/scalable/apps
+            cp "$PROJECT_DIR"/"$ICON_DIR"/"$ICON" $ICON_LOC/scalable/apps/${PACKAGE_NAME}.$EXT
+            chmod 0644 $ICON_LOC/scalable/apps/${PACKAGE_NAME}.$EXT
         else
             if [ -n "$RES" ]; then
-                mkdir -p $TEMP$ICON_LOC$RES/apps
-                cp "$PROJECT_DIR"/"$ICON_DIR"/"$ICON" $TEMP$ICON_LOC$RES/apps/"$PACKAGE_NAME".$EXT
-                chmod 0644 $TEMP$ICON_LOC$RES/apps/"$PACKAGE_NAME".$EXT
+                mkdir -p $ICON_LOC/$RES/apps
+                cp "$PROJECT_DIR"/"$ICON_DIR"/"$ICON" $ICON_LOC/$RES/apps/${PACKAGE_NAME}.$EXT
+                chmod 0644 $ICON_LOC/$RES/apps/${PACKAGE_NAME}.$EXT
             fi
         fi
     done
@@ -142,15 +143,15 @@ fi
 
 cd $TEMP
 for line in $(find usr/ -type f); do
-    md5sum $line >> $TEMP/DEBIAN/md5sums
+    md5sum "$line" >> $TEMP/DEBIAN/md5sums
 done
 chmod 0644 $TEMP/DEBIAN/md5sums
 
 for line in $(find usr/ -type d); do
-    chmod 0755 $line
+    chmod 0755 "$line"
 done
 
-fakeroot dpkg-deb -b $TEMP "$RELEASE_DIR"/"$PACKAGE_NAME"-"$PACKAGE_VERSION"_all.deb
+fakeroot dpkg-deb -b $TEMP "$RELEASE_DIR"/$PACKAGE_NAME-${PACKAGE_VERSION}_all.deb
 cd "$RELEASE_DIR"
 rm -rf $TEMP
 
