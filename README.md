@@ -96,6 +96,12 @@ it will automatically detect which version your project uses.
 #### ANDROID
 Note that every argument passed to the options should be alphanumerical,
 with eventual underscores (i.e. [a-zA-Z0-9\_]), otherwise you'll get errors.  
+`--apk-icon`            Path to a single folder where icons are stored.
+                        The script will first look up for filename that contains
+                        `42x42`, `72x72`, `96x96` or `144x144`.
+                        It will then search the icon directory for subdirectories like
+                        `drawable-mdpi`, `drawable-hdpi`, `drawable-xhdpi` and `drawable-xxhdpi`
+                        to find an `ic_launcher.png` image.  
 `--activity`            The name of the class that extends GameActivity.
                         By default it is the name of the project with ‘Activity’ appended,
                         eventual spaces and dashes replaced by underscores.  
@@ -103,7 +109,7 @@ with eventual underscores (i.e. [a-zA-Z0-9\_]), otherwise you'll get errors.
                         It must be only alphanumerical characters, with eventual underscores.  
 `--apk-package-name`    Set the name of the package.
                         By default, it is the name of your project, with eventual spaces replaced by underscores.  
-`--apk-package-version` Set the version of your package.   
+`--apk-package-version` Set the version of your package.  
 `--update-android`      Update the love-android-sdl2.git repository used in the cache.  
 
 #### OTHERS

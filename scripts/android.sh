@@ -19,6 +19,11 @@ if [ "$CONFIG" = true ]; then
     if [ -n "${INI__android__maintainer_name}" ]; then
         MAINTAINER_NAME=${INI__android__maintainer_name}
     fi
+    if [ -n "${INI__android__icon}" ]; then
+        IFS=$'\n'
+        ICON_DIR=${INI__android__icon}
+        ICON_FILES=( $(ls -AC1 "$ICON_DIR") )
+    fi
 fi
 
 
@@ -28,6 +33,10 @@ do
     if [ "$OPTOPT" = "activity" ]; then
         ACTIVITY=$OPTARG
         activity_defined_argument=true
+    elif [ "$OPTOPT" = "apk-icon" ]; then
+        IFS=$'\n'
+        ICON_DIR=$OPTARG
+        ICON_FILES=( $(ls -AC1 "$ICON_DIR") )
     elif [ "$OPTOPT" = "apk-package-version" ]; then
         PACKAGE_VERSION=$OPTARG
     elif [ "$OPTOPT" = "apk-maintainer-name" ]; then
@@ -91,29 +100,72 @@ ANDROID_VERSION=$(grep -Eo -m 1 "[0-9]+.[0-9]+.[0-9]+[a-z]*" "$LOVE_ANDROID_DIR"
 ANDROID_LOVE_VERSION=$(echo "$ANDROID_VERSION" | grep -Eo "[0-9]+.[0-9]+.[0-9]+")
 
 if [ "$LOVE_VERSION" != "$ANDROID_LOVE_VERSION" ]; then
-    echo "Love version ($LOVE_VERSION) differs from love-android-sdl2 version ($ANDROID_LOVE_VERSION). Could not create package."
-
-else
-    mkdir -p "$LOVE_ANDROID_DIR"/assets
-    cp "$LOVE_FILE" "$LOVE_ANDROID_DIR"/assets/game.love
-    cd "$LOVE_ANDROID_DIR"
-    sed -i "s/org.love2d.android/com.${MAINTAINER_NAME}.${PACKAGE_NAME}/" AndroidManifest.xml
-    sed -i "s/$ANDROID_VERSION/${ANDROID_VERSION}-${PACKAGE_NAME}-v${PACKAGE_VERSION}/" AndroidManifest.xml
-    sed -i "0,/LÖVE for Android/s//$PROJECT_NAME $PACKAGE_VERSION/" AndroidManifest.xml
-    sed -i "s/LÖVE for Android/$PROJECT_NAME/" AndroidManifest.xml
-    sed -i "s/GameActivity/$ACTIVITY/" AndroidManifest.xml
-
-    mkdir -p src/com/$MAINTAINER_NAME/$PACKAGE_NAME
-    echo "package com.${MAINTAINER_NAME}.${PACKAGE_NAME};
-    import org.love2d.android.GameActivity;
-
-    public class $ACTIVITY extends GameActivity {}
-    " > src/com/$MAINTAINER_NAME/$PACKAGE_NAME/${ACTIVITY}.java
-
-    ant debug
-    cp bin/love_android_sdl2-debug.apk "$RELEASE_DIR"
-    cd "$RELEASE_DIR"
+    exit_module 1 "Love version ($LOVE_VERSION) differs from love-android-sdl2 version ($ANDROID_LOVE_VERSION). Could not create package."
 fi
+
+mkdir -p "$LOVE_ANDROID_DIR"/assets
+cp "$LOVE_FILE" "$LOVE_ANDROID_DIR"/assets/game.love
+cd "$LOVE_ANDROID_DIR"
+sed -i "s/org.love2d.android/com.${MAINTAINER_NAME}.${PACKAGE_NAME}/" AndroidManifest.xml
+sed -i "s/$ANDROID_VERSION/${ANDROID_VERSION}-${PACKAGE_NAME}-v${PACKAGE_VERSION}/" AndroidManifest.xml
+sed -i "0,/LÖVE for Android/s//$PROJECT_NAME $PACKAGE_VERSION/" AndroidManifest.xml
+sed -i "s/LÖVE for Android/$PROJECT_NAME/" AndroidManifest.xml
+sed -i "s/GameActivity/$ACTIVITY/" AndroidManifest.xml
+
+mkdir -p src/com/$MAINTAINER_NAME/$PACKAGE_NAME
+echo "package com.${MAINTAINER_NAME}.${PACKAGE_NAME};
+import org.love2d.android.GameActivity;
+
+public class $ACTIVITY extends GameActivity {}
+" > src/com/$MAINTAINER_NAME/$PACKAGE_NAME/${ACTIVITY}.java
+
+if [ -n "$ICON_DIR" ]; then
+    for ICON in "${ICON_FILES[@]}"
+    do
+        RES=$(echo "$ICON" | grep -Eo "[0-9]+x[0-9]+")
+        EXT=$(echo "$ICON" | sed -e 's/.*\.//g')
+        if [ "$RES" = "42x42" ]; then
+            cp "$PROJECT_DIR"/"$ICON_DIR"/"$ICON" \
+                "$LOVE_ANDROID_DIR"/res/drawable-mdpi/ic_launcher.png
+            echo "HERE"
+        elif [ "$RES" = "72x72" ]; then
+            cp "$PROJECT_DIR"/"$ICON_DIR"/"$ICON" \
+                "$LOVE_ANDROID_DIR"/res/drawable-hdpi/ic_launcher.png
+        elif [ "$RES" = "96x96" ]; then
+            cp "$PROJECT_DIR"/"$ICON_DIR"/"$ICON" \
+                "$LOVE_ANDROID_DIR"/res/drawable-xhdpi/ic_launcher.png
+        elif [ "$RES" = "144x144" ]; then
+            cp "$PROJECT_DIR"/"$ICON_DIR"/"$ICON" \
+                "$LOVE_ANDROID_DIR"/res/drawable-xxhdpi/ic_launcher.png
+        fi
+    done
+    if [ -f "$PROJECT_DIR/$ICON_DIR/drawable-mdpi/ic_launcher.png" ]; then
+        cp "$PROJECT_DIR"/"$ICON_DIR"/drawable-mdpi/ic_launcher.png \
+            "$LOVE_ANDROID_DIR"/res/drawable-mdpi/ic_launcher.png
+    fi
+    if [ -f "$PROJECT_DIR/$ICON_DIR/drawable-hdpi/ic_launcher.png" ]; then
+        cp "$PROJECT_DIR"/"$ICON_DIR"/drawable-hdpi/ic_launcher.png \
+            "$LOVE_ANDROID_DIR"/res/drawable-hdpi/ic_launcher.png
+        echo "THERE"
+    fi
+    if [ -f "$PROJECT_DIR/$ICON_DIR/drawable-xhdpi/ic_launcher.png" ]; then
+        cp "$PROJECT_DIR"/"$ICON_DIR"/drawable-xhdpi/ic_launcher.png \
+            "$LOVE_ANDROID_DIR"/res/drawable-xhdpi/ic_launcher.png
+    fi
+    if [ -f "$PROJECT_DIR/$ICON_DIR/drawable-xxhdpi/ic_launcher.png" ]; then
+        cp "$PROJECT_DIR"/"$ICON_DIR"/drawable-xxhdpi/ic_launcher.png \
+            "$LOVE_ANDROID_DIR"/res/drawable-xxhdpi/ic_launcher.png
+    fi    
+fi
+
+
+
+
+ant debug
+cp bin/love_android_sdl2-debug.apk "$RELEASE_DIR"
+git checkout -- .
+rm -rf src/com bin gen
+cd "$RELEASE_DIR"
 
 
 unset ACTIVITY PACKAGE_NAME PACKAGE_VERSION MAINTAINER_NAME

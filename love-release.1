@@ -121,6 +121,14 @@ Set the version of your package.
 Note that every argument passed to the options should be alphanumerical,
 with eventual underscores (i.e. [a-zA-Z0-9_]), otherwise you'll get errors.
 .TP
+.B \-\-apk\-icon \fIdir\fR
+Path to a single folder where icons are stored.
+The script will first look up for filename that contains
+\fI42x42\fR, \fI72x72\fR, \fI96x96\fR or \fI144x144\fR.
+It will then search the icon directory for subdirectories like
+\fIdrawable-mdpi\fR, \fIdrawable-hdpi\fR, \fIdrawable-xhdpi\fR and \fIdrawable-xxhdpi\fR
+to find an \fIic_launcher.png\fR image.
+.TP
 .B \-\-activity \fIactivity\fR
 The name of the class that extends GameActivity.
 By default it is the name of the project with 'Activity' appended,
