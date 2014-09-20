@@ -67,8 +67,9 @@ if [ "$RELEASE_WIN_32" = true ]; then
 
     cat love-$LOVE_VERSION-win32/love.exe "$LOVE_FILE" > love-$LOVE_VERSION-win32/"$PROJECT_NAME".exe
     rm love-$LOVE_VERSION-win32/love.exe
-    zip -9 -qr "$PROJECT_NAME"-win32.zip love-$LOVE_VERSION-win32
-    rm -rf love-$LOVE_VERSION-win32.zip love-$LOVE_VERSION-win32
+    mv love-$LOVE_VERSION-win32 "$PROJECT_NAME"-win32
+    zip -9 -qr "$PROJECT_NAME"-win32.zip "$PROJECT_NAME"-win32
+    rm -rf love-$LOVE_VERSION-win32.zip "$PROJECT_NAME"-win32
 fi
 
 ## Windows 64-bits ##
@@ -99,8 +100,9 @@ if [ "$RELEASE_WIN_64" = true ] && [ "$LOVE_GT_080" = true ]; then
 
     cat love-$LOVE_VERSION-win64/love.exe "$LOVE_FILE" > love-$LOVE_VERSION-win64/"$PROJECT_NAME".exe
     rm love-$LOVE_VERSION-win64/love.exe
-    zip -9 -qr "$PROJECT_NAME"-win64.zip love-$LOVE_VERSION-win64
-    rm -rf love-$LOVE_VERSION-win64.zip love-$LOVE_VERSION-win64
+    mv love-$LOVE_VERSION-win64 "$PROJECT_NAME"-win64
+    zip -9 -qr "$PROJECT_NAME"-win64.zip "$PROJECT_NAME"-win64
+    rm -rf love-$LOVE_VERSION-win64.zip "$PROJECT_NAME"-win64
 fi
 
 

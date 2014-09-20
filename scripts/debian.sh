@@ -19,9 +19,7 @@ if [ "$CONFIG" =  true ]; then
         PACKAGE_NAME=${INI__debian__package_name}
     fi
     if [ -n "${INI__debian__icon}" ]; then
-        IFS=$'\n'
         ICON_DIR=${INI__debian__icon}
-        ICON_FILES=( $(ls -AC1 "$ICON_DIR") )
     fi
 fi
 
@@ -39,9 +37,7 @@ do
         PACKAGE_NAME=$OPTARG
         package_name_defined_argument=true
     elif [ "$OPTOPT" = "deb-icon" ]; then
-        IFS=$'\n'
         ICON_DIR=$OPTARG
-        ICON_FILES=( $(ls -AC1 "$ICON_DIR") )
     fi
 done
 
@@ -113,13 +109,23 @@ BIN_LOC=$TEMP/usr/bin
 mkdir -p $BIN_LOC
 echo "#!/usr/bin/env bash" >  $BIN_LOC/$PACKAGE_NAME
 echo "set -e"              >> $BIN_LOC/$PACKAGE_NAME
-echo "love $PACKAGE_DIR/$PACKAGE_LOC" >> $BIN_LOC/$PACKAGE_NAME
+echo "love /usr/share/games/$PACKAGE_NAME/$PACKAGE_LOC" >> $BIN_LOC/$PACKAGE_NAME
 chmod 0755 $BIN_LOC/$PACKAGE_NAME
 
 ICON_LOC=$TEMP/usr/share/icons/hicolor
 mkdir -p $ICON_LOC
 if [ -n "$ICON_DIR" ]; then
     echo "Icon=$PACKAGE_NAME" >> $DESKTOP
+
+    IFS=$'\n'
+    if [ "${ICON_DIR%?}" = "/" ]; then
+        ICON_DIR=${ICON_DIR: -1}
+    fi
+    if [ "${ICON_DIR:0:1}" != "/" ]; then
+        ICON_DIR=$PROJECT_DIR/$ICON_DIR
+    fi
+    ICON_FILES=( $(ls -AC1 "$ICON_DIR") )
+
     for ICON in "${ICON_FILES[@]}"
     do
         RES=$(echo "$ICON" | grep -Eo "[0-9]+x[0-9]+")

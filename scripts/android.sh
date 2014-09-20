@@ -20,9 +20,7 @@ if [ "$CONFIG" = true ]; then
         MAINTAINER_NAME=${INI__android__maintainer_name}
     fi
     if [ -n "${INI__android__icon}" ]; then
-        IFS=$'\n'
         ICON_DIR=${INI__android__icon}
-        ICON_FILES=( $(ls -AC1 "$ICON_DIR") )
     fi
 fi
 
@@ -30,13 +28,11 @@ fi
 # Options
 while getoptex "$SCRIPT_ARGS" "$@"
 do
-    if [ "$OPTOPT" = "activity" ]; then
+    if [ "$OPTOPT" = "apk-activity" ]; then
         ACTIVITY=$OPTARG
         activity_defined_argument=true
     elif [ "$OPTOPT" = "apk-icon" ]; then
-        IFS=$'\n'
         ICON_DIR=$OPTARG
-        ICON_FILES=( $(ls -AC1 "$ICON_DIR") )
     elif [ "$OPTOPT" = "apk-package-version" ]; then
         PACKAGE_VERSION=$OPTARG
     elif [ "$OPTOPT" = "apk-maintainer-name" ]; then
@@ -120,6 +116,16 @@ public class $ACTIVITY extends GameActivity {}
 " > src/com/$MAINTAINER_NAME/$PACKAGE_NAME/${ACTIVITY}.java
 
 if [ -n "$ICON_DIR" ]; then
+
+    IFS=$'\n'
+    if [ "${ICON_DIR%?}" = "/" ]; then
+        ICON_DIR=${ICON_DIR: -1}
+    fi
+    if [ "${ICON_DIR:0:1}" != "/" ]; then
+        ICON_DIR=$PROJECT_DIR/$ICON_DIR
+    fi
+    ICON_FILES=( $(ls -AC1 "$ICON_DIR") )
+
     for ICON in "${ICON_FILES[@]}"
     do
         RES=$(echo "$ICON" | grep -Eo "[0-9]+x[0-9]+")
@@ -127,7 +133,6 @@ if [ -n "$ICON_DIR" ]; then
         if [ "$RES" = "42x42" ]; then
             cp "$PROJECT_DIR"/"$ICON_DIR"/"$ICON" \
                 "$LOVE_ANDROID_DIR"/res/drawable-mdpi/ic_launcher.png
-            echo "HERE"
         elif [ "$RES" = "72x72" ]; then
             cp "$PROJECT_DIR"/"$ICON_DIR"/"$ICON" \
                 "$LOVE_ANDROID_DIR"/res/drawable-hdpi/ic_launcher.png
@@ -149,7 +154,6 @@ if [ -n "$ICON_DIR" ]; then
     if [ -f "$PROJECT_DIR/$ICON_DIR/drawable-hdpi/ic_launcher.png" ]; then
         cp "$PROJECT_DIR"/"$ICON_DIR"/drawable-hdpi/ic_launcher.png \
             "$LOVE_ANDROID_DIR"/res/drawable-hdpi/ic_launcher.png
-        echo "THERE"
     fi
     if [ -f "$PROJECT_DIR/$ICON_DIR/drawable-xhdpi/ic_launcher.png" ]; then
         cp "$PROJECT_DIR"/"$ICON_DIR"/drawable-xhdpi/ic_launcher.png \
