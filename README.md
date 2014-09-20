@@ -102,6 +102,7 @@ with eventual underscores (i.e. [a-zA-Z0-9\_]), otherwise you'll get errors.
                         It will then search the icon directory for subdirectories like
                         `drawable-mdpi`, `drawable-hdpi`, `drawable-xhdpi` and `drawable-xxhdpi`
                         to find an `ic_launcher.png` image.  
+                        OUYA icon (size `732x412`, or `drawable-xhdpi/ouya_icon.png`) is supported.  
 `--activity`            The name of the class that extends GameActivity.
                         By default it is the name of the project with ‘Activity’ appended,
                         eventual spaces and dashes replaced by underscores.  
