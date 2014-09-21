@@ -131,40 +131,40 @@ if [ -n "$ICON_DIR" ]; then
         RES=$(echo "$ICON" | grep -Eo "[0-9]+x[0-9]+")
         EXT=$(echo "$ICON" | sed -e 's/.*\.//g')
         if [ "$RES" = "42x42" ]; then
-            cp "$PROJECT_DIR"/"$ICON_DIR"/"$ICON" \
+            cp "$ICON_DIR"/"$ICON" \
                 "$LOVE_ANDROID_DIR"/res/drawable-mdpi/ic_launcher.png
         elif [ "$RES" = "72x72" ]; then
-            cp "$PROJECT_DIR"/"$ICON_DIR"/"$ICON" \
+            cp "$ICON_DIR"/"$ICON" \
                 "$LOVE_ANDROID_DIR"/res/drawable-hdpi/ic_launcher.png
         elif [ "$RES" = "96x96" ]; then
-            cp "$PROJECT_DIR"/"$ICON_DIR"/"$ICON" \
+            cp "$ICON_DIR"/"$ICON" \
                 "$LOVE_ANDROID_DIR"/res/drawable-xhdpi/ic_launcher.png
         elif [ "$RES" = "144x144" ]; then
-            cp "$PROJECT_DIR"/"$ICON_DIR"/"$ICON" \
+            cp "$ICON_DIR"/"$ICON" \
                 "$LOVE_ANDROID_DIR"/res/drawable-xxhdpi/ic_launcher.png
         elif [ "$RES" = "732x412" ]; then
-            cp "$PROJECT_DIR"/"$ICON_DIR"/"$ICON" \
+            cp "$ICON_DIR"/"$ICON" \
                 "$LOVE_ANDROID_DIR"/res/drawable-xhdpi/ouya_icon.png
         fi
     done
     if [ -f "$PROJECT_DIR/$ICON_DIR/drawable-mdpi/ic_launcher.png" ]; then
-        cp "$PROJECT_DIR"/"$ICON_DIR"/drawable-mdpi/ic_launcher.png \
+        cp "$ICON_DIR"/drawable-mdpi/ic_launcher.png \
             "$LOVE_ANDROID_DIR"/res/drawable-mdpi/ic_launcher.png
     fi
     if [ -f "$PROJECT_DIR/$ICON_DIR/drawable-hdpi/ic_launcher.png" ]; then
-        cp "$PROJECT_DIR"/"$ICON_DIR"/drawable-hdpi/ic_launcher.png \
+        cp "$ICON_DIR"/drawable-hdpi/ic_launcher.png \
             "$LOVE_ANDROID_DIR"/res/drawable-hdpi/ic_launcher.png
     fi
     if [ -f "$PROJECT_DIR/$ICON_DIR/drawable-xhdpi/ic_launcher.png" ]; then
-        cp "$PROJECT_DIR"/"$ICON_DIR"/drawable-xhdpi/ic_launcher.png \
+        cp "$ICON_DIR"/drawable-xhdpi/ic_launcher.png \
             "$LOVE_ANDROID_DIR"/res/drawable-xhdpi/ic_launcher.png
     fi
     if [ -f "$PROJECT_DIR/$ICON_DIR/drawable-xxhdpi/ic_launcher.png" ]; then
-        cp "$PROJECT_DIR"/"$ICON_DIR"/drawable-xxhdpi/ic_launcher.png \
+        cp "$ICON_DIR"/drawable-xxhdpi/ic_launcher.png \
             "$LOVE_ANDROID_DIR"/res/drawable-xxhdpi/ic_launcher.png
     fi
     if [ -f "$PROJECT_DIR/$ICON_DIR/drawable-xhdpi/ouya_icon.png" ]; then
-        cp "$PROJECT_DIR"/"$ICON_DIR"/drawable-xhdpi/ouya_icon.png \
+        cp "$ICON_DIR"/drawable-xhdpi/ouya_icon.png \
             "$LOVE_ANDROID_DIR"/res/drawable-xhdpi/ouya_icon.png
     fi
 fi

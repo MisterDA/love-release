@@ -132,12 +132,12 @@ if [ -n "$ICON_DIR" ]; then
         EXT=$(echo "$ICON" | sed -e 's/.*\.//g')
         if [ "$EXT" = "svg" ]; then
             mkdir -p $ICON_LOC/scalable/apps
-            cp "$PROJECT_DIR"/"$ICON_DIR"/"$ICON" $ICON_LOC/scalable/apps/${PACKAGE_NAME}.$EXT
+            cp "$ICON_DIR"/"$ICON" $ICON_LOC/scalable/apps/${PACKAGE_NAME}.$EXT
             chmod 0644 $ICON_LOC/scalable/apps/${PACKAGE_NAME}.$EXT
         else
             if [ -n "$RES" ]; then
                 mkdir -p $ICON_LOC/$RES/apps
-                cp "$PROJECT_DIR"/"$ICON_DIR"/"$ICON" $ICON_LOC/$RES/apps/${PACKAGE_NAME}.$EXT
+                cp "$ICON_DIR"/"$ICON" $ICON_LOC/$RES/apps/${PACKAGE_NAME}.$EXT
                 chmod 0644 $ICON_LOC/$RES/apps/${PACKAGE_NAME}.$EXT
             fi
         fi
