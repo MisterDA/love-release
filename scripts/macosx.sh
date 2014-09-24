@@ -124,7 +124,7 @@ if [ "$LOVE_GT_090" = true ]; then
 
     echo "$INFO_PLIST" > "$PROJECT_NAME".app/Contents/Info.plist
 
-    zip -9 -qr "$PROJECT_NAME"-macosx-x64.zip "$PROJECT_NAME".app
+    zip -9 -qyr "$PROJECT_NAME"-macosx-x64.zip "$PROJECT_NAME".app
     rm -rf love-$LOVE_VERSION-macosx-x64.zip "$PROJECT_NAME".app __MACOSX
 
     ## MacOS 32-bits ##
@@ -143,7 +143,7 @@ else
 
     echo "$INFO_PLIST" > "$PROJECT_NAME".app/Contents/Info.plist
 
-    zip -9 -qr "$PROJECT_NAME"-macosx-ub.zip "$PROJECT_NAME".app
+    zip -9 -qyr "$PROJECT_NAME"-macosx-ub.zip "$PROJECT_NAME".app
     rm -rf love-$LOVE_VERSION-macosx-ub.zip "$PROJECT_NAME".app __MACOSX
 fi
 

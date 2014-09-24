@@ -18,5 +18,5 @@ _love-release()
         return 0
     fi
 }
-complete -F _love-release love-release
+complete -f -F _love-release love-release
 
