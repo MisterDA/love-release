@@ -7,7 +7,7 @@ _love-release()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
     opts="-l"
-    opts="$opts -w --win-icon"
+    opts="$opts -w --win-icon --win-package-version --win-maintainer-name --win-package-name --win-appid --win-installer"
     opts="$opts -d --deb-icon --deb-package-version --deb-maintainer-name --maintainer-email --deb-package-name"
     opts="$opts -a --apk-icon --apk-activity --apk-package-version --apk-maintainer-name --apk-package-name --update-android"
     opts="$opts -m --osx-icon --osx-maintainer-name"

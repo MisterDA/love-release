@@ -35,7 +35,6 @@ do
         MAINTAINER_EMAIL=$OPTARG
     elif [ "$OPTOPT" = "deb-package-name" ]; then
         PACKAGE_NAME=$OPTARG
-        package_name_defined_argument=true
     elif [ "$OPTOPT" = "deb-icon" ]; then
         ICON_DIR=$OPTARG
     fi

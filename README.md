@@ -74,7 +74,20 @@ it will automatically detect which version your project uses.
 `--homepage`         Set the homepage of your project.
 
 #### WINDOWS
-`--win-icon`    Path to an ico file to use.
+You can create an installer. If you don’t, you will have zip of a folder
+containing your game executable and its dlls.
+Creating installers and using icons require [Wine](http://www.winehq.org/) to be installed.  
+`--win-icon`    Path to an ico file to use.  
+`--win-installer`   Create an installer with [Inno Setup](http://www.jrsoftware.org/isinfo.php).
+`--win-appid`       Your game ID. You can use a GUID/UUID and generate one with `uuidgen`.
+                    It should remain the same between updates.
+                    Mandatory if using an installer, not needed for a simple zip.  
+`--win-maintainer-name`     Set the maintainer’s name.
+                            Mandatory if using an installer, not needed for a simple zip.  
+`--win-package-name`
+                            Mandatory if using an installer, not needed for a simple zip.  
+`--win-package-version`     Set the version of your package.  
+                            Mandatory if using an installer, not needed for a simple zip.  
 
 #### MAC OS X
 `--osx-icon`               Path to an icns file to use.  

@@ -85,9 +85,32 @@ Set the description of your project.
 .B \-\-homepage \fIurl\fR
 Set the homepage of your project.
 .SH WINDOWS
+You can create an installer. If you don’t, you will have zip of a folder
+containing your game executable and its dlls.
+Creating installers and using icons require Wine to be installed.
 .TP
 .B \-\-win\-icon \fIicon\fR
 Path to an ico file to use.
+.TP
+.B \-\-win\-installer
+Create an installer with Inno Setup.
+.TP
+.B \-\-win\-appid \fIid\fR
+Your game ID. You can use a GUID/UUID and generate one with \fIuuigen\fR.
+It should remain the same between updates.
+Mandatory if using an installer, not needed for a simple zip.
+.TP
+.B \-\-win\-maintainer\-name \fIname\fR
+Set the maintainer’s name.
+Mandatory if using an installer, not needed for a simple zip.
+.TP
+.B \-\-win\-package\-name \fIname\fR
+Set the name of the package.
+Mandatory if using an installer, not needed for a simple zip.
+.TP
+.B \-\-win\-package\-version \fIversion\fR
+Set the version of your package.
+Mandatory if using an installer, not needed for a simple zip.
 .SH MAC OS X
 .TP
 .B \-\-osx\-icon \fIicon\fR

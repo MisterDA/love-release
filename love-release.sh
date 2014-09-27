@@ -17,7 +17,7 @@ LOVE_VERSION=0.9.1
 SCRIPT_ARGS="l;"
 
 ## Windows
-SCRIPT_ARGS="w. win-icon: $SCRIPT_ARGS"
+SCRIPT_ARGS="w. win-icon: win-package-version: win-maintainer-name: win-package-name: win-appid: win-installer; $SCRIPT_ARGS"
 
 ## Debian
 SCRIPT_ARGS="d; deb-icon: deb-package-version: deb-maintainer-name: maintainer-email: deb-package-name: $SCRIPT_ARGS"
