@@ -88,6 +88,8 @@ Set the homepage of your project.
 You can create an installer. If you don’t, you will have zip of a folder
 containing your game executable and its dlls.
 Creating installers and using icons require Wine to be installed.
+When the script installs Resource Hacker or Inno Setup, an install wizard GUI will appear.
+Please let everything as is, do not uncheck checkboxes or replace installation directory.
 .TP
 .B \-\-win\-icon \fIicon\fR
 Path to an ico file to use.
@@ -185,7 +187,7 @@ See \fIconfig.ini\fR.
 The script is modular.
 Each different platform is handled by a subscript stored in \fIscripts\fR.
 If you'd like to add the support of another platform,
-or your own build script, see \fIscripts/example.sh\fR.
+or write your own build script, see \fIscripts/example.sh\fR.
 .SH ICONS
 The script doesn’t yet handle the process of creating icons,
 but if provided it can use them.

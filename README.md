@@ -76,17 +76,19 @@ it will automatically detect which version your project uses.
 #### WINDOWS
 You can create an installer. If you don’t, you will have zip of a folder
 containing your game executable and its dlls.
-Creating installers and using icons require [Wine](http://www.winehq.org/) to be installed.  
+Creating installers and using icons require [Wine](http://www.winehq.org/) to be installed.
+When the script installs Resource Hacker or Inno Setup, an install wizard GUI will appear.
+Please let everything as is, do not uncheck checkboxes or replace installation directory.  
 `--win-icon`    Path to an ico file to use.  
-`--win-installer`   Create an installer with [Inno Setup](http://www.jrsoftware.org/isinfo.php).
+`--win-installer`   Create an installer with [Inno Setup](http://www.jrsoftware.org/isinfo.php).  
 `--win-appid`       Your game ID. You can use a GUID/UUID and generate one with `uuidgen`.
                     It should remain the same between updates.
                     Mandatory if using an installer, not needed for a simple zip.  
 `--win-maintainer-name`     Set the maintainer’s name.
                             Mandatory if using an installer, not needed for a simple zip.  
-`--win-package-name`
+`--win-package-name`        Set the name of your package.
                             Mandatory if using an installer, not needed for a simple zip.  
-`--win-package-version`     Set the version of your package.  
+`--win-package-version`     Set the version of your package.
                             Mandatory if using an installer, not needed for a simple zip.  
 
 #### MAC OS X
@@ -137,7 +139,7 @@ with eventual underscores (i.e. [a-zA-Z0-9\_]), otherwise you'll get errors.
 The script is modular.
 Each different platform is handled by a subscript stored in `scripts`.
 If you’d like to add the support of another platform,
-or your own build script, see `scripts/example.sh`.
+or write your own build script, see `scripts/example.sh`.
 
 #### ICONS
 The script doesn’t yet handle the process of creating icons,
