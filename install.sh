@@ -1,16 +1,35 @@
 #!/usr/bin/env bash
 
-if [ $UID -ne 0 ]; then
-    echo "This script must be run as root, or you can change the installation directories by editing it." >&2
-    exit 1
+if [ $UID -eq 0 ]; then
+    read -n 1 -p "Do you wish to install love-release system-wide ? [Y/n]: " yn
+    case $yn in
+        [Yy]*|"" ) echo;;
+        * ) echo -e "\nInstallation aborted."; exit;;
+    esac
+
+    echo "Installing..."
+    BINARY_DIR=/usr/bin
+    INSTALL_DIR=/usr/share/love-release
+    MANPAGE_DIR=/usr/share/man/man1
+    COMPLETION_DIR=$(pkg-config --variable=completionsdir bash-completion)
+else
+    read -n 1 -p "Do you wish to install love-release in your user directory ? [Y/n]: " yn
+    case $yn in
+        [Yy]*|"" ) echo;;
+        * ) echo -e "\nInstallation aborted."; exit;;
+    esac
+
+    echo "Installing..."
+    BINARY_DIR="$HOME"/bin
+    INSTALL_DIR="$HOME"/.local/share/love-release
+    MANPAGE_DIR="$HOME"/.local/share/man/man1
+    COMPLETION_DIR="$HOME"/.bash_completion
+
+    echo "Add these lines to your shell rc file:"
+    echo "    export PATH=\"$BINARY_DIR:\$PATH\""
+    echo "    export MANPATH=\"$MANPAGE_DIR:\""
 fi
 
-echo "Installing..."
-
-BINARY_DIR=/usr/bin
-INSTALL_DIR=/usr/share/love-release
-MANPAGE_DIR=/usr/share/man/man1
-COMPLETION_DIR=/etc/bash_completion.d
 
 SED_ARG=$(echo "$INSTALL_DIR" | sed -e 's/[\/&]/\\&/g')
 mkdir -p "$BINARY_DIR"

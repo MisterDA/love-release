@@ -2,10 +2,13 @@
 `love-release.sh` -- Bash script to generate Love 2D game releases
 
 ### INSTALLATION
-Clone and run as root `install.sh`, or edit `install.sh` to choose
-locations in user-space.  
-Close and reopen your terminal to make completion available, or execute :  
-`. /etc/bash_completion.d/love-release`
+    git clone https://github.com/MisterDA/love-release.git
+    cd love-release
+
+    # Install system-wide
+    sudo ./install.sh
+    # Install in user space
+    ./install.sh
 
 ### SYNOPSIS
 `love-release.sh [-adlmw] [-n project_name] [-r release_dir] [-v love_version] [FILES...]`
