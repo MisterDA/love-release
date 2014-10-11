@@ -84,12 +84,36 @@ dir_escape () {
     echo "$dir"
 }
 
+# Get user confirmation, simple Yes/No question
+# $1: message, usually just a question
+# $2: default choice, 0 - no; 1 - yes, default - yes
+# return: true - yes, false - no
+get_user_confirmation () {
+    if [ "$2" = "0" ]; then
+        read -n 1 -p "$1 [y/N]: " yn
+        default=false
+    else
+        read -n 1 -p "$1 [Y/n]: " yn
+        default=true
+    fi
+    case $yn in
+        [Yy]* )
+            echo "true"; echo >> "$(tty)";;
+        [Nn]* )
+            echo "false"; echo >> "$(tty)";;
+        "" )
+            echo "$default";;
+        * )
+            echo "$default"; echo >> "$(tty)";;
+    esac
+}
+
 
 # Love version detection
 if [ "$FOUND_LUA" = true ] && [ -f "conf.lua" ]; then
     LOVE_VERSION_AUTO=$(lua -e 'f = loadfile("conf.lua"); t, love = {window = {}, modules = {}}, {}; f(); love.conf(t); t.version = t.version or ""; print(t.version)')
 else
-    LOVE_VERSION_AUTO=$(grep -Eo -m 1 "t.version = \"[0-9]+.[0-9]+.[0-9]+\"" conf.lua 2> /dev/null |  grep -Eo "[0-9]+.[0-9]+.[0-9]+")
+    LOVE_VERSION_AUTO=$(grep -Eo -m 1 't.version = "[0-9]+.[0-9]+.[0-9]+"' conf.lua 2> /dev/null |  grep -Eo '[0-9]+.[0-9]+.[0-9]+')
 fi
 if [ -n "$LOVE_VERSION_AUTO" ]; then
     LOVE_VERSION=$LOVE_VERSION_AUTO
