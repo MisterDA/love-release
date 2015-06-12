@@ -13,10 +13,9 @@ The script fully supports Windows, MacOS either on x86 or x64,
 Debian and Android packages.
 It needs an Internet connection to download Love files,
 and relies on \fBcurl\fR, \fBzip\fR and \fBunzip\fR commands.
-To set the default Love version to use,
-you can edit the very beginning of the script.
-If \fBlua\fR and a \fIconf.lua\fR file are found,
-it will automatically detect which version your project uses.
+.SH CONFIGURATION
+You can install \fIlua\fR and add a \fIconf.lua\fR to your project to get automatic releases.
+See the \fIconf.lua\fR file included to see how configuration works.
 .SH OPTIONS
 .TP
 .B \-h
@@ -178,11 +177,6 @@ Update the love-android-sdl2.git repository used in the cache.
 .B \-\-clean
 Clean the cache located in \fI~/.cache/love-release\fR.
 One can replace the Love files there.
-.TP
-.B \-\-config \fIfile\fR
-Pass a configuration file as argument.
-It describes which build you want to make, with what options.
-See \fIconfig.ini\fR.
 .SH MODULES
 The script is modular.
 Each different platform is handled by a subscript stored in \fIscripts\fR.

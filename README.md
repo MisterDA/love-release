@@ -2,13 +2,21 @@
 `love-release.sh` -- Bash script to generate Love 2D game releases
 
 ### INSTALLATION
-    git clone https://github.com/MisterDA/love-release.git
-    cd love-release
+First clone the repository, then you have two choices:
+- you can build the script and install it on your system, and benefit of command-line completion, man page and extensibility,
+- or make an embedded version with every thing you need in one file
+Alternatively, you could also change the installation directories by editing the Makefile.
 
-    # Install system-wide
-    sudo ./install.sh
-    # Install in user space
-    ./install.sh
+```shell
+# Install on your system (assumes root rights)
+make
+make install
+
+# All-in-one
+make embedded
+```
+
+To remove love-release, if you haven't changed the default installation directories, run `make remove`.
 
 ### SYNOPSIS
 `love-release.sh [-adlmw] [-n project_name] [-r release_dir] [-v love_version] [FILES...]`
@@ -21,10 +29,10 @@ The script fully supports Windows, MacOS either on x86 or x64,
 Debian and Android packages.  
 It needs an Internet connection to download Love files,
 and relies on `curl`, `zip` and `unzip` commands.  
-To set the default Love version to use,
-you can edit the very beginning of the script.  
-If `lua` and a `conf.lua` file are found,
-it will automatically detect which version your project uses.  
+
+### CONFIGURATION
+You can install `lua` and add a `conf.lua` to your project to get automatic releases.
+See the `conf.lua` file included to see how configuration works.
 
 ### OPTIONS
 `-h`     Print a short help  
@@ -134,9 +142,6 @@ with eventual underscores (i.e. [a-zA-Z0-9\_]), otherwise you'll get errors.
 #### OTHERS
 `--clean`     Clean the cache located in `~/.cache/love-release`.
               One can replace the Love files there.  
-`--config`    Pass a configuration file as argument.
-              It describes which build you want to make, with what options.
-              See `config.ini`.
 
 #### MODULES
 The script is modular.

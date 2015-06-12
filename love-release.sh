@@ -1,74 +1,146 @@
 #!/usr/bin/env bash
 
-
-# Edit this if you want to use another Love version by default
-LOVE_VERSION=0.9.1
-
-
-# Platform-specific scripts registration
-
-## To register your platforms scripts, you have to choose a command name that will trigger your script.
-## It must be followed by:
-## - a semicolon ";" if it doesn't require an argument
-## - a dot "." if it has an optional argument
-## - a colon ":" if it requires an argument
-
-## Love file
-SCRIPT_ARGS="l;"
-
-## Windows
-SCRIPT_ARGS="w. win-icon: win-package-version: win-maintainer-name: win-package-name: win-appid: win-installer; $SCRIPT_ARGS"
-
-## Debian
-SCRIPT_ARGS="d; deb-icon: deb-package-version: deb-maintainer-name: maintainer-email: deb-package-name: $SCRIPT_ARGS"
-
-## Android
-SCRIPT_ARGS="a; apk-icon: apk-activity: apk-package-version: apk-maintainer-name: apk-package-name: update-android; $SCRIPT_ARGS"
-
-## Mac OS X
-SCRIPT_ARGS="m; osx-icon: osx-maintainer-name: $SCRIPT_ARGS"
-
-
-## List the options that require a file/directory that should be excluded by zip.
-EXCLUDE_OPTIONS=("win-icon" "osx-icon" "deb-icon" "apk-icon")
-EXCLUDE_CONFIG=("INI__windows__icon" "INI__macosx__icon" "INI__debian__icon" "INI__android__icon")
-
-
-## Add a short summary of your platform script here
-## SHORT_HELP=" -a    Create an executable for a
-##  --osname    Create an executable for osname"
-SHORT_HELP=" -l    Create a plain Love file
- -a     Create an Android package
- -d    Create a Debian package
- -m    Create a Mac OS X application
- -w,   Create a Windows application
-    -w32  Create a Windows x86 application
-    -w64  Create a Windows x64 application"
-
-## Don't forget to source the corresponding file at the bottom of the script !
+# LÖVE version
+LOVE_DEF_VERSION=0.9.2
 
 
 
-# Test if requirements are installed
-command -v curl  >/dev/null 2>&1 || { echo "curl is not installed. Aborting." >&2; exit 1; }
-command -v zip   >/dev/null 2>&1 || { echo "zip is not installed. Aborting." >&2; exit 1; }
-command -v unzip >/dev/null 2>&1 || { echo "unzip is not installed. Aborting." >&2; exit 1; }
-FOUND_LUA=true
-command -v lua   >/dev/null 2>&1 || { FOUND_LUA=false; }
+# Helper functions
 
-
-# Tests on float numbers
-float_test () {
-    a=$(echo | awk 'END { exit ( !( '"$1"')); }' && echo "true")
-    if [ "$a" != "true" ]; then
-        a=false
+# Dependencies check
+check_deps ()
+{
+    command -v curl  > /dev/null 2>&1 || {
+        echo "curl is not installed. Aborting."
+        local EXIT=true
+    }
+    command -v zip   > /dev/null 2>&1 || {
+        echo "zip is not installed. Aborting."
+        local EXIT=true
+    }
+    command -v unzip > /dev/null 2>&1 || {
+        echo "unzip is not installed. Aborting."
+        local EXIT=true
+    }
+    command -v lua   > /dev/null 2>&1 || {
+        echo "lua is not installed. Install it to ease your releases."
+    } && {
+        LUA=true
+    }
+    if [[ $EXIT == true ]]; then
+        exit 1
     fi
-    echo $a
 }
 
+# Reset script variables
+reset_vars () {
+    TITLE="$(basename $(pwd))"
+    RELEASE_DIR=releases
+    CACHE_DIR=~/.cache/love-release
+}
+
+# Get user confirmation, simple Yes/No question
+## $1: message, usually just a question
+## $2: default choice, 0 - no; 1 - yes, default - yes
+## return: true - yes
+get_user_confirmation () {
+    if [[ $2 == "0" ]]; then
+        read -n 1 -p "$1 [y/N]: " yn
+        local default=false
+    else
+        read -n 1 -p "$1 [Y/n]: " yn
+        local default=true
+    fi
+    case $yn in
+        [Yy]* )
+            echo "true"; echo >> "$(tty)";;
+        [Nn]* )
+            echo "false"; echo >> "$(tty)";;
+        "" )
+            echo "$default";;
+        * )
+            echo "$default"; echo >> "$(tty)";;
+    esac
+}
+
+
+# Generate LÖVE version variables
+## $1: LÖVE version string
+gen_version () {
+    if [[ $1 =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+        LOVE_VERSION=$1
+        LOVE_VERSION_MAJOR=${BASH_REMATCH[1]}
+        LOVE_VERSION_MINOR=${BASH_REMATCH[2]}
+        LOVE_VERSION_REVISION=${BASH_REMATCH[3]}
+    fi
+}
+
+
+# Compare two LÖVE versions
+## $1: First LÖVE version
+## $2: comparison operator
+##     "ge", "le", "gt" "lt"
+##     ">=", "<=", ">", "<"
+## $3: Second LÖVE version
+## return: "true" or "false"
+compare_version () {
+    if [[ $1 =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+        local v1_maj=${BASH_REMATCH[1]}
+        local v1_min=${BASH_REMATCH[2]}
+        local v1_rev=${BASH_REMATCH[3]}
+    else
+        echo "false"
+        return
+    fi
+    if [[ $2 =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+        local v2_maj=${BASH_REMATCH[1]}
+        local v2_min=${BASH_REMATCH[2]}
+        local v2_rev=${BASH_REMATCH[3]}
+    else
+        echo "false"
+        return
+    fi
+
+    case $2 in
+        ge|\>= )
+            if (( $v1_maj >= $v2_maj && $v1_min >= $v2_min && $v1_rev >= $v2_rev )); then
+                echo "true"
+            else
+                echo "false"
+            fi
+            ;;
+        le|\<= )
+            if (( $v1_maj <= $v2_maj && $v1_min <= $v2_min && $v1_rev <= $v2_rev )); then
+                echo "true"
+            else
+                echo "false"
+            fi
+            ;;
+        gt|\> )
+            if (( $v1_maj > $v2_maj || ( $v1_max == $v2_max && $v1_min > $v2_min ) ||
+                ( $v1_max == $v2_max && $v1_min == $v2_min && $v1_rev > $v2_rev ) )); then
+                echo "true"
+            else
+                echo "false"
+            fi
+            ;;
+        lt|\< )
+            if (( $v1_maj > $v2_maj || ( $v1_max == $v2_max && $v1_min > $v2_min ) ||
+                ( $v1_max == $v2_max && $v1_min == $v2_min && $v1_rev > $v2_rev ) )); then
+                echo "true"
+            else
+                echo "false"
+            fi
+            ;;
+    esac
+}
+
+
 # Escape directory name for zip
+## $1: directory path
+## return: escaped directory path
 dir_escape () {
-    dir="$1"
+    local dir="$1"
     if [ -d "$dir" ]; then
         if [ "${dir::1}" != "/" ]; then
             dir="/$dir"
@@ -84,212 +156,131 @@ dir_escape () {
     echo "$dir"
 }
 
-# Get user confirmation, simple Yes/No question
-# $1: message, usually just a question
-# $2: default choice, 0 - no; 1 - yes, default - yes
-# return: true - yes, false - no
-get_user_confirmation () {
-    if [ "$2" = "0" ]; then
-        read -n 1 -p "$1 [y/N]: " yn
-        default=false
-    else
-        read -n 1 -p "$1 [Y/n]: " yn
-        default=true
+
+# Read configuration
+## $1: system name
+read_config () {
+    if [[ $LUA == true ]] && [[ -f "conf.lua" ]]; then
+        local var=$(lua - <<EOF
+f = loadfile("conf.lua")
+t, love = {window = {}, modules = {}, screen = {}}, {}
+f()
+love.conf(t)
+
+-- "love", "windows", "osx", "debian" or "android"
+os = "$OS"
+
+fields = {
+    "identity", "version", "game_version", "icon", "exclude",
+    "title", "author", "email", "url", "description", }
+
+for _, f in ipairs(fields) do
+    t[f] = t[f] or ""
+end
+
+for i in ipairs(t.os) do
+    t.os[os] = {}
+end
+
+if not t.os or #t.os == 0 then t.os.love = {} end
+
+if t.os[os] then
+    print(os:upper()..'=true')
+    for _, f in ipairs(fields) do
+        t.os[os][f] = t.os[os][f] or t[f]
+        if type(t.os[os][f]) == "table" then
+            str = f:upper()..'=('
+            for _, v in ipairs(t.os[os][f]) do
+                str = str..' "'..v..'"'
+            end
+            str = str..' )'
+            print(str)
+        else
+            print(f:upper()..'="'..t.os[os][f]..'"')
+        end
+    end
+else
+    print(os:upper()..'=false')
+end
+
+if os == "windows" then
+    t.os.windows.x86 = t.os.windows.x86 or true
+    t.os.windows.x64 = t.os.windows.x64 or true
+    t.os.windows.installer = t.os.windows.installer or false
+    t.os.windows.appid = t.os.windows.appid or ""
+    print("X86="..tostring(t.os.windows.x86))
+    print("X64="..tostring(t.os.windows.x64))
+    print("INSTALLER="..tostring(t.os.windows.installer))
+    print("APPID="..t.os.windows.appid)
+end
+EOF
+)
+        eval "$var"
+        if [[ $(compare_version "$LOVE_VERSION" ">" "$VERSION") == true ]]; then
+            if [[ $(get_user_confirmation "LÖVE $LOVE_VERSION is out ! Your project uses LÖVE $VERSION. Continue ?") == false ]]; then
+                exit
+            fi
+            gen_version $VERSION
+            unset VERSION
+        fi
     fi
-    case $yn in
-        [Yy]* )
-            echo "true"; echo >> "$(tty)";;
-        [Nn]* )
-            echo "false"; echo >> "$(tty)";;
-        "" )
-            echo "$default";;
-        * )
-            echo "$default"; echo >> "$(tty)";;
-    esac
 }
 
-
-# Love version detection
-if [ "$FOUND_LUA" = true ] && [ -f "conf.lua" ]; then
-    LOVE_VERSION_AUTO=$(lua -e 'f = loadfile("conf.lua"); t, love = {window = {}, modules = {}}, {}; f(); love.conf(t); t.version = t.version or ""; print(t.version)')
-else
-    LOVE_VERSION_AUTO=$(grep -Eo -m 1 't.version = "[0-9]+.[0-9]+.[0-9]+"' conf.lua 2> /dev/null |  grep -Eo '[0-9]+.[0-9]+.[0-9]+')
-fi
-if [ -n "$LOVE_VERSION_AUTO" ]; then
-    LOVE_VERSION=$LOVE_VERSION_AUTO
-fi
-LOVE_VERSION_MAJOR=$(echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*')
-LOVE_GT_080=$(float_test "$LOVE_VERSION_MAJOR >= 0.8")
-LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
-
-
-# Global variables
-ARGS=( "$@" )
-SCRIPT_ARGS="$SCRIPT_ARGS h; n: r: v: x: config: homepage: description: clean help"
-SCRIPT_ARGS=$(printf '%s\n' $SCRIPT_ARGS | sort -u)
-CONFIG=false
-CONFIG_FILE=config.ini
-
-PROJECT_FILES=
-MAIN_EXCLUDE_FILES=
-
-PROJECT_NAME="${PWD##/*/}"
-PROJECT_DIR="$PWD"
-
-RELEASE_DIR="$PWD"/releases
-MAIN_CACHE_DIR=~/.cache/love-release
-INSTALL_DIR=
-PLATFORMS_DIR="$INSTALL_DIR"/scripts
-INCLUDE_DIR="$INSTALL_DIR"/include
-
-if [ -n "$SHORT_HELP" ] && [ "${SHORT_HELP:$((${#SHORT_HELP}-1)):1}" != $'\n' ]; then
-    SHORT_HELP="$SHORT_HELP
-"
-fi
-SHORT_HELP="Usage: love-release.sh [options...] [files...]
-Options:
- -h, --help  Prints short or long help
- -n    Set the projects name
- -r    Set the release directory
- -v    Set the Love version
-$SHORT_HELP"
-
-
-# Read config
-missing_operands=true
-source "$INCLUDE_DIR"/getopt/getopt.sh
-while getoptex "$SCRIPT_ARGS" "$@"
-do
-    if [ "$OPTOPT" = "config" ]; then
-        source "$INCLUDE_DIR"/bash_ini_parser/read_ini.sh
-        missing_operands=false
-        CONFIG_FILE=$OPTARG
-        read_ini "$CONFIG_FILE" || exit 1
-        CONFIG=true
-        SED_ARG=$(echo "$PLATFORMS_DIR" | sed -e 's/[\/&]/\\&/g')
-        PLATFORM_SCRIPTS=$(echo "${INI__ALL_SECTIONS}" | sed -r -e 's/[ ]*global[ ]*//g' -e "s/\<[^ ]+\>/$SED_ARG\/&.sh/g")
-        IFS=" " read -a PLATFORM_SCRIPTS <<< "$PLATFORM_SCRIPTS"
-        if [ -n "${INI__global__release_dir}" ]; then
-            RELEASE_DIR=${INI__global__release_dir}
-        fi
-        if [ -n "${INI__global__love_version}" ]; then
-            LOVE_VERSION=${INI__global__love_version}
-            LOVE_VERSION_MAJOR=$(echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*')
-            LOVE_GT_080=$(float_test "$LOVE_VERSION_MAJOR >= 0.8")
-            LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
-        fi
-        if [ -n "${INI__global__project_name}" ]; then
-            PROJECT_NAME=${INI__global__project_name}
-        fi
-        if [ -n "${INI__global__homepage}" ]; then
-            PROJECT_HOMEPAGE=${INI__global__homepage}
-        fi
-        if [ -n "${INI__global__description}" ]; then
-            PROJECT_DESCRIPTION=${INI__global__description}
-        fi
-        for option in "${EXCLUDE_CONFIG[@]}"
-        do
-            MAIN_EXCLUDE_FILES=$(dir_escape "${!option}") $MAIN_EXCLUDE_FILES
-        done
-    fi
-done
-unset OPTIND
-unset OPTOFS
-
-
-# Parsing options
-while getoptex "$SCRIPT_ARGS" "$@"
-do
-    if [ "$OPTOPT" = "h" ]; then
-        echo "$SHORT_HELP"
-        exit
-    elif [ "$OPTOPT" = "help" ]; then
-        man love-release
-        exit
-    elif [ "$OPTOPT" = "n" ]; then
-        PROJECT_NAME=$OPTARG
-    elif [ "$OPTOPT" = "r" ]; then
-        RELEASE_DIR=$OPTARG
-    elif [ "$OPTOPT" = "v" ]; then
-        LOVE_VERSION=$OPTARG
-        LOVE_VERSION_MAJOR=$(echo "$LOVE_VERSION" | grep -Eo '^[0-9]+\.?[0-9]*')
-        LOVE_GT_080=$(float_test "$LOVE_VERSION_MAJOR >= 0.8")
-        LOVE_GT_090=$(float_test "$LOVE_VERSION_MAJOR >= 0.9")
-    elif [ "$OPTOPT" = "x" ]; then
-        MAIN_EXCLUDE_FILES="$(dir_escape "$OPTARG") $MAIN_EXCLUDE_FILES"
-    elif [ "$OPTOPT" = "homepage" ]; then
-        PROJECT_HOMEPAGE=$OPTARG
-    elif [ "$OPTOPT" = "description" ]; then
-        PROJECT_DESCRIPTION=$OPTARG
-    elif [ "$OPTOPT" = "clean" ]; then
-        missing_operands=false
-        rm -rf "$MAIN_CACHE_DIR"
-    fi
-    for option in "${EXCLUDE_OPTIONS[@]}"
-    do
-        if [ "$OPTOPT" = "$option" ]; then
-            MAIN_EXCLUDE_FILES=$(dir_escape "$OPTARG") $MAIN_EXCLUDE_FILES
-        fi
-    done
-done
-shift $((OPTIND-1))
-for file in "$@"
-do
-    PROJECT_FILES="$PROJECT_FILES $file"
-done
-
-set -- "${ARGS[@]}"
-unset OPTIND
-unset OPTOFS
+dump_var () {
+    echo "LOVE_VERSION=$LOVE_VERSION"
+    echo "LOVE_DEF_VERSION=$LOVE_DEF_VERSION"
+    echo "LOVE_WEB_VERSION=$LOVE_WEB_VERSION"
+    echo
+    echo "IDENTITY=$IDENTITY"
+    echo "GAME_VERSION=$GAME_VERSION"
+    echo "ICON=$ICON"
+    echo
+    echo "TITLE=$TITLE"
+    echo "AUTHOR=$AUTHOR"
+    echo "EMAIL=$EMAIL"
+    echo "URL=$URL"
+    echo "DESCRIPTION=$DESCRIPTION"
+}
 
 
 # Modules functions
 ## $1: Module name
-init_module ()
+## return: true if module should be executed
+execute_module ()
 {
-    GLOBAL_OPTIND=$OPTIND
-    GLOBAL_OPTOFS=$OPTOFS
-    unset OPTIND
-    unset OPTOFS
-    EXCLUDE_FILES=$MAIN_EXCLUDE_FILES
-    if [ -z "$MAIN_RELEASE_DIR" ]; then
-        MAIN_RELEASE_DIR=$(cd "$(dirname "$RELEASE_DIR")" && pwd)/$(basename "$RELEASE_DIR")
-        RELEASE_DIR="$MAIN_RELEASE_DIR"/$LOVE_VERSION
-    fi
-    missing_operands=false
-    CACHE_DIR="$MAIN_CACHE_DIR"/$LOVE_VERSION
-    mkdir -p "$RELEASE_DIR" "$CACHE_DIR"
-    rm -rf "$RELEASE_DIR"/"$PROJECT_NAME".love 2> /dev/null
-    echo "Generating $PROJECT_NAME with Love $LOVE_VERSION for $1..."
+    local module="$1"
+    read_config "$module"
+    module=${module^^}
+    echo "${!module}"
 }
 
+# Init module
+init_module ()
+{
+    reset_vars
+    mkdir -p "$RELEASE_DIR"
+    mkdir -p "$CACHE_DIR"/"$LOVE_VERSION"
+    echo "Generating $TITLE with Love $LOVE_VERSION for ${MODULE}..."
+}
+
+# Create the LÖVE file
 ## $1: Compression level 0-9
 create_love_file ()
 {
-    cd "$PROJECT_DIR"
-    rm -rf "$RELEASE_DIR"/"$PROJECT_NAME".love 2> /dev/null
-    if [ -z "$PROJECT_FILES" ]; then
-        zip --filesync -$1 -r "$RELEASE_DIR"/"$PROJECT_NAME".love \
-            -x "$0" "${MAIN_RELEASE_DIR#$PWD/}/*" "$CONFIG_FILE" $MAIN_EXCLUDE_FILES $EXCLUDE_FILES \
-            $(ls -Ap | grep "^\." | sed -e 's/^/\//g' -e 's/\/$/\/*/g') @ \
-            .
-    else
-        zip --filesync -$1 -r "$RELEASE_DIR"/"$PROJECT_NAME".love \
-            -x "$0" "${MAIN_RELEASE_DIR#$PWD/}/*" "$CONFIG_FILE" $MAIN_EXCLUDE_FILES $EXCLUDE_FILES \
-            $(ls -Ap | grep "^\." | sed -e 's/^/\//g' -e 's/\/$/\/*/g') @ \
-            $PROJECT_FILES
-    fi
-    cd "$RELEASE_DIR"
-    LOVE_FILE="$PROJECT_NAME".love
+    LOVE_FILE="$RELEASE_DIR"/"$TITLE".love
+    zip -FS -$1 -r "$LOVE_FILE" \
+        -x "$0" "${RELEASE_DIR#$PWD/}/*" \
+        $(ls -Ap | grep "^\." | sed -e 's/^/\//g' -e 's/\/$/\/*/g') @ \
+        .
 }
 
-## $1: exit code. 0 - success, other - failure
+# Exit module
+## $1: exit code.
+## 0 - success, other - failure
 ## $2: error message
 exit_module ()
 {
-    if [ -z "$1" ] || [ "$1" = "0" ]; then
-        OPTIND=$GLOBAL_OPTIND
-        OPTOFS=$GLOBAL_OPTOFS
+    if [[ -z $1 || "$1" == "0" ]]; then
         echo "Done !"
     else
         echo -e "$2"
@@ -297,58 +288,34 @@ exit_module ()
     fi
 }
 
-if [ "$CONFIG" = true ]; then
-    for script in "${PLATFORM_SCRIPTS[@]}"
-    do
-        source "$script"
-    done
-    exit
+
+
+# Main
+
+check_deps
+
+# Get latest LÖVE version number
+gen_version $LOVE_DEF_VERSION
+LOVE_WEB_VERSION=$(curl -s https://love2d.org/releases.xml | grep -m 2 "<title>" | tail -n 1 | grep -Eo "[0-9]+.[0-9]+.[0-9]+")
+gen_version $LOVE_WEB_VERSION
+
+INSTALLED=false
+EMBEDDED=false
+
+if [[ $INSTALLED == false && $EMBEDDED == false ]]; then
+    >&2 echo "love-release has not been installed, and is not embedded into one script. Consider doing one of the two."
+    INSTALLED=true
 fi
 
-
-
-# Platform-specific scripts registration
-## To register your platforms scripts, test for the option you've specified
-## at the beginning of the script and source the corresponding file.
-## $OPTOPT holds the option and $OPTARG holds the eventual argument passed to it.
-
-## while getoptex "a; osname:" "$@"
-while getoptex "$SCRIPT_ARGS" "$@"
-do
-    :
-##  if [ "$OPTOPT" = "a" ]; then
-##      source "$PLATFORMS_DIR/a-system.sh"
-##  elif [ "$OPTOPT" = "osname" ]; then
-##      OSNAME=$OPTARG
-##      source "$PLATFORMS_DIR/os.sh"
-##  fi
-    if [ "$OPTOPT" = "l" ]; then
-        source "$PLATFORMS_DIR"/love.sh
-    elif [ "$OPTOPT" = "a" ]; then
-        source "$PLATFORMS_DIR"/android.sh
-    elif [ "$OPTOPT" = "d" ]; then
-        source "$PLATFORMS_DIR"/debian.sh
-    elif [ "$OPTOPT" = "m" ]; then
-        source "$PLATFORMS_DIR"/macosx.sh
-    elif [ "$OPTOPT" = "w" ]; then
-        if [ "$OPTARG" = "32" ]; then
-            RELEASE_WIN_32=true
-        elif [ "$OPTARG" = "64" ]; then
-            RELEASE_WIN_64=true
-        else
-            RELEASE_WIN_32=true
-            RELEASE_WIN_64=true
+if [[ $EMBEDDED == true ]]; then
+    : # include_scripts_here
+elif [[ $INSTALLED == true ]]; then
+    SCRIPTS_DIR="scripts"
+    for file in "$SCRIPTS_DIR"/*.sh; do
+        MODULE="$(basename -s '.sh' "$file")"
+        if [[ $(execute_module "$1") == true  ]]; then
+            source "$file"
         fi
-        source "$PLATFORMS_DIR"/windows.sh
-    fi
-done
-
-
-# Missing operands
-if [ "$missing_operands" = true ]; then
-    >&2 echo "./love-release.sh: missing operands.
-love-release.sh [-adlmw] [-n project_name] [-r release_dir] [-v love_version] [FILES...]
-Try 'love-release.sh --help' for more information."
-    exit 1
+    done
 fi
 
