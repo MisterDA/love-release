@@ -4,8 +4,9 @@
 ### INSTALLATION
 First clone the repository, then you have two choices:
 - you can build the script and install it on your system, and benefit of command-line completion, man page and extensibility,
-- or make an embedded version with every thing you need in one file
-Alternatively, you could also change the installation directories by editing the Makefile.
+- or make an embedded version with every thing you need in one file.
+
+Alternatively, you can change the installation directories by editing the Makefile.
 
 ```shell
 # Install on your system (assumes root rights)
