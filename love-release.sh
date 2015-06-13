@@ -251,6 +251,13 @@ execute_module ()
     local module="$1"
     read_config "$module"
     module=${module^^}
+    if [[ ${!module} == true && -z $DEFAULT_MODULE ]]; then
+        if [[ ${module} == "LOVE" ]]; then
+            DEFAULT_MODULE=true
+        else
+            DEFAULT_MODULE=false
+        fi
+    fi
     echo "${!module}"
 }
 
@@ -302,6 +309,8 @@ gen_version $LOVE_WEB_VERSION
 INSTALLED=false
 EMBEDDED=false
 
+DEFAULT_MODULE=
+
 if [[ $INSTALLED == false && $EMBEDDED == false ]]; then
     >&2 echo "love-release has not been installed, and is not embedded into one script. Consider doing one of the two."
     INSTALLED=true
@@ -313,9 +322,16 @@ elif [[ $INSTALLED == true ]]; then
     SCRIPTS_DIR="scripts"
     for file in "$SCRIPTS_DIR"/*.sh; do
         MODULE="$(basename -s '.sh' "$file")"
-        if [[ $(execute_module "$1") == true  ]]; then
+        if [[ $(execute_module "$MODULE") == true  ]]; then
             source "$file"
         fi
     done
+fi
+
+if [[ -z $DEFAULT_MODULE || $DEFAULT_MODULE == true ]]; then
+    MODULE="love"
+    init_module
+    create_love_file 9
+    exit_module
 fi
 
