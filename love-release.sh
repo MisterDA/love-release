@@ -204,9 +204,9 @@ else
 end
 
 if os == "windows" then
-    t.os.windows.x86 = t.os.windows.x86 or true
-    t.os.windows.x64 = t.os.windows.x64 or true
-    t.os.windows.installer = t.os.windows.installer or false
+    t.os.windows.x86 = t.os.windows.x86 and true or false
+    t.os.windows.x64 = t.os.windows.x64 and true or false
+    t.os.windows.installer = t.os.windows.installer and true or false
     t.os.windows.appid = t.os.windows.appid or ""
     print("X86="..tostring(t.os.windows.x86))
     print("X64="..tostring(t.os.windows.x64))
