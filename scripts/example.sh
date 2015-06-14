@@ -1,4 +1,5 @@
 # Example
+return
 
 # This example script should show you how to write a module for love-release.
 

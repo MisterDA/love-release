@@ -1,4 +1,8 @@
 # Android debug package
+if [[ $(execute_module "android") == false ]]; then
+    return
+fi
+
 init_module "Android"
 
 

@@ -1,4 +1,8 @@
 # Windows
+if [[ $(execute_module "windows") == false ]]; then
+    return
+fi
+
 init_module "Windows"
 
 

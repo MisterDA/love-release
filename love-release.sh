@@ -35,6 +35,7 @@ check_deps ()
 # Reset script variables
 reset_vars () {
     TITLE="$(basename $(pwd))"
+    MODULE=
     RELEASE_DIR=releases
     CACHE_DIR=~/.cache/love-release
 }
@@ -168,7 +169,7 @@ f()
 love.conf(t)
 
 -- "love", "windows", "osx", "debian" or "android"
-os = "$OS"
+os = "$1"
 
 fields = {
     "identity", "version", "game_version", "icon", "exclude",
@@ -178,8 +179,8 @@ for _, f in ipairs(fields) do
     t[f] = t[f] or ""
 end
 
-for i in ipairs(t.os) do
-    t.os[os] = {}
+for _, v in ipairs(t.os) do
+    t.os[v] = {}
 end
 
 if not t.os or #t.os == 0 then t.os.love = {} end
@@ -203,7 +204,7 @@ else
     print(os:upper()..'=false')
 end
 
-if os == "windows" then
+if t.os.windows and os == "windows" then
     t.os.windows.x86 = t.os.windows.x86 and true or false
     t.os.windows.x64 = t.os.windows.x64 and true or false
     t.os.windows.installer = t.os.windows.installer and true or false
@@ -231,6 +232,9 @@ dump_var () {
     echo "LOVE_DEF_VERSION=$LOVE_DEF_VERSION"
     echo "LOVE_WEB_VERSION=$LOVE_WEB_VERSION"
     echo
+    echo "RELEASE_DIR=$RELEASE_DIR"
+    echo "CACHE_DIR=$CACHE_DIR"
+    echo
     echo "IDENTITY=$IDENTITY"
     echo "GAME_VERSION=$GAME_VERSION"
     echo "ICON=$ICON"
@@ -244,30 +248,39 @@ dump_var () {
 
 
 # Modules functions
+
+# Test if module should be executed
 ## $1: Module name
 ## return: true if module should be executed
 execute_module ()
 {
+    reset_vars
     local module="$1"
+    MODULE="$module"
     read_config "$module"
     module=${module^^}
-    if [[ ${!module} == true && -z $DEFAULT_MODULE ]]; then
-        if [[ ${module} == "LOVE" ]]; then
-            DEFAULT_MODULE=true
-        else
-            DEFAULT_MODULE=false
+    if [[ ${!module} == true ]]; then
+        if [[ -z $DEFAULT_MODULE ]]; then
+            if [[ ${module} == "LOVE" ]]; then
+                DEFAULT_MODULE=true
+            else
+                DEFAULT_MODULE=false
+            fi
         fi
+    else
+        reset_vars
     fi
     echo "${!module}"
 }
 
 # Init module
+## $1: Pretty module name
 init_module ()
 {
-    reset_vars
+    MODULE="$1"
     mkdir -p "$RELEASE_DIR"
-    mkdir -p "$CACHE_DIR"/"$LOVE_VERSION"
-    echo "Generating $TITLE with Love $LOVE_VERSION for ${MODULE}..."
+    mkdir -p "$CACHE_DIR"
+    echo "Generating $TITLE with LÖVE $LOVE_VERSION for ${MODULE}..."
 }
 
 # Create the LÖVE file
@@ -283,14 +296,19 @@ create_love_file ()
 
 # Exit module
 ## $1: exit code.
-## 0 - success, other - failure
+##  0 - success
+##  1 - binary not found or downloaded
+##  other - failure
 ## $2: error message
 exit_module ()
 {
     if [[ -z $1 || "$1" == "0" ]]; then
         echo "Done !"
+    elif [[ "$1" == "1" ]]; then
+        >&2 echo -e "$2"
+        >&2 echo "LÖVE $LOVE_VERSION could not be found or downloaded."
     else
-        echo -e "$2"
+        >&2 echo -e "$2"
         exit $1
     fi
 }
@@ -321,17 +339,19 @@ if [[ $EMBEDDED == true ]]; then
 elif [[ $INSTALLED == true ]]; then
     SCRIPTS_DIR="scripts"
     for file in "$SCRIPTS_DIR"/*.sh; do
-        MODULE="$(basename -s '.sh' "$file")"
-        if [[ $(execute_module "$MODULE") == true  ]]; then
-            source "$file"
-        fi
+        (source "$file")
     done
 fi
 
 if [[ -z $DEFAULT_MODULE || $DEFAULT_MODULE == true ]]; then
-    MODULE="love"
-    init_module
+    (
+    reset_vars
+    read_config "love"
+    init_module "LÖVE"
     create_love_file 9
     exit_module
+    )
 fi
+
+exit 0
 

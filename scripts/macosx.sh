@@ -1,4 +1,8 @@
 # Mac OS X
+if [[ $(execute_module "osx") == false ]]; then
+    return
+fi
+
 init_module "Mac OS X"
 
 

@@ -11,7 +11,7 @@ SED_INSTALL_DIR=$(shell echo "$(INSTALL_DIR)" | sed -e 's/[\/&]/\\&/g')
 
 love-release: clean
 	mkdir -p $(BUILD_DIR)
-	sed -e 's/INSTALL=false/INSTALL=true/' -e 's/SCRIPTS_DIR="scripts"/SCRIPTS_DIR="$(SED_INSTALL_DIR)\/scripts"/' love-release.sh > '$(BUILD_DIR)/love-release'
+	sed -e 's/INSTALLED=false/INSTALLED=true/' -e 's/SCRIPTS_DIR="scripts"/SCRIPTS_DIR="$(SED_INSTALL_DIR)\/scripts"/' love-release.sh > '$(BUILD_DIR)/love-release'
 	cp love-release.1 '$(BUILD_DIR)/love-release.1'
 	gzip '$(BUILD_DIR)/love-release.1'
 
@@ -26,9 +26,9 @@ install:
 embedded: clean
 	mkdir -p '$(BUILD_DIR)'
 	sed 's/EMBEDDED=false/EMBEDDED=true/' love-release.sh > '$(BUILD_DIR)/love-release.sh'
-	for file in scripts/*; do \
+	for file in scripts/*.sh; do \
 		module="$$(basename -s '.sh' "$$file")"; \
-		content='if [[ $$(execute_module "'"$$module"'") == true ]]; then'$$'\n'"$$(cat $$file)"$$'\n''fi'$$'\n\n'; \
+		content='(source <(cat <<\EndOfModule'$$'\n'"$$(cat $$file)"$$'\n''EndOfModule'$$'\n''))'$$'\n\n'; \
 		echo "$$content" >> "$(BUILD_DIR)/tmp"; \
 	done
 	sed -i.bak -e '/include_scripts_here$$/r $(BUILD_DIR)/tmp' '$(BUILD_DIR)/love-release.sh';
