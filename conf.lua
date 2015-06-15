@@ -18,7 +18,7 @@ function love.conf(t)
     t.os = {
         "love",
         windows = {
-            x86       = true,
+            x32       = true,
             x64       = true,
             installer = false,
             appid     = nil,

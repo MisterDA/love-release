@@ -205,11 +205,11 @@ else
 end
 
 if t.os.windows and os == "windows" then
-    t.os.windows.x86 = t.os.windows.x86 and true or false
+    t.os.windows.x32 = t.os.windows.x32 and true or false
     t.os.windows.x64 = t.os.windows.x64 and true or false
     t.os.windows.installer = t.os.windows.installer and true or false
     t.os.windows.appid = t.os.windows.appid or ""
-    print("X86="..tostring(t.os.windows.x86))
+    print("X32="..tostring(t.os.windows.x32))
     print("X64="..tostring(t.os.windows.x64))
     print("INSTALLER="..tostring(t.os.windows.installer))
     print("APPID="..t.os.windows.appid)
@@ -217,13 +217,6 @@ end
 EOF
 )
         eval "$var"
-        if [[ $(compare_version "$LOVE_VERSION" ">" "$VERSION") == true ]]; then
-            if [[ $(get_user_confirmation "LÖVE $LOVE_VERSION is out ! Your project uses LÖVE $VERSION. Continue ?") == false ]]; then
-                exit
-            fi
-            gen_version $VERSION
-            unset VERSION
-        fi
     fi
 }
 
@@ -256,7 +249,6 @@ execute_module ()
 {
     reset_vars
     local module="$1"
-    MODULE="$module"
     read_config "$module"
     module=${module^^}
     if [[ ${!module} == true ]]; then
@@ -266,6 +258,13 @@ execute_module ()
             else
                 DEFAULT_MODULE=false
             fi
+        fi
+        if [[ $(compare_version "$LOVE_VERSION" ">" "$VERSION") == true ]]; then
+            if [[ $(get_user_confirmation "LÖVE $LOVE_VERSION is out ! Your project uses LÖVE $VERSION. Continue ?") == false ]]; then
+                exit
+            fi
+            gen_version $VERSION
+            unset VERSION
         fi
     else
         reset_vars
