@@ -1,7 +1,5 @@
 # Android debug package
-execute_module "android"
-
-init_module "Android"
+init_module "Android" "android"
 
 
 PACKAGE_NAME=$(echo $PROJECT_NAME | sed -e 's/[^-a-zA-Z0-9_]/-/g' | tr '[:upper:]' '[:lower:]')

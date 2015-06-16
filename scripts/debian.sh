@@ -1,7 +1,5 @@
 # Debian package
-execute_module "debian"
-
-init_module "Debian"
+init_module "Debian" "debian"
 
 
 PACKAGE_NAME=$(echo $PROJECT_NAME | sed -e 's/[^-a-zA-Z0-9_]/-/g' | tr '[:upper:]' '[:lower:]')

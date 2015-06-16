@@ -242,11 +242,12 @@ dump_var () {
 
 # Modules functions
 
-# Test if module should be executed
-## $1: Module name
+# Init module
+## $1: Pretty module name
+## $2: Configuration module name
 ## return: 0 - if module should be executed, else exit 2
-execute_module () {
-    local module="$1"
+init_module () {
+    local module="$2"
     read_config "$module"
     module=${module^^}
     if [[ ${!module} == true ]]; then
@@ -255,19 +256,13 @@ execute_module () {
             gen_version $VERSION
             unset VERSION
         fi
+        MODULE="$1"
+        mkdir -p "$RELEASE_DIR" "$CACHE_DIR"
+        echo "Generating $TITLE with LÖVE $LOVE_VERSION for ${MODULE}..."
         return 0
     else
         exit_module "execute"
     fi
-}
-
-# Init module
-## $1: Pretty module name
-init_module () {
-    MODULE="$1"
-    mkdir -p "$RELEASE_DIR"
-    mkdir -p "$CACHE_DIR"
-    echo "Generating $TITLE with LÖVE $LOVE_VERSION for ${MODULE}..."
 }
 
 # Create the LÖVE file
@@ -339,7 +334,7 @@ fi
 
 
 (
-    (execute_module "love")
+    (init_module "LÖVE" "love")
     if [[ $? -eq 0 || $DEFAULT_MODULE == true ]]; then
         read_config "default"
         init_module "LÖVE"

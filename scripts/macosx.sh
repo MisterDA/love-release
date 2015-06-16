@@ -1,7 +1,5 @@
 # Mac OS X
-execute_module "osx"
-
-init_module "Mac OS X"
+init_module "Mac OS X" "osx"
 
 
 PACKAGE_NAME=$(echo $PROJECT_NAME | sed -e 's/[^-a-zA-Z0-9_]/-/g' | tr '[:upper:]' '[:lower:]')
