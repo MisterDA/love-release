@@ -28,7 +28,7 @@ embedded: clean
 	sed 's/EMBEDDED=false/EMBEDDED=true/' love-release.sh > '$(BUILD_DIR)/love-release.sh'
 	for file in scripts/*.sh; do \
 		module="$$(basename -s '.sh' "$$file")"; \
-		content='(source <(cat <<\EndOfModule'$$'\n'"$$(cat $$file)"$$'\n''EndOfModule'$$'\n''))'$$'\n\n'; \
+		content='(source <(cat <<\EndOfModule'$$'\n'"$$(cat $$file)"$$'\n''EndOfModule'$$'\n''))'$$'\n''default_module'$$'\n\n'; \
 		echo "$$content" >> "$(BUILD_DIR)/tmp"; \
 	done
 	sed -i.bak -e '/include_scripts_here$$/r $(BUILD_DIR)/tmp' '$(BUILD_DIR)/love-release.sh';

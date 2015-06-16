@@ -8,8 +8,7 @@ LOVE_DEF_VERSION=0.9.2
 # Helper functions
 
 # Dependencies check
-check_deps ()
-{
+check_deps () {
     command -v curl  > /dev/null 2>&1 || {
         echo "curl is not installed. Aborting."
         local EXIT=true
@@ -32,35 +31,27 @@ check_deps ()
     fi
 }
 
-# Reset script variables
-reset_vars () {
-    TITLE="$(basename $(pwd))"
-    MODULE=
-    RELEASE_DIR=releases
-    CACHE_DIR=~/.cache/love-release
-}
-
 # Get user confirmation, simple Yes/No question
 ## $1: message, usually just a question
-## $2: default choice, 0 - no; 1 - yes, default - yes
-## return: true - yes
+## $2: default choice, 0 - yes; 1 - no, default - yes
+## return: 0 - yes, 1 - no
 get_user_confirmation () {
-    if [[ $2 == "0" ]]; then
-        read -n 1 -p "$1 [y/N]: " yn
-        local default=false
-    else
+    if [[ -z $2 || $2 == "0" ]]; then
         read -n 1 -p "$1 [Y/n]: " yn
-        local default=true
+        local default=0
+    else
+        read -n 1 -p "$1 [y/N]: " yn
+        local default=1
     fi
     case $yn in
         [Yy]* )
-            echo "true"; echo >> "$(tty)";;
+            echo; return 0;;
         [Nn]* )
-            echo "false"; echo >> "$(tty)";;
+            echo; return 1;;
         "" )
-            echo "$default";;
+            return $default;;
         * )
-            echo "$default"; echo >> "$(tty)";;
+            echo; return $default;;
     esac
 }
 
@@ -83,54 +74,52 @@ gen_version () {
 ##     "ge", "le", "gt" "lt"
 ##     ">=", "<=", ">", "<"
 ## $3: Second LÖVE version
-## return: "true" or "false"
+## return: 0 - true, 1 - false
 compare_version () {
     if [[ $1 =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
         local v1_maj=${BASH_REMATCH[1]}
         local v1_min=${BASH_REMATCH[2]}
         local v1_rev=${BASH_REMATCH[3]}
     else
-        echo "false"
-        return
+        return 1
     fi
     if [[ $2 =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
         local v2_maj=${BASH_REMATCH[1]}
         local v2_min=${BASH_REMATCH[2]}
         local v2_rev=${BASH_REMATCH[3]}
     else
-        echo "false"
-        return
+        return 1
     fi
 
     case $2 in
         ge|\>= )
             if (( $v1_maj >= $v2_maj && $v1_min >= $v2_min && $v1_rev >= $v2_rev )); then
-                echo "true"
+                return 0
             else
-                echo "false"
+                return 1
             fi
             ;;
         le|\<= )
             if (( $v1_maj <= $v2_maj && $v1_min <= $v2_min && $v1_rev <= $v2_rev )); then
-                echo "true"
+                return 0
             else
-                echo "false"
+                return 1
             fi
             ;;
         gt|\> )
             if (( $v1_maj > $v2_maj || ( $v1_max == $v2_max && $v1_min > $v2_min ) ||
                 ( $v1_max == $v2_max && $v1_min == $v2_min && $v1_rev > $v2_rev ) )); then
-                echo "true"
+                return 0
             else
-                echo "false"
+                return 1
             fi
             ;;
         lt|\< )
             if (( $v1_maj < $v2_maj || ( $v1_max == $v2_max && $v1_min < $v2_min ) ||
                 ( $v1_max == $v2_max && $v1_min == $v2_min && $v1_rev < $v2_rev ) )); then
-                echo "true"
+                return 0
             else
-                echo "false"
+                return 1
             fi
             ;;
     esac
@@ -139,7 +128,7 @@ compare_version () {
 
 # Escape directory name for zip
 ## $1: directory path
-## return: escaped directory path
+## echo: escaped directory path
 dir_escape () {
     local dir="$1"
     if [ -d "$dir" ]; then
@@ -183,7 +172,11 @@ for _, v in ipairs(t.os) do
     t.os[v] = {}
 end
 
-if not t.os or #t.os == 0 then t.os.love = {} end
+if os == "default" then
+    if not t.os then t.os = {} end
+    if not t.os.love then t.os.love = {} end
+    os = "love"
+end
 
 if t.os[os] then
     print(os:upper()..'=true')
@@ -220,6 +213,13 @@ EOF
     fi
 }
 
+# Test if default module should be executed
+default_module () {
+    if [[ $? -ne 2 ]]; then
+        DEFAULT_MODULE=false
+    fi
+}
+
 dump_var () {
     echo "LOVE_VERSION=$LOVE_VERSION"
     echo "LOVE_DEF_VERSION=$LOVE_DEF_VERSION"
@@ -244,38 +244,26 @@ dump_var () {
 
 # Test if module should be executed
 ## $1: Module name
-## return: true if module should be executed
-execute_module ()
-{
-    reset_vars
+## return: 0 - if module should be executed, else exit 2
+execute_module () {
     local module="$1"
     read_config "$module"
     module=${module^^}
     if [[ ${!module} == true ]]; then
-        if [[ -z $DEFAULT_MODULE ]]; then
-            if [[ ${module} == "LOVE" ]]; then
-                DEFAULT_MODULE=true
-            else
-                DEFAULT_MODULE=false
-            fi
-        fi
-        if [[ $(compare_version "$LOVE_VERSION" ">" "$VERSION") == true ]]; then
-            if [[ $(get_user_confirmation "LÖVE $LOVE_VERSION is out ! Your project uses LÖVE $VERSION. Continue ?") == false ]]; then
-                exit
-            fi
+        if compare_version "$LOVE_VERSION" ">" "$VERSION"; then
+            echo "LÖVE $LOVE_VERSION is out ! Your project uses LÖVE ${VERSION}."
             gen_version $VERSION
             unset VERSION
         fi
+        return 0
     else
-        reset_vars
+        exit_module "execute"
     fi
-    echo "${!module}"
 }
 
 # Init module
 ## $1: Pretty module name
-init_module ()
-{
+init_module () {
     MODULE="$1"
     mkdir -p "$RELEASE_DIR"
     mkdir -p "$CACHE_DIR"
@@ -284,8 +272,7 @@ init_module ()
 
 # Create the LÖVE file
 ## $1: Compression level 0-9
-create_love_file ()
-{
+create_love_file () {
     LOVE_FILE="$RELEASE_DIR"/"$TITLE".love
     zip -FS -$1 -r "$LOVE_FILE" \
         -x "$0" "${RELEASE_DIR#$PWD/}/*" \
@@ -294,22 +281,25 @@ create_love_file ()
 }
 
 # Exit module
-## $1: exit code.
-##  0 - success
-##  1 - binary not found or downloaded
-##  other - failure
-## $2: error message
-exit_module ()
-{
-    if [[ -z $1 || "$1" == "0" ]]; then
+## $1: optional error identifier
+## $2: optional error message, printed if $1=="undef" or unidentified error
+exit_module () {
+    if [[ -z $1 ]]; then
         echo "Done !"
-    elif [[ "$1" == "1" ]]; then
-        >&2 echo -e "$2"
-        >&2 echo "LÖVE $LOVE_VERSION could not be found or downloaded."
-    else
-        >&2 echo -e "$2"
-        exit $1
+        exit 0
     fi
+    case $1 in
+        execute )
+            exit 2 ;;
+        binary )
+            >&2 echo "LÖVE $LOVE_VERSION could not be found or downloaded."
+            exit 3 ;;
+        undef|* )
+            if [[ -n $2 ]]; then
+                >&2 echo "$2"
+            fi
+            exit 1 ;;
+    esac
 }
 
 
@@ -326,7 +316,11 @@ gen_version $LOVE_WEB_VERSION
 INSTALLED=false
 EMBEDDED=false
 
-DEFAULT_MODULE=
+DEFAULT_MODULE=true
+
+TITLE="$(basename $(pwd))"
+RELEASE_DIR=releases
+CACHE_DIR=~/.cache/love-release
 
 if [[ $INSTALLED == false && $EMBEDDED == false ]]; then
     >&2 echo "love-release has not been installed, and is not embedded into one script. Consider doing one of the two."
@@ -339,18 +333,20 @@ elif [[ $INSTALLED == true ]]; then
     SCRIPTS_DIR="scripts"
     for file in "$SCRIPTS_DIR"/*.sh; do
         (source "$file")
+        default_module
     done
 fi
 
-if [[ -z $DEFAULT_MODULE || $DEFAULT_MODULE == true ]]; then
-    (
-    reset_vars
-    read_config "love"
-    init_module "LÖVE"
-    create_love_file 9
-    exit_module
-    )
-fi
+
+(
+    (execute_module "love")
+    if [[ $? -eq 0 || $DEFAULT_MODULE == true ]]; then
+        read_config "default"
+        init_module "LÖVE"
+        create_love_file 9
+        exit_module
+    fi
+)
 
 exit 0
 

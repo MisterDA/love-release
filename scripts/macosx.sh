@@ -1,7 +1,5 @@
 # Mac OS X
-if [[ $(execute_module "osx") == false ]]; then
-    return
-fi
+execute_module "osx"
 
 init_module "Mac OS X"
 

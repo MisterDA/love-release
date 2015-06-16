@@ -1,7 +1,5 @@
 # Debian package
-if [[ $(execute_module "debian") == false ]]; then
-    return
-fi
+execute_module "debian"
 
 init_module "Debian"
 

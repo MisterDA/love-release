@@ -1,7 +1,5 @@
 # Windows
-if [[ $(execute_module "windows") == false ]]; then
-    return
-fi
+execute_module "windows"
 
 init_module "Windows"
 
