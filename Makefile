@@ -19,7 +19,7 @@ install:
 	install -m 0755 '$(BUILD_DIR)/love-release' '$(BINARY_DIR)'
 	install -m 0755 -d '$(INSTALL_DIR)' '$(INSTALL_DIR)/scripts' '$(COMPLETION_DIR)'
 	install -m 0755 scripts/* '$(INSTALL_DIR)/scripts'
-	install -m 0644 -t '$(INSTALL_DIR)' README.md conf.lua
+	install -m 0644 -t '$(INSTALL_DIR)' README.md conf.lua example.sh
 	install -m 0644 completion.sh '$(COMPLETION_DIR)/love-release'
 	install -m 0644 '$(BUILD_DIR)/love-release.1.gz' '$(MANPAGE_DIR)'
 
