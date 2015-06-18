@@ -1,5 +1,7 @@
 # Windows
-init_module "Windows" "windows"
+init_module "Windows" "windows" "w"
+OPTIONS="w"
+LONG_OPTIONS=""
 
 
 PACKAGE_NAME=$(echo $PROJECT_NAME | sed -e 's/[^-a-zA-Z0-9_]/-/g' | tr '[:upper:]' '[:lower:]')

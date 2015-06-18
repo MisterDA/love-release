@@ -10,17 +10,31 @@ LOVE_DEF_VERSION=0.9.2
 # Dependencies check
 check_deps () {
     command -v curl  > /dev/null 2>&1 || {
-        echo "curl is not installed. Aborting."
+        >&2 echo "curl is not installed. Aborting."
         local EXIT=true
     }
     command -v zip   > /dev/null 2>&1 || {
-        echo "zip is not installed. Aborting."
+        >&2 echo "zip is not installed. Aborting."
         local EXIT=true
     }
     command -v unzip > /dev/null 2>&1 || {
-        echo "unzip is not installed. Aborting."
+        >&2 echo "unzip is not installed. Aborting."
         local EXIT=true
     }
+    command -v getopt > /dev/null 2>&1 || {
+        local opt=false
+    } && {
+        unset GETOPT_COMPATIBLE
+        local out=$(getopt -T)
+        if [[ $? -eq 4 && -z $out ]]; then
+            local opt=false
+        fi
+    }
+    if [[ $opt == false ]]; then
+        >&2 echo "GNU getopt is not installed. Aborting."
+        local EXIT=true
+    fi
+
     command -v lua   > /dev/null 2>&1 || {
         echo "lua is not installed. Install it to ease your releases."
     } && {
@@ -58,13 +72,16 @@ get_user_confirmation () {
 
 # Generate LÖVE version variables
 ## $1: LÖVE version string
+## return: 0 - string matched, 1 - else
 gen_version () {
     if [[ $1 =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
         LOVE_VERSION=$1
         LOVE_VERSION_MAJOR=${BASH_REMATCH[1]}
         LOVE_VERSION_MINOR=${BASH_REMATCH[2]}
         LOVE_VERSION_REVISION=${BASH_REMATCH[3]}
+        return 0
     fi
+    return 1
 }
 
 
@@ -175,7 +192,7 @@ end
 if os == "default" then
     if not t.os then t.os = {} end
     if not t.os.love then t.os.love = {} end
-    os = "love"
+    t.os.default = t.os.love
 end
 
 if t.os[os] then
@@ -220,6 +237,18 @@ default_module () {
     fi
 }
 
+# Print short help
+short_help () {
+    cat <<EOF
+Usage: love-release.sh [options...] [files...]
+Options:
+ -h           Print short help
+ -n <name>    Set the project's name
+ -r <release> Set the release directory
+ -v <version> Set the LÖVE version
+EOF
+}
+
 dump_var () {
     echo "LOVE_VERSION=$LOVE_VERSION"
     echo "LOVE_DEF_VERSION=$LOVE_DEF_VERSION"
@@ -237,6 +266,8 @@ dump_var () {
     echo "EMAIL=$EMAIL"
     echo "URL=$URL"
     echo "DESCRIPTION=$DESCRIPTION"
+    echo
+    echo "${FILES[@]}"
 }
 
 
@@ -245,24 +276,38 @@ dump_var () {
 # Init module
 ## $1: Pretty module name
 ## $2: Configuration module name
+## $3: Module option
 ## return: 0 - if module should be executed, else exit 2
 init_module () {
+    (
+        opt="$3"
+        if (( ${#opt} == 1 )); then opt="-$opt"
+        elif (( ${#opt} >= 2 )); then opt="--$opt"; fi
+        eval set -- "$ARGS"
+        while true; do
+            case "$1" in
+                $opt ) exit 0 ;;
+                -- )   exit 1 ;;
+                * )    shift ;;
+            esac
+        done
+    )
+    local opt=$?
     local module="$2"
     read_config "$module"
     module=${module^^}
-    if [[ ${!module} == true ]]; then
-        if compare_version "$LOVE_VERSION" ">" "$VERSION"; then
-            echo "LÖVE $LOVE_VERSION is out ! Your project uses LÖVE ${VERSION}."
-            gen_version $VERSION
-            unset VERSION
-        fi
-        MODULE="$1"
-        mkdir -p "$RELEASE_DIR" "$CACHE_DIR"
-        echo "Generating $TITLE with LÖVE $LOVE_VERSION for ${MODULE}..."
-        return 0
-    else
-        exit_module "execute"
+    if (( $opt == 1 )); then
+        if [[ ${!module} == false ]]; then exit_module "execute"; fi
     fi
+    if compare_version "$LOVE_VERSION" ">" "$VERSION"; then
+        echo "LÖVE $LOVE_VERSION is out ! Your project uses LÖVE ${VERSION}."
+        gen_version $VERSION
+        unset VERSION
+    fi
+    MODULE="$1"
+    mkdir -p "$RELEASE_DIR" "$CACHE_DIR"
+    echo "Generating $TITLE with LÖVE $LOVE_VERSION for ${MODULE}..."
+    return 0
 }
 
 # Create the LÖVE file
@@ -272,7 +317,7 @@ create_love_file () {
     zip -FS -$1 -r "$LOVE_FILE" \
         -x "$0" "${RELEASE_DIR#$PWD/}/*" \
         $(ls -Ap | grep "^\." | sed -e 's/^/\//g' -e 's/\/$/\/*/g') @ \
-        .
+        "${FILES[@]}"
 }
 
 # Exit module
@@ -289,6 +334,11 @@ exit_module () {
         binary )
             >&2 echo "LÖVE $LOVE_VERSION could not be found or downloaded."
             exit 3 ;;
+        options )
+            exit 4 ;;
+        version )
+            >&2 echo "LÖVE version string is invalid."
+            exit 5 ;;
         undef|* )
             if [[ -n $2 ]]; then
                 >&2 echo "$2"
@@ -316,10 +366,32 @@ DEFAULT_MODULE=true
 TITLE="$(basename $(pwd))"
 RELEASE_DIR=releases
 CACHE_DIR=~/.cache/love-release
+FILES=()
+
+OPTIONS="lhn:r:v:"
+LONG_OPTIONS=""
+ARGS=$(getopt -o "$OPTIONS" -l "$LONG_OPTIONS" -n 'love-release' -- "$@")
+if (( $? != 0 )); then short_help; exit_module "options"; fi
+eval set -- "$ARGS"
+
+while true; do
+    case "$1" in
+        -n ) TITLE="$2"; shift 2 ;;
+        -r ) RELEASE_DIR="$2"; shift 2 ;;
+        -v ) if ! gen_version "$2"; then exit_module "version"; fi; shift 2 ;;
+        -h ) short_help; exit 0 ;;
+        -- ) shift; break ;;
+        * ) shift ;;
+    esac
+done
+
+for arg do
+    FILES+=( "$arg" )
+done
+if (( ${#FILES} == 0 )); then FILES+=( "." ); fi
 
 if [[ $INSTALLED == false && $EMBEDDED == false ]]; then
-    >&2 echo "love-release has not been installed, and is not embedded into one script. Consider doing one of the two."
-    INSTALLED=true
+    exit_module "undef" "love-release has not been installed, and is not embedded into one script."
 fi
 
 if [[ $EMBEDDED == true ]]; then
@@ -334,10 +406,9 @@ fi
 
 
 (
-    (init_module "LÖVE" "love")
+    (init_module "LÖVE" "love" "l")
     if [[ $? -eq 0 || $DEFAULT_MODULE == true ]]; then
-        read_config "default"
-        init_module "LÖVE"
+        init_module "LÖVE" "default"
         create_love_file 9
         exit_module
     fi
