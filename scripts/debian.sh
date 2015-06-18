@@ -1,6 +1,6 @@
 # Debian package
-init_module "Debian" "debian" "d"
-OPTIONS="d"
+init_module "Debian" "debian" "D"
+OPTIONS="D"
 LONG_OPTIONS=""
 
 

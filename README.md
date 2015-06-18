@@ -20,7 +20,7 @@ make embedded
 To remove love-release, if you haven't changed the default installation directories, run `make remove`.
 
 ### SYNOPSIS
-`love-release.sh [-adlmw] [-n project_name] [-r release_dir] [-v love_version] [FILES...]`
+`love-release.sh [-ADLMW] [-t project_title] [-r release_dir] [-l love_version] [FILES...]`
 
 ### DESCRIPTION
 love-release.sh can be used to generate Love 2D game applications
@@ -40,7 +40,7 @@ See the `conf.lua` file included to see how configuration works.
 `--help` Print this longer help
 
 #### OPERATING SYSTEMS
-`-a` Create an Android package.
+`-A` Create an Android package.
      In order to create an Android package, you must have installed the Android SDK.
      See [Building LÖVE for Android](https://bitbucket.org/MartinFelis/love-android-sdl2/wiki/Building_L%C3%96VE_for_Android_-_Linux),
      but there is no need to install the [LÖVE port to Android](https://bitbucket.org/MartinFelis/love-android-sdl2),
@@ -48,42 +48,52 @@ See the `conf.lua` file included to see how configuration works.
      You also might want to provide more informations about it.
      See the ANDROID section below.
 
-`-d` Create a deb package. Aimed at Debian and Ubuntu derivatives.
+`-D` Create a deb package. Aimed at Debian and Ubuntu derivatives.
      In order to create a Debian package, you must provide more informations about it.
      See the DEBIAN section below.
 
-`-l` Create a plain Love file. It is just a zip of your sources, renamed in \*.love.
+`-L` Create a plain Love file. It is just a zip of your sources, renamed in \*.love.
      Mostly aimed at Linux players or developers and the most common distribution process.
 
-`-m` Create MacOS application.
+`-M` Create MacOS application.
      Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
      If you are targeting one of these, your project must be developped with Love 0.8.0 or lower.
      Depending on the Love version used, the script will choose which one,
      between x64 only or Universal Build to create.
 
-`-w` Create Windows application.
+`-W` Create Windows application.
      Starting with Love 0.8.0, a release is specially available for Windows x64.
      If you are targeting one of these, your project must be developed with Love 0.8.0 or newer.
      Remember that x86 is always backwards compatible with x64.
      Depending on the Love version used, the script will choose which one,
      between x64 and x86 or x86 only to create.  
-`-w32`  Create Windows x86 executable only  
-`-w64`  Create Windows x64 executable only
+`-W32`  Create Windows x86 executable only  
+`-W64`  Create Windows x64 executable only
 
 #### PROJECT OPTIONS
-`-n`  Set the projects name. By default, the name of the current directory is used.
+`-a, --author` Set the project's author.
 
-`-r`  Set the release directory. By default, a subdirectory called releases is created.
+`-d, --description` Set the project's description.
 
-`-v`  Love version. Default is 0.9.1.
-      Starting with Love 0.8.0, a release is specially available for Windows x64.
-      Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
+`-e, --email` Set the author's email.
+
+`-i, --icon` Path to icons.
+
+`-l, --love` Love version. Default is 0.9.2.
+             Starting with Love 0.8.0, a release is specially available for Windows x64.
+             Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
+
+`-p, --pkg` Set the project's identity.
+
+`-r, --release`  Set the release directory. By default, a subdirectory called releases is created.
+
+`-t, --title`  Set the project's title. By default, the name of the current directory is used.
+
+`-u, --url` Set the project's homepage.
+
+`-v, --version` Set your project's version.
 
 `-x`  Exclude file or directory.
-
-`--description`      Set the description of your project.
-
-`--homepage`         Set the homepage of your project.
 
 #### WINDOWS
 You can create an installer. If you don’t, you will have zip of a folder

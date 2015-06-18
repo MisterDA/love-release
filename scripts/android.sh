@@ -1,6 +1,6 @@
 # Android debug package
-init_module "Android" "android" "a"
-OPTIONS="a"
+init_module "Android" "android" "A"
+OPTIONS="A"
 LONG_OPTIONS=""
 
 

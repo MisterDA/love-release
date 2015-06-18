@@ -1,6 +1,6 @@
 # Windows
-init_module "Windows" "windows" "w"
-OPTIONS="w"
+init_module "Windows" "windows" "W"
+OPTIONS="W"
 LONG_OPTIONS=""
 
 

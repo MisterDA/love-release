@@ -42,7 +42,7 @@ embedded: clean
 	if [[ -n $$long && $${long: -1} != ',' ]]; then long="$${long},"; fi; \
 	sed -re "s/^OPTIONS=(['\"]?)/OPTIONS=\1$$short/" -e "s/^LONG_OPTIONS=(['\"]?)/LONG_OPTIONS=\1$$long/" \
 		-e 's/EMBEDDED=false/EMBEDDED=true/' \
-		-e '/include_scripts_here$$/r $(BUILD_DIR)/tmp' love-release.sh > '$(BUILD_DIR)/love-release'
+		-e '/include_scripts_here$$/r $(BUILD_DIR)/tmp' love-release.sh > '$(BUILD_DIR)/love-release.sh'
 	chmod 0775 '$(BUILD_DIR)/love-release.sh'
 	rm -rf '$(BUILD_DIR)/tmp'
 

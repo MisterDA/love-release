@@ -1,6 +1,6 @@
 # Mac OS X
-init_module "Mac OS X" "osx" "m"
-OPTIONS="m"
+init_module "Mac OS X" "osx" "M"
+OPTIONS="M"
 LONG_OPTIONS=""
 
 

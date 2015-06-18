@@ -243,7 +243,7 @@ short_help () {
 Usage: love-release.sh [options...] [files...]
 Options:
  -h           Print short help
- -n <name>    Set the project's name
+ -t <title>   Set the project's title
  -r <release> Set the release directory
  -v <version> Set the LÖVE version
 EOF
@@ -368,18 +368,26 @@ RELEASE_DIR=releases
 CACHE_DIR=~/.cache/love-release
 FILES=()
 
-OPTIONS="lhn:r:v:"
-LONG_OPTIONS=""
+OPTIONS="La:d:e:hi:l:p:r:t:u:v:"
+LONG_OPTIONS="author:,clean,description:,email:,help,icon:,love:,pkg:,release:,title:,url:,version:"
 ARGS=$(getopt -o "$OPTIONS" -l "$LONG_OPTIONS" -n 'love-release' -- "$@")
 if (( $? != 0 )); then short_help; exit_module "options"; fi
 eval set -- "$ARGS"
 
 while true; do
     case "$1" in
-        -n ) TITLE="$2"; shift 2 ;;
-        -r ) RELEASE_DIR="$2"; shift 2 ;;
-        -v ) if ! gen_version "$2"; then exit_module "version"; fi; shift 2 ;;
-        -h ) short_help; exit 0 ;;
+        -a|--author )       AUTHOR="$2"; shift 2 ;;
+        --clean )           rm -rf "$CACHE_DIR"; shift ;;
+        -d|--description )  DESCRIPTION="$2"; shift 2 ;;
+        -e|--email )        EMAIL="$2"; shift 2 ;;
+        -h|--help )         short_help; exit 0 ;;
+        -i|--icon )         ICON="$2"; shift 2 ;;
+        -l|--love )         if ! gen_version "$2"; then exit_module "version"; fi; shift 2 ;;
+        -p|--pkg )          IDENTITY="$2"; shift 2 ;;
+        -r|--release )      RELEASE_DIR="$2"; shift 2 ;;
+        -t|--title )        TITLE="$2"; shift 2 ;;
+        -u|--url )          URL="$2"; shift 2 ;;
+        -v|--version )      GAME_VERSION="$2"; shift 2 ;;
         -- ) shift; break ;;
         * ) shift ;;
     esac
@@ -406,7 +414,7 @@ fi
 
 
 (
-    (init_module "LÖVE" "love" "l")
+    (init_module "LÖVE" "love" "L")
     if [[ $? -eq 0 || $DEFAULT_MODULE == true ]]; then
         init_module "LÖVE" "default"
         create_love_file 9

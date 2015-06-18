@@ -3,7 +3,7 @@
 love-release.sh \- Bash script to generate Love 2D game releases
 .SH SYNOPSIS
 .B love\-release.sh
-[\fB\-adlmw\fR] [\fB\-n\fR \fIproject_name\fR] [\fB\-r\fR \fIrelease_dir\fR] [\fB\-v\fR \fIlove_version\fR] [\fIFILES...\fR]
+[\fB\-ADLMW\fR] [\fB\-t\fR \fIproject_title\fR] [\fB\-r\fR \fIrelease_dir\fR] [\fB\-l\fR \fIlove_version\fR] [\fIFILES...\fR]
 .SH DESCRIPTION
 .B love-release.sh
 can be used to generate Love 2D game applications
@@ -25,7 +25,7 @@ Print a short help
 Print this longer help
 .SH OPERATING SYSTEMS
 .TP
-.B \-a
+.B \-A
 Create an Android package.
 In order to create an Android package, you must have installed the Android SDK,
 but there is no need to install the LÖVE port to Android,
@@ -33,23 +33,23 @@ as the script will handle this by itself.
 You also might want to provide more informations about it.
 See the ANDROID section below.
 .TP
-.B \-d
+.B \-D
 Create a deb package. Aimed at Debian and Ubuntu derivatives.
 In order to create a Debian package, you must provide more informations about it.
 See the DEBIAN section below.
 .TP
-.B \-l
+.B \-L
 Create a plain Love file. It is just a zip of your sources, renamed in \fI*.love\fR.
 Mostly aimed at Linux players or developers and the most common distribution process.
 .TP
-.B \-m
+.B \-M
 Create MacOS application.
 Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
 If you are targeting one of these, your project must be developed with Love 0.8.0 or lower.
 Depending on the Love version used, the script will choose which one,
 between x64 only or Universal Build to create.
 .TP
-.BR \-w \", \" \-w32 \", \" \-w64
+.BR \-W
 Create Windows application.
 Starting with Love 0.8.0, a release is specially available for Windows x64.
 If you are targeting one of these, your project must be developed with Love 0.8.0 or newer.
@@ -57,32 +57,47 @@ Remember that x86 is always backwards compatible with x64.
 Depending on the Love version used, the script will choose which one,
 between x64 and x86 or x86 only to create.
 .br
-.B \-w32
+.B \-W32
 Create Windows x86 executable only.
 .br
-.B \-w64
+.B \-W64
 Create Windows x64 executable only.
 .SH PROJECT OPTIONS
 .TP
-.B \-n \fIproject-name\fR
-Set the projects name. By default, the name of the current directory is used.
+.B \-a, \-\-author \fIauthor\fR
+Set the project's author.
 .TP
-.B \-r \fIrelease-dir\fR
-Set the release directory. By default, a subdirectory called releases is created.
+.B \-d, \-\-description \fIdescription\fR
+Set the project's description.
 .TP
-.B \-v \fIversion\fR
-Love version. Default is 0.9.1.
+.B \-e, \-\-email \fIemail\fR
+Set the author's email.
+.TP
+.B \-i, \-\-icon \fIicon\fR
+Path to icons.
+.TP
+.B \-l, \-\-love \fIlove\fR
+Love version. Default is 0.9.2.
 Starting with Love 0.8.0, a release is specially available for Windows x64.
 Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
 .TP
+.B \-p, \-\-pkg \fIidentity\fR
+Set the project's identity.
+.TP
+.B \-r, \-\-release \fIrelease-dir\fR
+Set the release directory. By default, a subdirectory called releases is created.
+.TP
+.B \-t, \-\-title \fItitle\fR
+Set the project's title. By default, the name of the current directory is used.
+.TP
+.B \-u, \-\-url \fIurl\fR
+Set your project's homepage.
+.TP
+.B \-v, \-\-version \fIversion\fR
+Set the version for your project.
+.TP
 .B \-x \fIfile\fR|\fIdirectory\fR
 Exclude file or directory.
-.TP
-.B \-\-description \fIdescription\fR
-Set the description of your project.
-.TP
-.B \-\-homepage \fIurl\fR
-Set the homepage of your project.
 .SH WINDOWS
 You can create an installer. If you don’t, you will have zip of a folder
 containing your game executable and its dlls.
