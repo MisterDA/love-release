@@ -6,12 +6,8 @@ _love-release()
     COMPREPLY=()
     cur="${COMP_WORDS[COMP_CWORD]}"
     prev="${COMP_WORDS[COMP_CWORD-1]}"
-    opts="-l"
-    opts="$opts -w --win-icon --win-package-version --win-maintainer-name --win-package-name --win-appid --win-installer"
-    opts="$opts -d --deb-icon --deb-package-version --deb-maintainer-name --maintainer-email --deb-package-name"
-    opts="$opts -a --apk-icon --apk-activity --apk-package-version --apk-maintainer-name --apk-package-name --update-android"
-    opts="$opts -m --osx-icon --osx-maintainer-name"
-    opts="$opts -h -n -r -v -x --config --homepage --description --clean --help"
+
+    opts="-L -a -d -e -h -i -l -p -r -t -u -v --author --clean --description --email --help --icon --love --pkg --release --title --url --version"
 
     if [[ ${cur} == -* ]] ; then
         COMPREPLY=( $(compgen -W "${opts}" -- ${cur}) )

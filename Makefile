@@ -22,7 +22,9 @@ love-release: clean
 	done; \
 	sed -re "s/^OPTIONS=(['\"]?)/OPTIONS=\1$$short/" -e "s/^LONG_OPTIONS=(['\"]?)/LONG_OPTIONS=\1$$long/" \
 		-e 's/INSTALLED=false/INSTALLED=true/' \
-		-e 's/SCRIPTS_DIR="scripts"/SCRIPTS_DIR="$(SED_INSTALL_DIR)\/scripts"/' love-release.sh > '$(BUILD_DIR)/love-release'
+		-e 's/SCRIPTS_DIR="scripts"/SCRIPTS_DIR="$(SED_INSTALL_DIR)\/scripts"/' love-release.sh > '$(BUILD_DIR)/love-release'; \
+	comp="$$(if [[ -n $$long ]]; then echo --$$long | tr -d ':' | sed -e 's/,$$//' -e 's/,/ --/g'; fi)$$(if [[ -n $$short ]]; then echo $$short | sed -r 's/(.)/ -\1/g'; fi) "; \
+	sed -re "s/opts=\"(.*)/opts=\"$$comp\1/" completion.sh > '$(BUILD_DIR)/completion.sh'
 	cp love-release.1 '$(BUILD_DIR)/love-release.1'
 	gzip '$(BUILD_DIR)/love-release.1'
 
@@ -31,7 +33,7 @@ install:
 	install -m 0755 -d '$(INSTALL_DIR)' '$(INSTALL_DIR)/scripts' '$(COMPLETION_DIR)'
 	install -m 0755 scripts/* '$(INSTALL_DIR)/scripts'
 	install -m 0644 -t '$(INSTALL_DIR)' README.md conf.lua example.sh
-	install -m 0644 completion.sh '$(COMPLETION_DIR)/love-release'
+	install -m 0644 '$(BUILD_DIR)/completion.sh' '$(COMPLETION_DIR)/love-release'
 	install -m 0644 '$(BUILD_DIR)/love-release.1.gz' '$(MANPAGE_DIR)'
 
 embedded: clean
