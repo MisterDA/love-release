@@ -230,6 +230,33 @@ EOF
     fi
 }
 
+
+# Read script options
+## $1: options prefix
+read_options () {
+    local pre="$1"
+    eval set -- "$ARGS"
+    while true; do
+        case "$1" in
+            -a|--${pre}author )       AUTHOR="$2"; shift 2 ;;
+            --clean )                 rm -rf "$CACHE_DIR"; shift ;;
+            -d|--${pre}description )  DESCRIPTION="$2"; shift 2 ;;
+            -e|--${pre}email )        EMAIL="$2"; shift 2 ;;
+            -h|--${pre}help )         short_help; exit 0 ;;
+            -i|--${pre}icon )         ICON="$2"; shift 2 ;;
+            -l|--${pre}love )         if ! gen_version "$2"; then exit_module "version"; fi; shift 2 ;;
+            -p|--${pre}pkg )          IDENTITY="$2"; shift 2 ;;
+            -r|--${pre}release )      RELEASE_DIR="$2"; shift 2 ;;
+            -t|--${pre}title )        TITLE="$2"; shift 2 ;;
+            -u|--${pre}url )          URL="$2"; shift 2 ;;
+            -v|--${pre}version )      GAME_VERSION="$2"; shift 2 ;;
+            -- ) shift; break ;;
+            * ) shift ;;
+        esac
+    done
+}
+
+
 # Test if default module should be executed
 default_module () {
     if [[ $? -ne 2 ]]; then
@@ -301,10 +328,12 @@ init_module () {
     fi
     if compare_version "$LOVE_VERSION" ">" "$VERSION"; then
         echo "LÖVE $LOVE_VERSION is out ! Your project uses LÖVE ${VERSION}."
-        gen_version $VERSION
-        unset VERSION
     fi
+    gen_version $VERSION
+    unset VERSION
     MODULE="$1"
+    CACHE_DIR="$CACHE_DIR/$2"
+    read_options "$3"
     mkdir -p "$RELEASE_DIR" "$CACHE_DIR"
     echo "Generating $TITLE with LÖVE $LOVE_VERSION for ${MODULE}..."
     return 0
@@ -373,30 +402,13 @@ LONG_OPTIONS="author:,clean,description:,email:,help,icon:,love:,pkg:,release:,t
 ARGS=$(getopt -o "$OPTIONS" -l "$LONG_OPTIONS" -n 'love-release' -- "$@")
 if (( $? != 0 )); then short_help; exit_module "options"; fi
 eval set -- "$ARGS"
-
-while true; do
-    case "$1" in
-        -a|--author )       AUTHOR="$2"; shift 2 ;;
-        --clean )           rm -rf "$CACHE_DIR"; shift ;;
-        -d|--description )  DESCRIPTION="$2"; shift 2 ;;
-        -e|--email )        EMAIL="$2"; shift 2 ;;
-        -h|--help )         short_help; exit 0 ;;
-        -i|--icon )         ICON="$2"; shift 2 ;;
-        -l|--love )         if ! gen_version "$2"; then exit_module "version"; fi; shift 2 ;;
-        -p|--pkg )          IDENTITY="$2"; shift 2 ;;
-        -r|--release )      RELEASE_DIR="$2"; shift 2 ;;
-        -t|--title )        TITLE="$2"; shift 2 ;;
-        -u|--url )          URL="$2"; shift 2 ;;
-        -v|--version )      GAME_VERSION="$2"; shift 2 ;;
-        -- ) shift; break ;;
-        * ) shift ;;
-    esac
-done
-
+read_options
+while [[ $1 != '--' ]]; do shift; done; shift
 for arg do
     FILES+=( "$arg" )
 done
 if (( ${#FILES} == 0 )); then FILES+=( "." ); fi
+eval set -- "$ARGS"
 
 if [[ $INSTALLED == false && $EMBEDDED == false ]]; then
     exit_module "undef" "love-release has not been installed, and is not embedded into one script."

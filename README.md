@@ -71,6 +71,9 @@ See the `conf.lua` file included to see how configuration works.
 `-W64`  Create Windows x64 executable only
 
 #### PROJECT OPTIONS
+You can use the option of a module and append a long option from this list to set a specific
+option for a module. For example, the option `--Wauthor` will set the author's name for windows only.
+
 `-a, --author` Set the project's author.
 
 `-d, --description` Set the project's description.
@@ -101,58 +104,58 @@ containing your game executable and its dlls.
 Creating installers and using icons require [Wine](http://www.winehq.org/) to be installed.
 When the script installs Resource Hacker or Inno Setup, an install wizard GUI will appear.
 Please let everything as is, do not uncheck checkboxes or replace installation directory.  
-`--win-icon`    Path to an ico file to use.  
-`--win-installer`   Create an installer with [Inno Setup](http://www.jrsoftware.org/isinfo.php).  
-`--win-appid`       Your game ID. You can use a GUID/UUID and generate one with `uuidgen`.
-                    It should remain the same between updates.
-                    Mandatory if using an installer, not needed for a simple zip.  
-`--win-maintainer-name`     Set the maintainer’s name.
-                            Mandatory if using an installer, not needed for a simple zip.  
-`--win-package-name`        Set the name of your package.
-                            Mandatory if using an installer, not needed for a simple zip.  
-`--win-package-version`     Set the version of your package.
-                            Mandatory if using an installer, not needed for a simple zip.  
+`--Wicon`       Path to an ico file to use.  
+`--Winstaller`  Create an installer with [Inno Setup](http://www.jrsoftware.org/isinfo.php).  
+`--Wappid`      Your game ID. You can use a GUID/UUID and generate one with `uuidgen`.
+                It should remain the same between updates.
+                Mandatory if using an installer, not needed for a simple zip.  
+`--Wauthor`     Set the maintainer’s name.
+                Mandatory if using an installer, not needed for a simple zip.  
+`--Wpkg`        Set the name of your package.
+                Mandatory if using an installer, not needed for a simple zip.  
+`--Wversion`    Set the version of your package.
+                Mandatory if using an installer, not needed for a simple zip.  
 
 #### MAC OS X
-`--osx-icon`               Path to an icns file to use.  
-`--osx-maintainer-name`    Set the maintainer’s name. Provide it for OS X CFBundleIdentifier.
+`--Micon`       Path to an icns file to use.  
+`--Mauthor`     Set the maintainer’s name. Provide it for OS X CFBundleIdentifier.
 
 #### DEBIAN
-`--deb-icon`             Path to a single folder where icons are stored.
-                         To be properly recognized, icons filename must contain `YYxYY`,
-                         where `YY` is the resolution of the icon.
-                         SVG files are recognized if suffixed with `.svg`.
-                         Other files will be ignored.  
-`--maintainer-email` Set the maintainer’s email.  
-`--deb-maintainer-name`  Set the maintainer’s name.  
-`--deb-package-name`     Set the name of the package and the command that will be used to launch your game.
-                         By default, it is the name of your project converted to lowercase,
-                         with eventual spaces replaced by dashes.  
-`--deb-package-version`  Set the version of your package.  
+`--Dicon`       Path to a single folder where icons are stored.
+                To be properly recognized, icons filename must contain `YYxYY`,
+                where `YY` is the resolution of the icon.
+                SVG files are recognized if suffixed with `.svg`.
+                Other files will be ignored.  
+`--Demail`      Set the maintainer’s email.  
+`--Dauthor`     Set the maintainer’s name.  
+`--Dpkg`        Set the name of the package and the command that will be used to launch your game.
+                By default, it is the name of your project converted to lowercase,
+                with eventual spaces replaced by dashes.  
+`--Dversion`    Set the version of your package.  
 
 #### ANDROID
 Note that every argument passed to the options should be alphanumerical,
 with eventual underscores (i.e. [a-zA-Z0-9\_]), otherwise you'll get errors.  
-`--apk-icon`            Path to a single folder where icons are stored.
-                        The script will first look up for filename that contains
-                        `42x42`, `72x72`, `96x96` or `144x144`.
-                        It will then search the icon directory for subdirectories like
-                        `drawable-mdpi`, `drawable-hdpi`, `drawable-xhdpi` and `drawable-xxhdpi`
-                        to find an `ic_launcher.png` image.  
-                        OUYA icon (size `732x412`, or `drawable-xhdpi/ouya_icon.png`) is supported.  
-`--apk-activity`            The name of the class that extends GameActivity.
-                        By default it is the name of the project with ‘Activity’ appended,
-                        eventual spaces and dashes replaced by underscores.  
-`--apk-maintainer-name` Set the maintainer’s name.
-                        It must be only alphanumerical characters, with eventual underscores.  
-`--apk-package-name`    Set the name of the package.
-                        By default, it is the name of your project, with eventual spaces replaced by underscores.  
-`--apk-package-version` Set the version of your package.  
-`--update-android`      Update the love-android-sdl2.git repository used in the cache.  
+`--Aicon`       Path to a single folder where icons are stored.
+                The script will first look up for filename that contains
+                `42x42`, `72x72`, `96x96` or `144x144`.
+                It will then search the icon directory for subdirectories like
+                `drawable-mdpi`, `drawable-hdpi`, `drawable-xhdpi` and `drawable-xxhdpi`
+                to find an `ic_launcher.png` image.  
+                OUYA icon (size `732x412`, or `drawable-xhdpi/ouya_icon.png`) is supported.  
+`--Aactivity`   The name of the class that extends GameActivity.
+                By default it is the name of the project with ‘Activity’ appended,
+                eventual spaces and dashes replaced by underscores.  
+`--Aauthor`     Set the maintainer’s name.
+                It must be only alphanumerical characters, with eventual underscores.  
+`--Apkg`        Set the name of the package.
+                By default, it is the name of your project, with eventual spaces replaced by underscores.  
+`--Aversion`    Set the version of your package.  
+`--Aupdate`     Update the love-android-sdl2.git repository used in the cache.  
 
 #### OTHERS
-`--clean`     Clean the cache located in `~/.cache/love-release`.
-              One can replace the Love files there.  
+`--clean`       Clean the cache located in `~/.cache/love-release`.
+                One can replace the Love files there.  
 
 #### MODULES
 The script is modular.

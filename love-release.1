@@ -63,6 +63,9 @@ Create Windows x86 executable only.
 .B \-W64
 Create Windows x64 executable only.
 .SH PROJECT OPTIONS
+You can use the option of a module and append a long option from this list to set a specific
+option for a module. For example, the option \fI\-\-Wauthor\fR will set the author's name for windows only.
+.br
 .TP
 .B \-a, \-\-author \fIauthor\fR
 Set the project's author.
@@ -105,62 +108,62 @@ Creating installers and using icons require Wine to be installed.
 When the script installs Resource Hacker or Inno Setup, an install wizard GUI will appear.
 Please let everything as is, do not uncheck checkboxes or replace installation directory.
 .TP
-.B \-\-win\-icon \fIicon\fR
+.B \-\-Wicon \fIicon\fR
 Path to an ico file to use.
 .TP
-.B \-\-win\-installer
+.B \-\-Winstaller
 Create an installer with Inno Setup.
 .TP
-.B \-\-win\-appid \fIid\fR
+.B \-\-Wappid \fIid\fR
 Your game ID. You can use a GUID/UUID and generate one with \fIuuigen\fR.
 It should remain the same between updates.
 Mandatory if using an installer, not needed for a simple zip.
 .TP
-.B \-\-win\-maintainer\-name \fIname\fR
+.B \-\-Wauthor \fIname\fR
 Set the maintainer’s name.
 Mandatory if using an installer, not needed for a simple zip.
 .TP
-.B \-\-win\-package\-name \fIname\fR
+.B \-\-Wpkg \fIname\fR
 Set the name of the package.
 Mandatory if using an installer, not needed for a simple zip.
 .TP
-.B \-\-win\-package\-version \fIversion\fR
+.B \-\-Wversion \fIversion\fR
 Set the version of your package.
 Mandatory if using an installer, not needed for a simple zip.
 .SH MAC OS X
 .TP
-.B \-\-osx\-icon \fIicon\fR
+.B \-\-Micon \fIicon\fR
 Path to an icns file to use.
 .TP
-.B \-\-osx\-maintainer\-name \fIname\fR
+.B \-\-Mauthor \fIname\fR
 Set the maintainer's name. Provide it for OS X CFBundleIdentifier.
 .SH DEBIAN
 .TP
-.B \-\-deb-icon \fIdir\fR
+.B \-\-Dicon \fIdir\fR
 Path to a single folder where icons are stored.
 To be properly recognized, icons filename must contain \fIYYxYY\fR,
 where \fIYY\fR is the resolution of the icon.
 SVG files are recognized if suffixed with \fI.svg\fR.
 Other files will be ignored.
 .TP
-.B \-\-maintainer-email \fIemail\fR
+.B \-\-Demail \fIemail\fR
 Set the maintainer's email.
 .TP
-.B \-\-deb\-maintainer\-name \fIname\fR
+.B \-\-Dauthor \fIname\fR
 Set the maintainer's name.
 .TP
-.B \-\-deb\-package-name \fIname\fR
+.B \-\-Dpkg \fIname\fR
 Set the name of the package and the command that will be use to launch your game.
 By default, it is the name of your project converted to lowercase,
 with eventual spaces replaced by dashes.
 .TP
-.B \-\-deb\-package\-version \fIversion\fR
+.B \-\-Dversion \fIversion\fR
 Set the version of your package.
 .SH ANDROID
 Note that every argument passed to the options should be alphanumerical,
 with eventual underscores (i.e. [a-zA-Z0-9_]), otherwise you'll get errors.
 .TP
-.B \-\-apk\-icon \fIdir\fR
+.B \-\-Aicon \fIdir\fR
 Path to a single folder where icons are stored.
 The script will first look up for filename that contains
 \fI42x42\fR, \fI72x72\fR, \fI96x96\fR or \fI144x144\fR.
@@ -169,23 +172,23 @@ It will then search the icon directory for subdirectories like
 to find an \fIic_launcher.png\fR image.
 OUYA icon (size \fI732x412\fR, or \fIdrawable-xhdpi/ouya_icon.png\fR) is supported.
 .TP
-.B \-\-apk\-activity \fIactivity\fR
+.B \-\-Aactivity \fIactivity\fR
 The name of the class that extends GameActivity.
 By default it is the name of the project with 'Activity' appended,
 eventual spaces and dashes replaced by underscores.
 .TP
-.B \-\-apk\-maintainer\-name \fIname\fR
+.B \-\-Aauthor \fIname\fR
 Set the maintainer’s name.
 It must be only alphanumerical characters, with eventual underscores.
 .TP
-.B \-\-apk\-package\-name \fIname\fR
+.B \-\-Apkg \fIname\fR
 Set the name of the package.
 By default, it is the name of your project, with eventual spaces replaced by underscores.
 .TP
-.B \-\-apk\-package\-version \fIversion\fR
+.B \-\-Aversion \fIversion\fR
 Set the version of your package.
 .TP
-.B \-\-update\-android
+.B \-\-Aupdate
 Update the love-android-sdl2.git repository used in the cache.
 .SH OTHERS
 .TP

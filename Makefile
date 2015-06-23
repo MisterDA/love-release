@@ -10,12 +10,16 @@ COMPLETION_DIR=/usr/share/bash-completion/completions
 SED_INSTALL_DIR=$(shell echo "$(INSTALL_DIR)" | sed -e 's/[\/&]/\\&/g')
 
 love-release: clean
-	mkdir -p $(BUILD_DIR)
+	mkdir -p '$(BUILD_DIR)'
+	longopt=$$(grep "^LONG_OPTIONS" love-release.sh | sed -re 's/LONG_OPTIONS="(.*)"/\1/'); \
 	for file in scripts/*.sh; do \
-		short="$${short}$$(grep -E -m 1 "^OPTIONS=['\"]?.*['\"]?" "$$file" | sed -r -e "s/OPTIONS=['\"]?//" -e "s/['\"]?$$//")"; \
-		long="$${long}$$(grep -E -m 1 "^LONG_OPTIONS=['\"]?.*['\"]?" "$$file" | sed -r -e "s/LONG_OPTIONS=['\"]?//" -e "s/['\"]?$$//")"; \
+		s="$$(grep -E -m 1 "^OPTIONS=['\"]?.*['\"]?" "$$file" | sed -re "s/OPTIONS=['\"]?//" -e "s/['\"]?$$//")"; \
+		short="$${s}$${short}"; \
+		l="$$s$$(echo "$$longopt" | sed -e "s/,/,$${s}/g")"; \
+		ll="$$(grep -E -m 1 "^LONG_OPTIONS=['\"]?.*['\"]?" "$$file" | sed -re "s/LONG_OPTIONS=['\"]?//" -e "s/['\"]?$$//" -e "s/,/,$${s}/g")"; \
+		if [[ -n $$ll ]]; then l="$${l},$${s}$${ll}"; fi; \
+		long="$${l},$${long}"; \
 	done; \
-	if [[ -n $$long && $${long: -1} != ',' ]]; then long="$${long},"; fi; \
 	sed -re "s/^OPTIONS=(['\"]?)/OPTIONS=\1$$short/" -e "s/^LONG_OPTIONS=(['\"]?)/LONG_OPTIONS=\1$$long/" \
 		-e 's/INSTALLED=false/INSTALLED=true/' \
 		-e 's/SCRIPTS_DIR="scripts"/SCRIPTS_DIR="$(SED_INSTALL_DIR)\/scripts"/' love-release.sh > '$(BUILD_DIR)/love-release'
@@ -32,14 +36,18 @@ install:
 
 embedded: clean
 	mkdir -p '$(BUILD_DIR)'
+	longopt=$$(grep "^LONG_OPTIONS" love-release.sh | sed -re 's/LONG_OPTIONS="(.*)"/\1/'); \
 	for file in scripts/*.sh; do \
 		module="$$(basename -s '.sh' "$$file")"; \
 		content='(source <(cat <<\EndOfModule'$$'\n'"$$(cat $$file)"$$'\n''EndOfModule'$$'\n''))'$$'\n''default_module'$$'\n\n'; \
 		echo "$$content" >> "$(BUILD_DIR)/tmp"; \
-		short="$${short}$$(grep -E -m 1 "^OPTIONS=['\"]?.*['\"]?" "$$file" | sed -r -e "s/OPTIONS=['\"]?//" -e "s/['\"]?$$//")"; \
-		long="$${long}$$(grep -E -m 1 "^LONG_OPTIONS=['\"]?.*['\"]?" "$$file" | sed -r -e "s/LONG_OPTIONS=['\"]?//" -e "s/['\"]?$$//")"; \
+		s="$$(grep -E -m 1 "^OPTIONS=['\"]?.*['\"]?" "$$file" | sed -re "s/OPTIONS=['\"]?//" -e "s/['\"]?$$//")"; \
+		short="$${s}$${short}"; \
+		l="$$s$$(echo "$$longopt" | sed -e "s/,/,$${s}/g")"; \
+		ll="$$(grep -E -m 1 "^LONG_OPTIONS=['\"]?.*['\"]?" "$$file" | sed -re "s/LONG_OPTIONS=['\"]?//" -e "s/['\"]?$$//" -e "s/,/,$${s}/g")"; \
+		if [[ -n $$ll ]]; then l="$${l},$${s}$${ll}"; fi; \
+		long="$${l},$${long}"; \
 	done; \
-	if [[ -n $$long && $${long: -1} != ',' ]]; then long="$${long},"; fi; \
 	sed -re "s/^OPTIONS=(['\"]?)/OPTIONS=\1$$short/" -e "s/^LONG_OPTIONS=(['\"]?)/LONG_OPTIONS=\1$$long/" \
 		-e 's/EMBEDDED=false/EMBEDDED=true/' \
 		-e '/include_scripts_here$$/r $(BUILD_DIR)/tmp' love-release.sh > '$(BUILD_DIR)/love-release.sh'
