@@ -323,11 +323,14 @@ init_module () {
     local module="$2"
     read_config "$module"
     module=${module^^}
-    if (( $opt == 1 )); then
-        if [[ ${!module} == false ]]; then exit_module "execute"; fi
-    fi
-    if compare_version "$LOVE_VERSION" ">" "$VERSION"; then
-        echo "LÖVE $LOVE_VERSION is out ! Your project uses LÖVE ${VERSION}."
+    if (( $opt == 0 )); then
+        if [[ ${!module} == false ]]; then
+            read_config "default"
+        fi
+    else
+        if [[ ${!module} == false ]]; then
+            exit_module "execute"
+        fi
     fi
     gen_version $VERSION
     unset VERSION
@@ -426,13 +429,17 @@ fi
 
 
 (
-    (init_module "LÖVE" "love" "L")
-    if [[ $? -eq 0 || $DEFAULT_MODULE == true ]]; then
-        init_module "LÖVE" "default"
-        create_love_file 9
-        exit_module
-    fi
+    init_module "LÖVE" "love" "L"
+    create_love_file 9
+    exit_module
 )
+if [[ $? -ne 0 && $DEFAULT_MODULE == true ]]; then
+(
+    init_module "LÖVE" "default"
+    create_love_file 9
+    exit_module
+)
+fi
 
 exit 0
 
