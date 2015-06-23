@@ -185,14 +185,13 @@ for _, f in ipairs(fields) do
     t[f] = t[f] or ""
 end
 
+t.os = t.os or {}
 for _, v in ipairs(t.os) do
     t.os[v] = {}
 end
 
 if os == "default" then
-    if not t.os then t.os = {} end
-    if not t.os.love then t.os.love = {} end
-    t.os.default = t.os.love
+    t.os.default = {}
 end
 
 if t.os[os] then
