@@ -41,7 +41,7 @@ check_deps () {
         LUA=true
     }
     if [[ $EXIT == true ]]; then
-        exit 1
+        exit_module "deps"
     fi
 }
 
@@ -100,7 +100,7 @@ compare_version () {
     else
         return 1
     fi
-    if [[ $2 =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
+    if [[ $3 =~ ^([0-9]+)\.([0-9]+)\.([0-9]+)$ ]]; then
         local v2_maj=${BASH_REMATCH[1]}
         local v2_min=${BASH_REMATCH[2]}
         local v2_rev=${BASH_REMATCH[3]}
@@ -238,7 +238,7 @@ read_options () {
     while true; do
         case "$1" in
             -a|--${pre}author )       AUTHOR="$2"; shift 2 ;;
-            --clean )                 rm -rf "$CACHE_DIR"; shift ;;
+            --${pre}clean )           rm -rf "$CACHE_DIR"; shift ;;
             -d|--${pre}description )  DESCRIPTION="$2"; shift 2 ;;
             -e|--${pre}email )        EMAIL="$2"; shift 2 ;;
             -h|--${pre}help )         short_help; exit 0 ;;
@@ -336,6 +336,7 @@ init_module () {
     MODULE="$1"
     CACHE_DIR="$CACHE_DIR/$2"
     read_options "$3"
+    LOVE_FILE="${TITLE}.love"
     mkdir -p "$RELEASE_DIR" "$CACHE_DIR"
     echo "Generating $TITLE with LÖVE $LOVE_VERSION for ${MODULE}..."
     return 0
@@ -344,20 +345,27 @@ init_module () {
 # Create the LÖVE file
 ## $1: Compression level 0-9
 create_love_file () {
-    LOVE_FILE="$RELEASE_DIR"/"$TITLE".love
-    zip -FS -$1 -r "$LOVE_FILE" \
-        -x "$0" "${RELEASE_DIR#$PWD/}/*" \
-        $(ls -Ap | grep "^\." | sed -e 's/^/\//g' -e 's/\/$/\/*/g') @ \
+    local dotfiles=()
+    for file in .*; do
+        if [[ $file == '.' || $file == '..' ]]; then continue; fi
+        if [[ -d $file ]]; then file="$file/*"; fi
+        dotfiles+=( "$file" )
+    done
+    zip -FS -$1 -r "$RELEASE_DIR/$LOVE_FILE" \
+        -x "$0" "${RELEASE_DIR#$PWD/}/*" "${dotfiles[@]}" @ \
         "${FILES[@]}"
 }
 
 # Exit module
 ## $1: optional error identifier
-## $2: optional error message, printed if $1=="undef" or unidentified error
+## $2: optional error message
 exit_module () {
     if [[ -z $1 ]]; then
         echo "Done !"
         exit 0
+    fi
+    if [[ -n $2 ]]; then
+        >&2 echo -e "$2"
     fi
     case $1 in
         execute )
@@ -370,10 +378,9 @@ exit_module () {
         version )
             >&2 echo "LÖVE version string is invalid."
             exit 5 ;;
+        deps )
+            exit 6 ;;
         undef|* )
-            if [[ -n $2 ]]; then
-                >&2 echo "$2"
-            fi
             exit 1 ;;
     esac
 }
@@ -395,6 +402,7 @@ EMBEDDED=false
 DEFAULT_MODULE=true
 
 TITLE="$(basename $(pwd))"
+PROJECT_DIR="$PWD"
 RELEASE_DIR=releases
 CACHE_DIR=~/.cache/love-release
 FILES=()
