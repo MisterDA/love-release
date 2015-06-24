@@ -1,223 +1,234 @@
 # Windows
 init_module "Windows" "windows" "W"
 OPTIONS="W"
-LONG_OPTIONS=""
+LONG_OPTIONS="appid:,installer,32,64"
 
-
-PACKAGE_NAME=$(echo $PROJECT_NAME | sed -e 's/[^-a-zA-Z0-9_]/-/g' | tr '[:upper:]' '[:lower:]')
-
-# Configuration
-if [ "$CONFIG" = true ]; then
-    RELEASE_WIN_32=true
-    RELEASE_WIN_64=true
-    if [ -n "${INI__windows__icon}" ]; then
-        PROJECT_ICO=${INI__windows__icon}
-    fi
-    if [ "${INI__windows__installer}" = true ]; then
-        INSTALLER=true
-    fi
-    if [ -n "${INI__windows__package_version}" ]; then
-        PACKAGE_VERSION=${INI__debian__package_version}
-    fi
-    if [ -n "${INI__windows__maintainer_name}" ]; then
-        MAINTAINER_NAME=${INI__debian__maintainer_name}
-    fi
-    if [ -n "${INI__windows__package_name}" ]; then
-        PACKAGE_NAME=${INI__debian__package_name}
-    fi
-    if [ -n "${INI__windows__appid}" ]; then
-        APPID=${INI__windows__appid}
-    fi
+if [[ -z $IDENTITY ]]; then
+    IDENTITY=$(echo $IDENTITY | sed -e 's/[^-a-zA-Z0-9_]/-/g' | tr '[:upper:]' '[:lower:]')
 fi
 
-
-# Options
-while getoptex "$SCRIPT_ARGS" "$@"
-do
-    if [ "$OPTOPT" = "win-icon" ]; then
-        PROJECT_ICO=$OPTARG
-    elif [ "$OPTOPT" = "win-installer" ]; then
-        INSTALLER=true
-    elif [ "$OPTOPT" = "win-package-version" ]; then
-        PACKAGE_VERSION=$OPTARG
-    elif [ "$OPTOPT" = "win-maintainer-name" ]; then
-        MAINTAINER_NAME=$OPTARG
-    elif [ "$OPTOPT" = "win-package-name" ]; then
-        PACKAGE_NAME=$OPTARG
-    elif [ "$OPTOPT" = "win-appid" ]; then
-        APPID=$OPTARG
-    fi
+while true; do
+    case "$1" in
+        --Wappid )     APPID="$2"; shift 2 ;;
+        --Winstaller ) INSTALLER=true; shift ;;
+        --W32 )        X32=true; shift ;;
+        --W64 )        X64=true; shift ;;
+        -- ) break ;;
+        * ) shift ;;
+    esac
 done
 
 
-# Wine
 FOUND_WINE=true
-command -v wine   >/dev/null 2>&1 || { FOUND_WINE=false; }
-if [ "$FOUND_WINE" = true ]; then
-    WINEPREFIX="$MAIN_CACHE_DIR"/wine
-    mkdir -p "$WINEPREFIX"/drive_c
-    if [ -n "$PROJECT_ICO" ]; then
-        RESHACKER="$WINEPREFIX"/drive_c/"Program Files (x86)"/"Resource Hacker"/ResHacker.exe
-        if [ ! -f "$RESHACKER" ]; then
-            curl -L -C - -o "$WINEPREFIX"/drive_c/reshack_setup.exe http://www.angusj.com/resourcehacker/reshack_setup.exe
-            WINEPREFIX="$WINEPREFIX" wine "$WINEPREFIX/drive_c/reshack_setup.exe"
+command -v wine >/dev/null 2>&1 || { FOUND_WINE=false; } && { WINEPREFIX="$CACHE_DIR/wine"; }
+
+
+if [[ -n $ICON ]]; then
+    if [[ $FOUND_WINE == true ]]; then
+        if [[ -d $ICON ]]; then
+            for file in $ICON/*.ico; do
+                if [[ -f $file ]]; then
+                    ICON="$file"
+                    break
+                else
+                    found=false
+                fi
+            done
         fi
-    fi
-    if [ "$INSTALLER" = true ]; then
-        INNOSETUP="$WINEPREFIX"/drive_c/"Program Files (x86)"/"Inno Setup 5"/ISCC.exe
-        if [ ! -f "$INNOSETUP" ]; then
-           curl -L -C - -o "$WINEPREFIX"/drive_c/is-unicode.exe http://www.jrsoftware.org/download.php/is-unicode.exe
-            WINEPREFIX="$WINEPREFIX" wine "$WINEPREFIX/drive_c/is-unicode.exe"
+        if [[ $found == false || ! -f $ICON ]]; then
+            >&2 echo "Windows icon was not found in ${ICON}."
+            ICON=
+        else
+            RESHACKER="$WINEPREFIX/drive_c/Program Files (x86)/Resource Hacker/ResourceHacker.exe"
+            if [[ ! -f $RESHACKER ]]; then
+                curl -L -C - -o "$WINEPREFIX/drive_c/reshacker_setup.exe http://www.angusj.com/resourcehacker/reshacker_setup.exe"
+                WINEPREFIX="$WINEPREFIX" wine "$WINEPREFIX/drive_c/reshacker_setup.exe"
+            fi
         fi
+    else
+        >&2 echo "Can not set Windows icon without Wine."
     fi
-else
-    unset PROJECT_ICO INSTALLER
 fi
+
+
+if [[ $INSTALLER == true ]]; then
+    missing_opt=false
+    error_msg="Could not build Windows installer."
+    if [[ $FOUND_WINE == false ]]; then
+        >&2 echo "Can not build Windows installer without Wine."
+        exit_module "deps"
+    fi
+    if [[ -z $AUTHOR ]]; then
+        missing_opt=true
+        error_msg="$error_msg\nMissing project author. Use -a or --Wauthor."
+    fi
+    if [[ -z $URL ]]; then
+        missing_opt=true
+        error_msg="$error_msg\nMissing project url. Use -u or --Wurl."
+    fi
+    if [[ -z $GAME_VERSION ]]; then
+        missing_opt=true
+        error_msg="$error_msg\nMissing project version. Use -v or --Wversion."
+    fi
+    if [[ -z $APPID ]]; then
+        missing_opt=true
+        error_msg="$error_msg\nMissing application GUID. Use --Wappid."
+    fi
+    if [[ $missing_opt == true ]]; then
+        exit_module "options" "$error_msg"
+    fi
+
+    INNOSETUP="$WINEPREFIX/drive_c/Program Files (x86)/Inno Setup 5/ISCC.exe"
+    if [[ ! -f $INNOSETUP ]]; then
+        curl -L -C - -o "$WINEPREFIX/drive_c/is-unicode.exe http://www.jrsoftware.org/download.php/is-unicode.exe"
+        WINEPREFIX="$WINEPREFIX" wine "$WINEPREFIX/drive_c/is-unicode.exe"
+    fi
 
 # Inno Setup
 # $1: Path to game exe directory
 # $2: true if 64 bits release
 create_installer () {
-    ln -s "$RELEASE_DIR"/"$1" "$WINEPREFIX"/drive_c/game
-    if [ -n "$PROJECT_ICO" ]; then
-        ln -s "$RELEASE_DIR"/"$PROJECT_ICO" "$WINEPREFIX"/drive_c/game.ico
+    ln -s "$1" "$WINEPREFIX/drive_c/game"
+    if [[ -n $ICON ]]; then
+        cd "$PROJECT_DIR"
+        ln -s "$ICON" "$WINEPREFIX/drive_c/game.ico"
+        cd "$RELEASE_DIR"
     else
-        ln -s "$RELEASE_DIR"/"$1"/game.ico "$WINEPREFIX"/drive_c/game.ico
+        ln -s "$1/game.ico" "$WINEPREFIX/drive_c/game.ico"
     fi
 
-    sed -e "s/#define MyAppName \"\"/#define MyAppName \"$PROJECT_NAME\"/" \
-        -e "s/#define MyAppVersion \"\"/#define MyAppVersion \"$PACKAGE_VERSION\"/" \
-        -e "s/#define MyAppPublisher \"\"/#define MyAppPublisher \"$MAINTAINER_NAME\"/" \
-        -e "s/#define MyAppURL \"\"/#define MyAppURL \"$HOMEPAGE\"/" \
-        -e "s/#define MyAppExeName \"\"/#define MyAppExeName \"${PROJECT_NAME}.exe\"/" \
-        -e "s/AppId={{}/AppId={{$APPID}/" \
-        -e "s/OutputBaseFilename=/OutputBaseFilename=${PACKAGE_NAME}-setup/" \
-        -e 's/SetupIconFile=/SetupIconFile=C:\\game.ico/' \
-        "$PLATFORMS_DIR"/assets/innosetup.iss > "$WINEPREFIX"/drive_c/innosetup.iss
-    if [ "$2" = true ]; then
-        sed -i 's/;ArchitecturesInstallIn64BitMode/ArchitecturesInstallIn64BitMode/' \
-            "$WINEPREFIX"/drive_c/innosetup.iss
+    cat > "$WINEPREFIX/drive_c/innosetup.iss" <<EOF
+#define MyAppName "$TITLE"
+#define MyAppVersion "$GAME_VERSION"
+#define MyAppPublisher "$AUTHOR"
+#define MyAppURL "$URL"
+#define MyAppExeName "${TITLE}.exe"
+
+[Setup]
+;ArchitecturesInstallIn64BitMode=x64 ia64
+AppId={{$APPID}
+AppName={#MyAppName}
+AppVersion={#MyAppVersion}
+;AppVerName={#MyAppName} {#MyAppVersion}
+AppPublisher={#MyAppPublisher}
+AppPublisherURL={#MyAppURL}
+AppSupportURL={#MyAppURL}
+AppUpdatesURL={#MyAppURL}
+DefaultDirName={pf}\{#MyAppName}
+DefaultGroupName={#MyAppName}
+AllowNoIcons=yes
+OutputBaseFilename=${IDENTITY}-setup
+SetupIconFile=C:\\game.ico
+Compression=lzma
+SolidCompression=yes
+
+[Languages]
+Name: "english"; MessagesFile: "compiler:Default.isl"
+Name: "french"; MessagesFile: "compiler:Languages\French.isl"
+Name: "german"; MessagesFile: "compiler:Languages\German.isl"
+
+[Tasks]
+Name: "desktopicon"; Description: "{cm:CreateDesktopIcon}"; GroupDescription: "{cm:AdditionalIcons}"; Flags: unchecked
+
+[Icons]
+Name: "{group}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"
+Name: "{group}\{cm:UninstallProgram,{#MyAppName}}"; Filename: "{uninstallexe}"
+Name: "{commondesktop}\{#MyAppName}"; Filename: "{app}\{#MyAppExeName}"; Tasks: desktopicon
+
+[Run]
+Filename: "{app}\{#MyAppExeName}"; Description: "{cm:LaunchProgram,{#StringChange(MyAppName, '&', '&&')}}"; Flags: nowait postinstall skipifsilent
+
+[Files]
+EOF
+    if [[ $2 == true ]]; then
+        sed -i 's/;ArchitecturesInstallIn64BitMode/ArchitecturesInstallIn64BitMode/' "$WINEPREFIX/drive_c/innosetup.iss"
     fi
 
-    for file in $(ls -AC1 "$1"); do
+    for file in $1; do
         echo "Source: \"C:\\game\\$file\"; DestDir: \"{app}\"; Flags: ignoreversion" \
             >> "$WINEPREFIX"/drive_c/innosetup.iss
     done
 
     WINEPREFIX="$WINEPREFIX" wine "$INNOSETUP" /Q 'c:\innosetup.iss'
-    mv "$WINEPREFIX"/drive_c/Output/"$PACKAGE_NAME"-setup.exe .
-    rm -rf "$WINEPREFIX"/drive_c/{game,game.ico,innosetup.iss,Output}
+    mv "$WINEPREFIX/drive_c/Output/$IDENTITY-setup.exe" .
+    rm -rf "$WINEPREFIX/drive_c/{game,game.ico,innosetup.iss,Output}"
 }
 
-# Missing commands
-MISSING_INFO=0
-ERROR_MSG="Could not build Windows installer."
-if [ -z "$PACKAGE_VERSION" ] && [ "$INSTALLER" = true ]; then
-    MISSING_INFO=1
-    ERROR_MSG="$ERROR_MSG\nMissing project's version. Use --win-package-version."
-fi
-if [ -z "$PROJECT_HOMEPAGE" ] && [ "$INSTALLER" = true ]; then
-    MISSING_INFO=1
-    ERROR_MSG="$ERROR_MSG\nMissing project's homepage. Use --homepage."
-fi
-if [ -z "$MAINTAINER_NAME" ] && [ "$INSTALLER" = true ]; then
-    MISSING_INFO=1
-    ERROR_MSG="$ERROR_MSG\nMissing maintainer's name. Use --win-maintainer-name."
-fi
-if [ -z "$APPID" ] && [ "$INSTALLER" = true ]; then
-    MISSING_INFO=1
-    ERROR_MSG="$ERROR_MSG\nMissing application GUID. Use --win-appid."
 fi
 
-if [ "$MISSING_INFO" -eq 1  ]; then
-    exit_module "$MISSING_INFO" "$ERROR_MSG"
+
+if [[ ${X32:=false} == false && ${X64:=false} == false ]]; then
+    X32=true
+    X64=true
 fi
 
 
 create_love_file 9
+cd "$RELEASE_DIR"
 
 
 # Windows 32-bits
-if [ "$RELEASE_WIN_32" = true ]; then
+if [[ $X32 == true ]]; then
 
-    if [ "$LOVE_GT_090" = true ]; then
-        if [ -f "$CACHE_DIR"/love-$LOVE_VERSION-win32.zip ]; then
-            cp "$CACHE_DIR"/love-$LOVE_VERSION-win32.zip ./
+    if [[ ! -f "$CACHE_DIR/love-$LOVE_VERSION-win32.zip" ]]; then
+        if compare_version "$LOVE_VERSION" '>=' '0.9.0'; then
+            curl -L -C - -o "$CACHE_DIR/love-$LOVE_VERSION-win32.zip" https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win32.zip
         else
-            curl -L -C - -o "$CACHE_DIR"/love-$LOVE_VERSION-win32.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win32.zip
-            cp "$CACHE_DIR"/love-$LOVE_VERSION-win32.zip ./
-        fi
-    else
-        if [ -f "$CACHE_DIR"/love-$LOVE_VERSION-win-x86.zip ]; then
-            cp "$CACHE_DIR"/love-$LOVE_VERSION-win-x86.zip ./love-$LOVE_VERSION-win32.zip
-        else
-            curl -L -C - -o "$CACHE_DIR"/love-$LOVE_VERSION-win-x86.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x86.zip
-            cp "$CACHE_DIR"/love-$LOVE_VERSION-win-x86.zip ./love-$LOVE_VERSION-win32.zip
+            curl -L -C - -o "$CACHE_DIR/love-$LOVE_VERSION-win32.zip" https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x86.zip
         fi
     fi
 
-    unzip -qq love-$LOVE_VERSION-win32.zip
+    unzip -qq "$CACHE_DIR/love-$LOVE_VERSION-win32.zip"
 
-    if [ -n "$PROJECT_ICO" ]; then
+    if [[ -n $ICON ]]; then
         WINEPREFIX="$WINEPREFIX" wine "$RESHACKER" \
-            -addoverwrite "love-$LOVE_VERSION-win32/love.exe,love-$LOVE_VERSION-win32/love.exe,"$PROJECT_ICO",ICONGROUP,MAINICON,0" 2> /dev/null
+            -addoverwrite "love-$LOVE_VERSION-win32/love.exe,love-$LOVE_VERSION-win32/love.exe,$ICON,ICONGROUP,MAINICON,0" 2> /dev/null
     fi
 
-    cat love-$LOVE_VERSION-win32/love.exe "$LOVE_FILE" > love-$LOVE_VERSION-win32/"$PROJECT_NAME".exe
+    cat love-$LOVE_VERSION-win32/love.exe "$LOVE_FILE" > "love-$LOVE_VERSION-win32/${TITLE}.exe"
     rm love-$LOVE_VERSION-win32/love.exe
-    mv love-$LOVE_VERSION-win32 "$PROJECT_NAME"-win32
-    if [ "$INSTALLER" = true ]; then
-        rm -rf "$PACKAGE_NAME"-setup-win32.exe 2> /dev/null
-        create_installer "$PROJECT_NAME-win32"
-        mv "$PACKAGE_NAME"-setup.exe "$PACKAGE_NAME"-setup-win32.exe
+    mv love-$LOVE_VERSION-win32 "$TITLE"-win32
+    if [[ $INSTALLER == true ]]; then
+        rm -rf "$IDENTITY-setup-win32.exe" 2> /dev/null
+        create_installer "$TITLE-win32"
+        mv "$IDENTITY-setup.exe" "$IDENTITY-setup-win32.exe"
     else
-        rm -rf "$PROJECT_NAME"-win32.zip 2> /dev/null
-        zip -9 -qr "$PROJECT_NAME"-win32.zip "$PROJECT_NAME"-win32
+        zip -FS -9 -qr "$TITLE-win32.zip" "$TITLE-win32"
     fi
-    rm -rf love-$LOVE_VERSION-win32.zip "$PROJECT_NAME"-win32
+    rm -rf "$TITLE-win32"
 fi
 
 ## Windows 64-bits ##
-if [ "$RELEASE_WIN_64" = true ] && [ "$LOVE_GT_080" = true ]; then
+if [[ $X64 == true ]] && compare_version "$LOVE_VERSION" '>=' '0.8.0'; then
 
-    if [ "$LOVE_GT_090" = true ]; then
-        if [ -f "$CACHE_DIR"/love-$LOVE_VERSION-win64.zip ]; then
-            cp "$CACHE_DIR"/love-$LOVE_VERSION-win64.zip ./
+    if [[ ! -f "$CACHE_DIR/love-$LOVE_VERSION-win64.zip" ]]; then
+        if compare_version "$LOVE_VERSION" '>=' '0.9.0'; then
+            curl -L -C - -o "$CACHE_DIR/love-$LOVE_VERSION-win64.zip" https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win64.zip
         else
-            curl -L -C - -o "$CACHE_DIR"/love-$LOVE_VERSION-win64.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win64.zip
-            cp "$CACHE_DIR"/love-$LOVE_VERSION-win64.zip ./
-        fi
-    else
-        if [ -f "$CACHE_DIR"/love-$LOVE_VERSION-win-x64.zip ]; then
-            cp "$CACHE_DIR"/love-$LOVE_VERSION-win-x64.zip ./love-$LOVE_VERSION-win64.zip
-        else
-            curl -L -C - -o "$CACHE_DIR"/love-$LOVE_VERSION-win-x64.zip https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x64.zip
-            cp "$CACHE_DIR"/love-$LOVE_VERSION-win-x64.zip ./love-$LOVE_VERSION-win64.zip
+            curl -L -C - -o "$CACHE_DIR/love-$LOVE_VERSION-win-x64.zip" https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x64.zip
         fi
     fi
 
-    unzip -qq love-$LOVE_VERSION-win64.zip
+    unzip -qq "$CACHE_DIR/love-$LOVE_VERSION-win64.zip"
 
-    if [ -n "$PROJECT_ICO" ]; then
+    if [[ -n $ICON ]]; then
         WINEPREFIX="$WINEPREFIX" wine "$RESHACKER" \
-            -addoverwrite "love-$LOVE_VERSION-win64/love.exe,love-$LOVE_VERSION-win64/love.exe,"$PROJECT_ICO",ICONGROUP,MAINICON,0" 2> /dev/null
+            -addoverwrite "love-$LOVE_VERSION-win64/love.exe,love-$LOVE_VERSION-win64/love.exe,$ICON,ICONGROUP,MAINICON,0" 2> /dev/null
     fi
 
-    cat love-$LOVE_VERSION-win64/love.exe "$LOVE_FILE" > love-$LOVE_VERSION-win64/"$PROJECT_NAME".exe
+    cat love-$LOVE_VERSION-win64/love.exe "$LOVE_FILE" > "love-$LOVE_VERSION-win64/${TITLE}.exe"
     rm love-$LOVE_VERSION-win64/love.exe
-    mv love-$LOVE_VERSION-win64 "$PROJECT_NAME"-win64
-    if [ "$INSTALLER" = true ]; then
-        rm -rf "$PACKAGE_NAME"-setup-win64.exe 2> /dev/null
-        create_installer "$PROJECT_NAME-win64" "true"
-        mv "$PACKAGE_NAME"-setup.exe "$PACKAGE_NAME"-setup-win64.exe
+    mv love-$LOVE_VERSION-win64 "$TITLE-win64"
+    if [[ $INSTALLER == true ]]; then
+        rm -rf "$IDENTITY-setup-win64.exe" 2> /dev/null
+        create_installer "$TITLE-win64" "true"
+        mv "$IDENTITY-setup.exe" "$IDENTITY-setup-win64.exe"
     else
-        rm -rf "$PROJECT_NAME"-win64.zip 2> /dev/null
-        zip -9 -qr "$PROJECT_NAME"-win64.zip "$PROJECT_NAME"-win64
+        zip -FS -9 -qr "$TITLE-win64.zip" "$TITLE-win64"
     fi
-    rm -rf love-$LOVE_VERSION-win64.zip "$PROJECT_NAME"-win64
+    rm -rf "$TITLE-win64"
 fi
 
 
-unset PROJECT_ICO APPID INSTALLER PACKAGE_NAME PACKAGE_VERSION MAINTAINER_NAME
 exit_module
 
