@@ -416,6 +416,11 @@ if [[ $INSTALLED == false && $EMBEDDED == false ]]; then
     exit_module "undef" "love-release has not been installed, and is not embedded into one script."
 fi
 
+if [[ ! -f "main.lua" ]]; then
+    >&2 echo "No main.lua file was found."
+    exit_module 1
+fi
+
 if [[ $EMBEDDED == true ]]; then
     : # include_scripts_here
 elif [[ $INSTALLED == true ]]; then
