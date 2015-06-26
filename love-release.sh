@@ -143,27 +143,6 @@ compare_version () {
 }
 
 
-# Escape directory name for zip
-## $1: directory path
-## echo: escaped directory path
-dir_escape () {
-    local dir="$1"
-    if [ -d "$dir" ]; then
-        if [ "${dir::1}" != "/" ]; then
-            dir="/$dir"
-        fi
-        if [ "${dir: -1}" != "*" ]; then
-            if [ "${dir: -1}" != "/" ]; then
-                dir="$dir/*"
-            else
-                dir="$dir*"
-            fi
-        fi
-    fi
-    echo "$dir"
-}
-
-
 # Read configuration
 ## $1: system name
 read_config () {
@@ -242,13 +221,23 @@ read_options () {
             -d|--${pre}description )  DESCRIPTION="$2"; shift 2 ;;
             -e|--${pre}email )        EMAIL="$2"; shift 2 ;;
             -h|--${pre}help )         short_help; exit 0 ;;
-            -i|--${pre}icon )         ICON="$2"; shift 2 ;;
+            -i|--${pre}icon )
+                ICON="$2"
+                if [[ -d $ICON ]]; then
+                    local icon="$(realpath "$ICON")"
+                    local wd="$(realpath "$PWD")"
+                    EXCLUDE+=( "${icon//$wd\/}/*" )
+                elif [[ -f $ICON ]]; then
+                    EXCLUDE+=( "$ICON" )
+                fi
+                shift 2 ;;
             -l|--${pre}love )         if ! gen_version "$2"; then exit_module "version"; fi; shift 2 ;;
             -p|--${pre}pkg )          IDENTITY="$2"; shift 2 ;;
             -r|--${pre}release )      RELEASE_DIR="$2"; shift 2 ;;
             -t|--${pre}title )        TITLE="$2"; shift 2 ;;
             -u|--${pre}url )          URL="$2"; shift 2 ;;
             -v|--${pre}version )      GAME_VERSION="$2"; shift 2 ;;
+            -x|--${pre}exclude )      EXCLUDE+=( "$2" ); shift 2 ;;
             -- ) shift; break ;;
             * ) shift ;;
         esac
@@ -351,8 +340,10 @@ create_love_file () {
         if [[ -d $file ]]; then file="$file/*"; fi
         dotfiles+=( "$file" )
     done
+    local release_dir="$(realpath "$RELEASE_DIR")"
+    local wd="$(realpath "$PWD")"
     zip -FS -$1 -r "$RELEASE_DIR/$LOVE_FILE" \
-        -x "$0" "${RELEASE_DIR#$PWD/}/*" "${dotfiles[@]}" @ \
+        -x "$0" "${release_dir//$wd\/}/*" "${dotfiles[@]}" "${EXCLUDE[@]}" @ \
         "${FILES[@]}"
 }
 
@@ -406,9 +397,10 @@ PROJECT_DIR="$PWD"
 RELEASE_DIR=releases
 CACHE_DIR=~/.cache/love-release
 FILES=()
+EXCLUDE=()
 
-OPTIONS="La:d:e:hi:l:p:r:t:u:v:"
-LONG_OPTIONS="author:,clean,description:,email:,help,icon:,love:,pkg:,release:,title:,url:,version:"
+OPTIONS="La:d:e:hi:l:p:r:t:u:v:x:"
+LONG_OPTIONS="author:,clean,description:,email:,exclude:,help,icon:,love:,pkg:,release:,title:,url:,version:"
 ARGS=$(getopt -o "$OPTIONS" -l "$LONG_OPTIONS" -n 'love-release' -- "$@")
 if (( $? != 0 )); then short_help; exit_module "options"; fi
 eval set -- "$ARGS"

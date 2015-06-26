@@ -96,7 +96,9 @@ option for a module. For example, the option `--Wauthor` will set the author's n
 
 `-v, --version` Set your project's version.
 
-`-x`  Exclude file or directory.
+`-x, --exclude`  Exclude file or directory.
+      Use backslashes or quotes to avoid the shell filename substitution,
+      so that the name matching is performed by zip at all directory levels.
 
 #### WINDOWS
 You can create an installer. If you don’t, you will have zip of a folder

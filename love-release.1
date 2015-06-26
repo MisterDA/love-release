@@ -99,8 +99,10 @@ Set your project's homepage.
 .B \-v, \-\-version \fIversion\fR
 Set the version for your project.
 .TP
-.B \-x \fIfile\fR|\fIdirectory\fR
+.B \-x, \-\-exclude \fIfile\fR|\fIdirectory\fR
 Exclude file or directory.
+Use backslashes or quotes to avoid the shell filename substitution,
+so that the name matching is performed by zip at all directory levels.
 .SH WINDOWS
 You can create an installer. If you don’t, you will have zip of a folder
 containing your game executable and its dlls.
