@@ -1,7 +1,11 @@
 ### NAME
-`love-release.sh` -- Bash script to generate Love 2D game releases
+`love-release.sh` -- Bash script to generate [LÖVE](https://love2d.org/) game releases
 
 ### INSTALLATION
+`love-release` relies on `GNU sed`, `GNU getopt` (OSX and BSD user needs to install them), `curl`, `zip` and `unzip`.
+You need to have `lua` installed to be able to read the configuration.
+You also need Wine to get icons and installer for Windows, the Debian pakaging utilities for Debian and the Android SDK to build a package for Android.
+
 First clone the repository, then you have two choices:
 - you can build the script and install it on your system, and benefit of command-line completion, man page and extensibility,
 - or make an embedded version with every thing you need in one file.
@@ -23,13 +27,10 @@ To remove love-release, if you haven't changed the default installation director
 `love-release.sh [-ADLMW] [-t project_title] [-r release_dir] [-l love_version] [FILES...]`
 
 ### DESCRIPTION
-love-release.sh can be used to generate Love 2D game applications
-and get over the fastidious zipping commands you had to do.  
+love-release.sh can be used to generate LÖVE game applications and get over the fastidious zipping commands you had to do.  
 
-The script fully supports Windows, MacOS either on x86 or x64,
-Debian and Android packages.  
-It needs an Internet connection to download Love files,
-and relies on `curl`, `zip` and `unzip` commands.  
+The script fully supports Windows, MacOS either on x86 or x64, Debian and Android packages.  
+It needs an Internet connection to download LÖVE files.
 
 ### CONFIGURATION
 You can install `lua` and add a `conf.lua` to your project to get automatic releases.
@@ -181,8 +182,4 @@ but if provided it can use them.
 [https://www.love2d.org](https://www.love2d.org)  
 [https://www.love2d.org/wiki/Game_Distribution](https://www.love2d.org/wiki/Game_Distribution)  
 [https://www.github.com/MisterDA/love-release](https://www.github.com/MisterDA/love-release)
-
-### THANKS
-The work done on Debian packaging is highly inspired by what [josefnpat](http://josefnpat.com/) did.
-Thanks to him !
 
