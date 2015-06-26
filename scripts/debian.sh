@@ -4,165 +4,101 @@ OPTIONS="D"
 LONG_OPTIONS=""
 
 
-PACKAGE_NAME=$(echo $PROJECT_NAME | sed -e 's/[^-a-zA-Z0-9_]/-/g' | tr '[:upper:]' '[:lower:]')
-
-# Configuration
-if [ "$CONFIG" =  true ]; then
-    if [ -n "${INI__debian__package_version}" ]; then
-        PACKAGE_VERSION=${INI__debian__package_version}
-    fi
-    if [ -n "${INI__debian__maintainer_name}" ]; then
-        MAINTAINER_NAME=${INI__debian__maintainer_name}
-    fi
-    if [ -n "${INI__debian__maintainer_email}" ]; then
-        MAINTAINER_EMAIL=${INI__debian__maintainer_email}
-    fi
-    if [ -n "${INI__debian__package_name}" ]; then
-        PACKAGE_NAME=${INI__debian__package_name}
-    fi
-    if [ -n "${INI__debian__icon}" ]; then
-        ICON_DIR=${INI__debian__icon}
-    fi
-fi
-
-
-# Options
-while getoptex "$SCRIPT_ARGS" "$@"
-do
-    if [ "$OPTOPT" = "deb-package-version" ]; then
-        PACKAGE_VERSION=$OPTARG
-    elif [ "$OPTOPT" = "deb-maintainer-name" ]; then
-        MAINTAINER_NAME=$OPTARG
-    elif [ "$OPTOPT" = "maintainer-email" ]; then
-        MAINTAINER_EMAIL=$OPTARG
-    elif [ "$OPTOPT" = "deb-package-name" ]; then
-        PACKAGE_NAME=$OPTARG
-    elif [ "$OPTOPT" = "deb-icon" ]; then
-        ICON_DIR=$OPTARG
-    fi
-done
-
+IDENTITY=$(echo $TITLE | sed -e 's/[^-a-zA-Z0-9_]/-/g' | tr '[:upper:]' '[:lower:]')
 
 # Debian
-MISSING_INFO=0
-ERROR_MSG="Could not build Debian package."
-if [ -z "$PACKAGE_VERSION" ]; then
-    MISSING_INFO=1
-    ERROR_MSG="$ERROR_MSG\nMissing project's version. Use --deb-package-version."
+missing_info=false
+error_msg="Could not build Debian package."
+if [[ -z $GAME_VERSION ]]; then
+    missing_info=true
+    error_msg="$error_msg\nMissing project's version. Use -v or --Dversion."
 fi
-if [ -z "$PROJECT_HOMEPAGE" ]; then
-    MISSING_INFO=1
-    ERROR_MSG="$ERROR_MSG\nMissing project's homepage. Use --homepage."
+if [[ -z $URL ]]; then
+    missing_info=true
+    error_msg="$error_msg\nMissing project's homepage. Use -u or -Durl."
 fi
-if [ -z "$PROJECT_DESCRIPTION" ]; then
-    MISSING_INFO=1
-    ERROR_MSG="$ERROR_MSG\nMissing project's description. Use --description."
+if [[ -z $DESCRIPTION ]]; then
+    missing_info=true
+    error_msg="$error_msg\nMissing project's description. Use -d or --Ddescription."
 fi
-if [ -z "$MAINTAINER_NAME" ]; then
-    MISSING_INFO=1
-    ERROR_MSG="$ERROR_MSG\nMissing maintainer's name. Use --deb-maintainer-name."
+if [[ -z $AUTHOR ]]; then
+    missing_info=true
+    error_msg="$error_msg\nMissing maintainer's name. Use -a or --Dauthor."
 fi
-if [ -z "$MAINTAINER_EMAIL" ]; then
-    MISSING_INFO=1
-    ERROR_MSG="$ERROR_MSG\nMissing maintainer's email. Use --maintainer-email."
+if [[ -z $EMAIL ]]; then
+    missing_info=true
+    error_msg="$error_msg\nMissing maintainer's email. Use -e or --Demail."
 fi
-if [ "$MISSING_INFO" -eq 1  ]; then
-    exit_module "$MISSING_INFO" "$ERROR_MSG"
+if [[ $missing_info == true  ]]; then
+    exit_module "options" "$error_msg"
 fi
 
 
 create_love_file 9
+cd "$RELEASE_DIR"
 
 
-TEMP=$(mktemp -d)
+TEMP="$(mktemp -d)"
+umask 0022
 
-CONTROL=$TEMP/DEBIAN/control
-mkdir -p $TEMP/DEBIAN
-echo "Package: $PACKAGE_NAME"    >  $CONTROL
-echo "Version: $PACKAGE_VERSION" >> $CONTROL
-echo "Architecture: all"         >> $CONTROL
-echo "Maintainer: $MAINTAINER_NAME <$MAINTAINER_EMAIL>" >> $CONTROL
-echo "Installed-Size: $(echo "$(stat -c %s "$PROJECT_NAME".love) / 1024" | bc)" >> $CONTROL
-echo "Depends: love (>= $LOVE_VERSION)"   >> $CONTROL
-echo "Priority: extra"                    >> $CONTROL
-echo "Homepage: $PROJECT_HOMEPAGE"        >> $CONTROL
-echo "Description: $PROJECT_DESCRIPTION"  >> $CONTROL
-chmod 0644 $CONTROL
+mkdir -p "$TEMP/DEBIAN"
+cat > "$TEMP/DEBIAN/control" <<EOF
+Package: $IDENTITY
+Version: $GAME_VERSION
+Architecture: all
+Maintainer: $AUTHOR <$EMAIL>
+Installed-Size: $(( $(stat -c %s "$LOVE_FILE") / 1024 ))
+Depends: love (>= $LOVE_VERSION)
+Priority: extra
+Homepage: $URL
+Description: $DESCRIPTION
+EOF
 
-DESKTOP=$TEMP/usr/share/applications/${PACKAGE_NAME}.desktop
-mkdir -p $TEMP/usr/share/applications
-echo "[Desktop Entry]"              >  $DESKTOP
-echo "Name=$PROJECT_NAME"           >> $DESKTOP
-echo "Comment=$PROJECT_DESCRIPTION" >> $DESKTOP
-echo "Exec=$PACKAGE_NAME"           >> $DESKTOP
-echo "Type=Application"             >> $DESKTOP
-echo "Categories=Game;"             >> $DESKTOP
-chmod 0644 $DESKTOP
+mkdir -p "$TEMP/usr/share/applications"
+cat > "$TEMP/usr/share/applications/${IDENTITY}.desktop" <<EOF
+[Desktop Entry]
+Name=$TITLE
+Comment=$DESCRIPTION
+Exec=$IDENTITY
+Type=Application
+Categories=Game;
+EOF
 
-PACKAGE_DIR=$TEMP/usr/share/games/$PACKAGE_NAME
-PACKAGE_LOC=$PACKAGE_NAME-$PACKAGE_VERSION.love
+mkdir -p "$TEMP/usr/bin"
+cat <(echo -ne '#!/usr/bin/env love\n') "$LOVE_FILE" > "$TEMP/usr/bin/$IDENTITY"
+chmod +x "$TEMP/usr/bin/$IDENTITY"
 
-mkdir -p $PACKAGE_DIR
-cp "$LOVE_FILE" $PACKAGE_DIR/$PACKAGE_LOC
-chmod 0644 $PACKAGE_DIR/$PACKAGE_LOC
+if [[ -d $ICON ]]; then
+    ICON_LOC=$TEMP/usr/share/icons/hicolor
+    mkdir -p $ICON_LOC
+    echo "Icon=$IDENTITY" >> "$TEMP/usr/share/applications/${IDENTITY}.desktop"
 
-BIN_LOC=$TEMP/usr/bin
-mkdir -p $BIN_LOC
-echo "#!/usr/bin/env bash" >  $BIN_LOC/$PACKAGE_NAME
-echo "set -e"              >> $BIN_LOC/$PACKAGE_NAME
-echo "love /usr/share/games/$PACKAGE_NAME/$PACKAGE_LOC" >> $BIN_LOC/$PACKAGE_NAME
-chmod 0755 $BIN_LOC/$PACKAGE_NAME
-
-ICON_LOC=$TEMP/usr/share/icons/hicolor
-mkdir -p $ICON_LOC
-if [ -n "$ICON_DIR" ]; then
-    echo "Icon=$PACKAGE_NAME" >> $DESKTOP
-
-    IFS=$'\n'
-    if [ "${ICON_DIR%?}" = "/" ]; then
-        ICON_DIR=${ICON_DIR: -1}
-    fi
-    if [ "${ICON_DIR:0:1}" != "/" ]; then
-        ICON_DIR=$PROJECT_DIR/$ICON_DIR
-    fi
-    ICON_FILES=( $(ls -AC1 "$ICON_DIR") )
-
-    for ICON in "${ICON_FILES[@]}"
-    do
-        RES=$(echo "$ICON" | grep -Eo "[0-9]+x[0-9]+")
-        EXT=$(echo "$ICON" | sed -e 's/.*\.//g')
-        if [ "$EXT" = "svg" ]; then
-            mkdir -p $ICON_LOC/scalable/apps
-            cp "$ICON_DIR"/"$ICON" $ICON_LOC/scalable/apps/${PACKAGE_NAME}.$EXT
-            chmod 0644 $ICON_LOC/scalable/apps/${PACKAGE_NAME}.$EXT
-        else
-            if [ -n "$RES" ]; then
-                mkdir -p $ICON_LOC/$RES/apps
-                cp "$ICON_DIR"/"$ICON" $ICON_LOC/$RES/apps/${PACKAGE_NAME}.$EXT
-                chmod 0644 $ICON_LOC/$RES/apps/${PACKAGE_NAME}.$EXT
-            fi
+    cd "$ICON"
+    for file in *; do
+        RES=$(echo "$file" | grep -Eo "[0-9]+x[0-9]+")
+        EXT=$(echo "$file" | sed -e 's/.*\.//g')
+        if [[ $EXT == "svg" ]]; then
+            mkdir -p "$ICON_LOC/scalable/apps"
+            cp "$file" "$ICON_LOC/scalable/apps/${IDENTITY}.svg"
+            chmod 0644 "$ICON_LOC/scalable/apps/${IDENTITY}.svg"
+        elif [[ -n $RES ]]; then
+            mkdir -p "$ICON_LOC/$RES/apps"
+            cp "$file" "$ICON_LOC/$RES/apps/${IDENTITY}.$EXT"
+            chmod 0644 "$ICON_LOC/$RES/apps/${IDENTITY}.$EXT"
         fi
     done
 else
-    echo "Icon=love" >> $DESKTOP
+    echo "Icon=love" >> "$TEMP/usr/share/applications/${IDENTITY}.desktop"
 fi
 
+cd "$TEMP"
+# TODO: There might be a problem here if the filename contains weird characters.
+find "usr" -type f -exec md5sum {} \; | sed -r "s/^([0-9a-f]{32}  )/\1\//g" > "$TEMP/DEBIAN/md5sums"
+cd "$PROJECT_DIR"
 
-cd $TEMP
-for line in $(find usr/ -type f); do
-    md5sum "$line" >> $TEMP/DEBIAN/md5sums
-done
-chmod 0644 $TEMP/DEBIAN/md5sums
-
-for line in $(find usr/ -type d); do
-    chmod 0755 "$line"
-done
-
-fakeroot dpkg-deb -b $TEMP "$RELEASE_DIR"/$PACKAGE_NAME-${PACKAGE_VERSION}_all.deb
-cd "$RELEASE_DIR"
-rm -rf $TEMP
+fakeroot dpkg-deb -b "$TEMP" "$RELEASE_DIR/$IDENTITY-${GAME_VERSION}_all.deb"
+rm -rf "$TEMP"
 
 
-unset MAINTAINER_NAME MAINTAINER_EMAIL PACKAGE_NAME PACKAGE_VERSION
 exit_module
 
