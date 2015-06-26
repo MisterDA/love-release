@@ -254,14 +254,16 @@ default_module () {
 
 # Print short help
 short_help () {
-    cat <<EOF
+    cat <<EndOfSHelp
 Usage: love-release.sh [options...] [files...]
 Options:
  -h           Print short help
  -t <title>   Set the project's title
  -r <release> Set the release directory
  -v <version> Set the LÖVE version
-EOF
+Modules:
+ -L    LÖVE
+EndOfSHelp
 }
 
 dump_var () {

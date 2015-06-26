@@ -19,9 +19,12 @@ love-release: clean
 		ll="$$(grep -E -m 1 "^LONG_OPTIONS=['\"]?.*['\"]?" "$$file" | sed -re "s/LONG_OPTIONS=['\"]?//" -e "s/['\"]?$$//" -e "s/,/,$${s}/g")"; \
 		if [[ -n $$ll ]]; then l="$${l},$${s}$${ll}"; fi; \
 		long="$${l},$${long}"; \
+		if [[ -n $$shelp ]]; then shelp="$$shelp\n"; fi; \
+		shelp="$$shelp -$$(grep "init_module" $$file | sed -e 's/init_module //' -e 's/" "/\t/g' -e 's/"//g' | awk -F "\t" '{print($$3,"  ",$$1)}')"; \
 	done; \
 	sed -re "s/^OPTIONS=(['\"]?)/OPTIONS=\1$$short/" -e "s/^LONG_OPTIONS=(['\"]?)/LONG_OPTIONS=\1$$long/" \
 		-e 's/INSTALLED=false/INSTALLED=true/' \
+		-e "/^EndOfSHelp/ i\\$$shelp" \
 		-e 's/SCRIPTS_DIR="scripts"/SCRIPTS_DIR="$(SED_INSTALL_DIR)\/scripts"/' love-release.sh > '$(BUILD_DIR)/love-release'; \
 	comp="$$(if [[ -n $$long ]]; then echo --$$long | tr -d ':' | sed -e 's/,$$//' -e 's/,/ --/g'; fi)$$(if [[ -n $$short ]]; then echo $$short | sed -r 's/(.)/ -\1/g'; fi) "; \
 	sed -re "s/opts=\"(.*)/opts=\"$$comp\1/" completion.sh > '$(BUILD_DIR)/completion.sh'
@@ -49,9 +52,11 @@ embedded: clean
 		ll="$$(grep -E -m 1 "^LONG_OPTIONS=['\"]?.*['\"]?" "$$file" | sed -re "s/LONG_OPTIONS=['\"]?//" -e "s/['\"]?$$//" -e "s/,/,$${s}/g")"; \
 		if [[ -n $$ll ]]; then l="$${l},$${s}$${ll}"; fi; \
 		long="$${l},$${long}"; \
+		shelp="$$shelp -$$(grep "init_module" $$file | sed -e 's/init_module //' -e 's/" "/\t/g' -e 's/"//g' | awk -F "\t" '{print($$3,"  ",$$1)}')"; \
 	done; \
 	sed -re "s/^OPTIONS=(['\"]?)/OPTIONS=\1$$short/" -e "s/^LONG_OPTIONS=(['\"]?)/LONG_OPTIONS=\1$$long/" \
 		-e 's/EMBEDDED=false/EMBEDDED=true/' \
+		-e "/^EndOfSHelp/ i\\$$shelp" \
 		-e '/include_scripts_here$$/r $(BUILD_DIR)/tmp' love-release.sh > '$(BUILD_DIR)/love-release.sh'
 	chmod 0775 '$(BUILD_DIR)/love-release.sh'
 	rm -rf '$(BUILD_DIR)/tmp'
