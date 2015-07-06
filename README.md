@@ -2,7 +2,7 @@
 `love-release.sh` -- Bash script to generate [LÖVE](https://love2d.org/) game releases
 
 ### INSTALLATION
-`love-release` relies on `GNU sed`, `GNU getopt` (OSX and BSD user needs to install them), `curl`, `zip` and `unzip`.
+`love-release` relies on `GNU getopt` (OSX and BSD user needs to install it), `curl`, `zip` and `unzip`.
 You need to have `lua` installed to be able to read the configuration.
 You also need Wine to get icons and installer for Windows, the Debian pakaging utilities for Debian and the Android SDK to build a package for Android.
 

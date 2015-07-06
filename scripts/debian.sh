@@ -93,7 +93,7 @@ fi
 
 cd "$TEMP"
 # TODO: There might be a problem here if the filename contains weird characters.
-find "usr" -type f -exec md5sum {} \; | sed -r "s/^([0-9a-f]{32}  )/\1\//g" > "$TEMP/DEBIAN/md5sums"
+find "usr" -type f -exec md5sum {} \; | sed -E "s/^([0-9a-f]{32}  )/\1\//g" > "$TEMP/DEBIAN/md5sums"
 cd "$PROJECT_DIR"
 
 fakeroot dpkg-deb -b "$TEMP" "$RELEASE_DIR/$IDENTITY-${GAME_VERSION}_all.deb"
