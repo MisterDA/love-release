@@ -224,8 +224,8 @@ read_options () {
             -i|--${pre}icon )
                 ICON="$2"
                 if [[ -d $ICON ]]; then
-                    local icon="$(realpath "$ICON")"
-                    local wd="$(realpath "$PWD")"
+                    local icon="$(readlink -m "$ICON")"
+                    local wd="$(readlink -m "$PWD")"
                     EXCLUDE+=( "${icon//$wd\/}/*" )
                 elif [[ -f $ICON ]]; then
                     EXCLUDE+=( "$ICON" )
@@ -342,8 +342,8 @@ create_love_file () {
         if [[ -d $file ]]; then file="$file/*"; fi
         dotfiles+=( "$file" )
     done
-    local release_dir="$(realpath "$RELEASE_DIR")"
-    local wd="$(realpath "$PWD")"
+    local release_dir="$(readlink -m "$RELEASE_DIR")"
+    local wd="$(readlink -m "$PWD")"
     zip -FS -$1 -r "$RELEASE_DIR/$LOVE_FILE" \
         -x "$0" "${release_dir//$wd\/}/*" "${dotfiles[@]}" "${EXCLUDE[@]}" @ \
         "${FILES[@]}"
