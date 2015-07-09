@@ -68,8 +68,8 @@ See the `conf.lua` file included to see how configuration works.
      Remember that x86 is always backwards compatible with x64.
      Depending on the Love version used, the script will choose which one,
      between x64 and x86 or x86 only to create.  
-`--W32`  Create Windows x86 executable only  
-`--W64`  Create Windows x64 executable only
+`-W32`  Create Windows x86 executable only  
+`-W64`  Create Windows x64 executable only
 
 #### PROJECT OPTIONS
 You can use the option of a module and append a long option from this list to set a specific

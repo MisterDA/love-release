@@ -1,7 +1,7 @@
 # Windows
 init_module "Windows" "windows" "W"
-OPTIONS="W"
-LONG_OPTIONS="appid:,installer,32,64"
+OPTIONS="W::"
+LONG_OPTIONS="appid:,installer"
 
 if [[ -z $IDENTITY ]]; then
     IDENTITY=$(echo $IDENTITY | sed -e 's/[^-a-zA-Z0-9_]/-/g' | tr '[:upper:]' '[:lower:]')
@@ -11,8 +11,10 @@ while true; do
     case "$1" in
         --Wappid )     APPID="$2"; shift 2 ;;
         --Winstaller ) INSTALLER=true; shift ;;
-        --W32 )        X32=true; shift ;;
-        --W64 )        X64=true; shift ;;
+        -W )           if [[ -z "$2" ]]; then X32=true; X64=true;
+                       elif (( "$2" == 32 )); then X32=true;
+                       elif (( "$2" == 64 )); then X64=true;
+                       fi; shift ;;
         -- ) break ;;
         * ) shift ;;
     esac
@@ -156,8 +158,9 @@ EOF
 
 fi
 
-
-if [[ ${X32:=false} == false && ${X64:=false} == false ]]; then
+${X32:=false}
+${X64:=false}
+if [[ $X32 == false && $X64 == false ]]; then
     X32=true
     X64=true
 fi
