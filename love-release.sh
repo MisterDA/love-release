@@ -26,13 +26,23 @@ check_deps () {
     } && {
         unset GETOPT_COMPATIBLE
         local out=$(getopt -T)
-        if [[ $? -eq 4 && -z $out ]]; then
+        if (( $? != 4 )) && [[ -n $out ]]; then
             local opt=false
         fi
     }
     if [[ $opt == false ]]; then
         >&2 echo "GNU getopt is not installed. Aborting."
         local EXIT=true
+    fi
+    if ! command -v readlink > /dev/null 2>&1 || ! readlink -m / > /dev/null 2>&1; then
+        command -v greadlink > /dev/null 2>&1 || {
+            >&2 echo "GNU readlink is not installed. Aborting."
+            local EXIT=true
+        } && {
+            readlink () {
+                greadlink "$@"
+            }
+        }
     fi
 
     command -v lua   > /dev/null 2>&1 || {
