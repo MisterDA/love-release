@@ -1,11 +1,16 @@
 ### NAME
-`love-release.sh` -- Bash script to generate [LÖVE](https://love2d.org/) game releases
+[love-release][] -- Bash script to generate [LÖVE][] game releases  
+Automate LÖVE [Game Distribution][].
 
 ### INSTALLATION
-`love-release` relies on `GNU getopt` and `GNU readlink` (OSX and BSD users need to install them), `curl`, `zip` and `unzip`.
-You need to have `lua` installed to be able to read the configuration.
-You also need Wine to get icons and installer for Windows, the Debian pakaging utilities for Debian and the Android SDK to build a package for Android.
+#### Dependencies
+- Bash 4
+- `GNU getopt` and `GNU readlink`. OSX/BSD users need to install them. You can add `GETOPT_COMPATIBLE=` in your shell rc to prevent incompatibilities.
+- `curl`, `zip` and `unzip`.
+- `lua` to read the configuration.
+You also need Wine to get icons and installer for Windows, the Debian packaging utilities for Debian and the Android SDK to build a package for Android.
 
+#### Build and install
 First clone the repository, then you have two choices:
 - you can build the script and install it on your system, and benefit of command-line completion, man page and extensibility,
 - or make an embedded version with every thing you need in one file.
@@ -43,9 +48,7 @@ See the `conf.lua` file included to see how configuration works.
 #### OPERATING SYSTEMS
 `-A` Create an Android package.
      In order to create an Android package, you must have installed the Android SDK.
-     See [Building LÖVE for Android](https://bitbucket.org/MartinFelis/love-android-sdl2/wiki/Building_L%C3%96VE_for_Android_-_Linux),
-     but there is no need to install the [LÖVE port to Android](https://bitbucket.org/MartinFelis/love-android-sdl2),
-     as the script will handle this by itself.
+     See [Building LÖVE for Android][], but there is no need to install the [LÖVE port to Android][], as the script will handle this by itself.
      You also might want to provide more informations about it.
      See the ANDROID section below.
 
@@ -53,27 +56,27 @@ See the `conf.lua` file included to see how configuration works.
      In order to create a Debian package, you must provide more informations about it.
      See the DEBIAN section below.
 
-`-L` Create a plain Love file. It is just a zip of your sources, renamed in \*.love.
+`-L` Create a plain LÖVE file. It is just a zip of your sources, renamed in \*.love.
      Mostly aimed at Linux players or developers and the most common distribution process.
 
 `-M` Create MacOS application.
-     Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
-     If you are targeting one of these, your project must be developped with Love 0.8.0 or lower.
-     Depending on the Love version used, the script will choose which one,
+     Starting with LÖVE 0.9.0, LÖVE no longer supports old x86 Macintosh.
+     If you are targeting one of these, your project must be developped with LÖVE 0.8.0 or lower.
+     Depending on the LÖVE version used, the script will choose which one,
      between x64 only or Universal Build to create.
 
 `-W` Create Windows application.
-     Starting with Love 0.8.0, a release is specially available for Windows x64.
-     If you are targeting one of these, your project must be developed with Love 0.8.0 or newer.
+     Starting with LÖVE 0.8.0, a release is specially available for Windows x64.
+     If you are targeting one of these, your project must be developed with LÖVE 0.8.0 or newer.
      Remember that x86 is always backwards compatible with x64.
-     Depending on the Love version used, the script will choose which one,
+     Depending on the LÖVE version used, the script will choose which one,
      between x64 and x86 or x86 only to create.  
 `-W32`  Create Windows x86 executable only  
 `-W64`  Create Windows x64 executable only
 
 #### PROJECT OPTIONS
 You can use the option of a module and append a long option from this list to set a specific
-option for a module. For example, the option `--Wauthor` will set the author's name for windows only.
+option for a module. For example, the option `--Wauthor` will set the author's name for Windows only.
 
 `-a, --author` Set the project's author.
 
@@ -83,9 +86,9 @@ option for a module. For example, the option `--Wauthor` will set the author's n
 
 `-i, --icon` Path to icons.
 
-`-l, --love` Love version. Default is 0.9.2.
-             Starting with Love 0.8.0, a release is specially available for Windows x64.
-             Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
+`-l, --love` LÖVE version. Default is 0.9.2.
+             Starting with LÖVE 0.8.0, a release is specially available for Windows x64.
+             Starting with LÖVE 0.9.0, LÖVE no longer supports old x86 Macintosh.
 
 `-p, --pkg` Set the project's identity.
 
@@ -104,11 +107,11 @@ option for a module. For example, the option `--Wauthor` will set the author's n
 #### WINDOWS
 You can create an installer. If you don’t, you will have zip of a folder
 containing your game executable and its dlls.
-Creating installers and using icons require [Wine](http://www.winehq.org/) to be installed.
+Creating installers and using icons require [Wine][] to be installed.
 When the script installs Resource Hacker or Inno Setup, an install wizard GUI will appear.
 Please let everything as is, do not uncheck checkboxes or replace installation directory.  
 `--Wicon`       Path to an ico file to use.  
-`--Winstaller`  Create an installer with [Inno Setup](http://www.jrsoftware.org/isinfo.php).  
+`--Winstaller`  Create an installer with [Inno Setup][].  
 `--Wappid`      Your game ID. You can use a GUID/UUID and generate one with `uuidgen`.
                 It should remain the same between updates.
                 Mandatory if using an installer, not needed for a simple zip.  
@@ -125,15 +128,13 @@ Please let everything as is, do not uncheck checkboxes or replace installation d
 
 #### DEBIAN
 `--Dicon`       Path to a single folder where icons are stored.
-                To be properly recognized, icons filename must contain `YYxYY`,
-                where `YY` is the resolution of the icon.
+                To be properly recognized, icons filename must contain `YYxYY`, where `YY` is the resolution of the icon.
                 SVG files are recognized if suffixed with `.svg`.
                 Other files will be ignored.  
 `--Demail`      Set the maintainer’s email.  
 `--Dauthor`     Set the maintainer’s name.  
 `--Dpkg`        Set the name of the package and the command that will be used to launch your game.
-                By default, it is the name of your project converted to lowercase,
-                with eventual spaces replaced by dashes.  
+                By default, it is the name of your project converted to lowercase, with eventual spaces replaced by dashes.  
 `--Dversion`    Set the version of your package.  
 
 #### ANDROID
@@ -158,28 +159,34 @@ with eventual underscores (i.e. [a-zA-Z0-9\_]), otherwise you'll get errors.
 
 #### OTHERS
 `--clean`       Clean the cache located in `~/.cache/love-release`.
-                One can replace the Love files there.  
+                One can replace the LÖVE binaries there.  
 
 #### MODULES
 The script is modular.
 Each different platform is handled by a subscript stored in `scripts`.
-If you’d like to add the support of another platform,
-or write your own build script, see `modules.md`.
+If you’d like to add the support of another platform, or write your own build script, see [modules.md](modules.md).
 
 #### ICONS
 The script doesn’t yet handle the process of creating icons,
 but if provided it can use them.
 
 - if you want to create MacOS icons (.icns), and you are
-  - running MacOS, then check [iconutil](https://developer.apple.com/library/mac/documentation/userexperience/conceptual/applehiguidelines/IconsImages/IconsImages.html).
-  - running GNU/Linux, then check [libicns](http://icns.sourceforge.net/).
+  - running MacOS, then check [iconutil][].
+  - running GNU/Linux, then check [libicns][].
 - if you want to create Windows icons (.ico), you can
-  - use [icoutils](http://www.nongnu.org/icoutils/) to create the icon,
-  - then [Wine](http://www.winehq.org/) and [Resource Hacker](http://www.angusj.com/resourcehacker/) to set the icon.
+  - use [icoutils][] to create the icon,
+  - then [Wine][] and [Resource Hacker][] to set the icon.
     This last step can be automatically done, assuming Wine is installed.
 
-### SEE ALSO
-[https://www.love2d.org](https://www.love2d.org)  
-[https://www.love2d.org/wiki/Game_Distribution](https://www.love2d.org/wiki/Game_Distribution)  
-[https://www.github.com/MisterDA/love-release](https://www.github.com/MisterDA/love-release)
+[LÖVE]:                      https://www.love2d.org
+[Game Distribution]:         https://www.love2d.org/wiki/Game_Distribution
+[love-release]:              https://www.github.com/MisterDA/love-release
+[iconutil]:                  https://developer.apple.com/library/mac/documentation/userexperience/conceptual/applehiguidelines/IconsImages/IconsImages.html
+[libicns]:                   http://icns.sourceforge.net
+[icoutils]:                  http://www.nongnu.org/icoutils/
+[Wine]:                      http://www.winehq.org
+[Resource Hacker]:           http://www.angusj.com/resourcehacker
+[Inno Setup]:                http://www.jrsoftware.org/isinfo.php
+[LÖVE port to Android]:      https://bitbucket.org/MartinFelis/love-android-sdl2
+[Building LÖVE for Android]: https://bitbucket.org/MartinFelis/love-android-sdl2/wiki/Building_L%C3%96VE_for_Android_-_Linux
 

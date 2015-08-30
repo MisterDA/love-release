@@ -36,22 +36,22 @@ In order to create a Debian package, you must provide more informations about it
 See the DEBIAN section below.
 .TP
 .B \-L
-Create a plain Love file. It is just a zip of your sources, renamed in \fI*.love\fR.
+Create a plain LÖVE file. It is just a zip of your sources, renamed in \fI*.love\fR.
 Mostly aimed at Linux players or developers and the most common distribution process.
 .TP
 .B \-M
 Create MacOS application.
-Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
-If you are targeting one of these, your project must be developed with Love 0.8.0 or lower.
-Depending on the Love version used, the script will choose which one,
+Starting with LÖVE 0.9.0, LÖVE no longer supports old x86 Macintosh.
+If you are targeting one of these, your project must be developed with LÖVE 0.8.0 or lower.
+Depending on the LÖVE version used, the script will choose which one,
 between x64 only or Universal Build to create.
 .TP
 .BR \-W \fIarch\fR
 Create Windows application.
-Starting with Love 0.8.0, a release is specially available for Windows x64.
-If you are targeting one of these, your project must be developed with Love 0.8.0 or newer.
+Starting with LÖVE 0.8.0, a release is specially available for Windows x64.
+If you are targeting one of these, your project must be developed with LÖVE 0.8.0 or newer.
 Remember that x86 is always backwards compatible with x64.
-Depending on the Love version used, the script will choose which one,
+Depending on the LÖVE version used, the script will choose which one,
 between x64 and x86 or x86 only to create.
 .br
 .B \-W32
@@ -61,7 +61,7 @@ Create Windows x86 executable only.
 Create Windows x64 executable only.
 .SH PROJECT OPTIONS
 You can use the option of a module and append a long option from this list to set a specific
-option for a module. For example, the option \fI\-\-Wauthor\fR will set the author's name for windows only.
+option for a module. For example, the option \fI\-\-Wauthor\fR will set the author's name for Windows only.
 .br
 .TP
 .B \-a, \-\-author \fIauthor\fR
@@ -77,9 +77,9 @@ Set the author's email.
 Path to icons.
 .TP
 .B \-l, \-\-love \fIlove\fR
-Love version. Default is 0.9.2.
-Starting with Love 0.8.0, a release is specially available for Windows x64.
-Starting with Love 0.9.0, Love no longer supports old x86 Macintosh.
+LÖVE version. Default is 0.9.2.
+Starting with LÖVE 0.8.0, a release is specially available for Windows x64.
+Starting with LÖVE 0.9.0, LÖVE no longer supports old x86 Macintosh.
 .TP
 .B \-p, \-\-pkg \fIidentity\fR
 Set the project's identity.
@@ -193,7 +193,7 @@ Update the love-android-sdl2.git repository used in the cache.
 .TP
 .B \-\-clean
 Clean the cache located in \fI~/.cache/love-release\fR.
-One can replace the Love files there.
+One can replace the LÖVE binaries there.
 .SH MODULES
 The script is modular.
 Each different platform is handled by a subscript stored in \fIscripts\fR.
