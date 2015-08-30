@@ -1,3 +1,4 @@
+SHELL=/usr/bin/env bash
 BUILD_DIR=build
 
 # Installation directories
@@ -9,7 +10,7 @@ COMPLETION_DIR=/usr/share/bash-completion/completions
 
 SED_INSTALL_DIR=$(shell echo "$(INSTALL_DIR)" | sed -e 's/[\/&]/\\&/g')
 
-love-release: clean
+love-release: deps clean
 	mkdir -p '$(BUILD_DIR)'
 	longopt=$$(grep "^LONG_OPTIONS" love-release.sh | sed -Ee 's/LONG_OPTIONS="(.*)"/\1/'); \
 	for file in scripts/*.sh; do \
@@ -61,6 +62,41 @@ embedded: clean
 		-e "$$(echo "$$(sed -n '/^EndOfSHelp/=' love-release.sh) i \\$$(printf "$$shelp")")" love-release.sh > '$(BUILD_DIR)/love-release.sh';
 	chmod 0775 '$(BUILD_DIR)/love-release.sh'
 	rm -rf '$(BUILD_DIR)/tmp'
+
+deps:
+	@if (( BASH_VERSINFO < 4 )); then \
+		echo "Bash 4 is not installed."; \
+	fi; \
+	command -v curl > /dev/null 2>&1 || { \
+		echo "curl is not installed."; \
+		EXIT=true; \
+	}; \
+	command -v zip > /dev/null 2>&1 || { \
+		echo "zip is not installed."; \
+		EXIT=true; \
+	}; \
+	command -v unzip > /dev/null 2>&1 || { \
+		echo "unzip is not installed."; \
+		EXIT=true; \
+	}; \
+	command -v getopt > /dev/null 2>&1 || { \
+		opt=false; \
+	} && { \
+		unset GETOPT_COMPATIBLE; \
+		out=$$(getopt -T); \
+		if (( $$? != 4 )) && [[ -n $$out ]]; then \
+			opt=false; \
+		fi; \
+	}; \
+	if [[ $$opt == false ]]; then \
+		echo "GNU getopt is not installed."; \
+		EXIT=true; \
+	fi; \
+	if ( ! command -v readlink > /dev/null 2>&1 || ! readlink -m / > /dev/null 2>&1 ) && command -v greadlink > /dev/null 2>&1; then \
+		echo "GNU readlink is not installed."; \
+		EXIT=true; \
+	fi; \
+	if [[ $$EXIT == true ]]; then false; fi
 
 remove:
 	rm -rf '$(BINARY_DIR)/love-release'
