@@ -43,8 +43,8 @@ if [[ -n $ICON ]]; then
         else
             RESHACKER="$WINEPREFIX/drive_c/Program Files (x86)/Resource Hacker/ResourceHacker.exe"
             if [[ ! -f $RESHACKER ]]; then
-                curl -L -C - -o "$WINEPREFIX/drive_c/reshacker_setup.exe http://www.angusj.com/resourcehacker/reshacker_setup.exe"
-                WINEPREFIX="$WINEPREFIX" wine "$WINEPREFIX/drive_c/reshacker_setup.exe"
+                curl -L -C - -o "$WINEPREFIX/drive_c/reshacker_setup.exe" "http://www.angusj.com/resourcehacker/reshacker_setup.exe"
+                WINEPREFIX="$WINEPREFIX" wine "$WINEPREFIX/drive_c/reshacker_setup.exe" 2>&1 /dev/null
             fi
         fi
     else
@@ -82,8 +82,8 @@ if [[ $INSTALLER == true ]]; then
 
     INNOSETUP="$WINEPREFIX/drive_c/Program Files (x86)/Inno Setup 5/ISCC.exe"
     if [[ ! -f $INNOSETUP ]]; then
-        curl -L -C - -o "$WINEPREFIX/drive_c/is-unicode.exe http://www.jrsoftware.org/download.php/is-unicode.exe"
-        WINEPREFIX="$WINEPREFIX" wine "$WINEPREFIX/drive_c/is-unicode.exe"
+        curl -L -C - -o "$WINEPREFIX/drive_c/is-unicode.exe" "http://www.jrsoftware.org/download.php/is-unicode.exe"
+        WINEPREFIX="$WINEPREFIX" wine "$WINEPREFIX/drive_c/is-unicode.exe" 2>&1 /dev/null
     fi
 
 # Inno Setup
@@ -175,9 +175,9 @@ if [[ $X32 == true ]]; then
 
     if [[ ! -f "$CACHE_DIR/love-$LOVE_VERSION-win32.zip" ]]; then
         if compare_version "$LOVE_VERSION" '>=' '0.9.0'; then
-            curl -L -C - -o "$CACHE_DIR/love-$LOVE_VERSION-win32.zip" https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win32.zip
+            curl -L -C - -o "$CACHE_DIR/love-$LOVE_VERSION-win32.zip" "https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win32.zip"
         else
-            curl -L -C - -o "$CACHE_DIR/love-$LOVE_VERSION-win32.zip" https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x86.zip
+            curl -L -C - -o "$CACHE_DIR/love-$LOVE_VERSION-win32.zip" "https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x86.zip"
         fi
     fi
 
@@ -185,7 +185,7 @@ if [[ $X32 == true ]]; then
 
     if [[ -n $ICON ]]; then
         WINEPREFIX="$WINEPREFIX" wine "$RESHACKER" \
-            -addoverwrite "love-$LOVE_VERSION-win32/love.exe,love-$LOVE_VERSION-win32/love.exe,$ICON,ICONGROUP,MAINICON,0" 2> /dev/null
+            -addoverwrite "love-$LOVE_VERSION-win32/love.exe,love-$LOVE_VERSION-win32/love.exe,$ICON,ICONGROUP,MAINICON,0" 2>&1 /dev/null
     fi
 
     cat love-$LOVE_VERSION-win32/love.exe "$LOVE_FILE" > "love-$LOVE_VERSION-win32/${TITLE}.exe"
@@ -206,9 +206,9 @@ if [[ $X64 == true ]] && compare_version "$LOVE_VERSION" '>=' '0.8.0'; then
 
     if [[ ! -f "$CACHE_DIR/love-$LOVE_VERSION-win64.zip" ]]; then
         if compare_version "$LOVE_VERSION" '>=' '0.9.0'; then
-            curl -L -C - -o "$CACHE_DIR/love-$LOVE_VERSION-win64.zip" https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win64.zip
+            curl -L -C - -o "$CACHE_DIR/love-$LOVE_VERSION-win64.zip" "https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win64.zip"
         else
-            curl -L -C - -o "$CACHE_DIR/love-$LOVE_VERSION-win-x64.zip" https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x64.zip
+            curl -L -C - -o "$CACHE_DIR/love-$LOVE_VERSION-win-x64.zip" "https://bitbucket.org/rude/love/downloads/love-$LOVE_VERSION-win-x64.zip"
         fi
     fi
 
@@ -216,7 +216,7 @@ if [[ $X64 == true ]] && compare_version "$LOVE_VERSION" '>=' '0.8.0'; then
 
     if [[ -n $ICON ]]; then
         WINEPREFIX="$WINEPREFIX" wine "$RESHACKER" \
-            -addoverwrite "love-$LOVE_VERSION-win64/love.exe,love-$LOVE_VERSION-win64/love.exe,$ICON,ICONGROUP,MAINICON,0" 2> /dev/null
+            -addoverwrite "love-$LOVE_VERSION-win64/love.exe,love-$LOVE_VERSION-win64/love.exe,$ICON,ICONGROUP,MAINICON,0" 2>&1 /dev/null
     fi
 
     cat love-$LOVE_VERSION-win64/love.exe "$LOVE_FILE" > "love-$LOVE_VERSION-win64/${TITLE}.exe"

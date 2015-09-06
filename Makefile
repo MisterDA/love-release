@@ -16,6 +16,7 @@ love-release: deps clean
 	for file in scripts/*.sh; do \
 		s="$$(grep -E -m 1 "^OPTIONS=['\"]?.*['\"]?" "$$file" | sed -Ee "s/OPTIONS=['\"]?//" -e "s/['\"]?$$//")"; \
 		short="$${s}$${short}"; \
+		s="$$(echo "$$s" | sed -e "s/[:]*$$//")"; \
 		l="$$s$$(echo "$$longopt" | sed -e "s/,/,$${s}/g")"; \
 		ll="$$(grep -E -m 1 "^LONG_OPTIONS=['\"]?.*['\"]?" "$$file" | sed -Ee "s/LONG_OPTIONS=['\"]?//" -e "s/['\"]?$$//" -e "s/,/,$${s}/g")"; \
 		if [[ -n $$ll ]]; then l="$${l},$${s}$${ll}"; fi; \
@@ -49,6 +50,7 @@ embedded: clean
 		echo "$$content" >> "$(BUILD_DIR)/tmp"; \
 		s="$$(grep -E -m 1 "^OPTIONS=['\"]?.*['\"]?" "$$file" | sed -Ee "s/OPTIONS=['\"]?//" -e "s/['\"]?$$//")"; \
 		short="$${s}$${short}"; \
+		s="$$(echo "$$s" | sed -e "s/[:]*$$//")"; \
 		l="$$s$$(echo "$$longopt" | sed -e "s/,/,$${s}/g")"; \
 		ll="$$(grep -E -m 1 "^LONG_OPTIONS=['\"]?.*['\"]?" "$$file" | sed -Ee "s/LONG_OPTIONS=['\"]?//" -e "s/['\"]?$$//" -e "s/,/,$${s}/g")"; \
 		if [[ -n $$ll ]]; then l="$${l},$${s}$${ll}"; fi; \
