@@ -1,8 +1,14 @@
 #!/usr/bin/env bash
 
 # LÖVE version
-LOVE_DEF_VERSION=0.9.2
+readonly LOVE_DEF_VERSION=0.9.2
 
+readonly INSTALLED=false
+readonly EMBEDDED=false
+
+readonly OPTIONS="La:d:e:hi:l:p:r:t:u:v:x:"
+readonly LONG_OPTIONS="author:,clean,description:,email:,exclude:,help,icon:,love:,pkg:,release:,title:,url:,version:"
+readonly ARGS=$(getopt -o "$OPTIONS" -l "$LONG_OPTIONS" -n 'love-release' -- "$@")
 
 
 # Helper functions
@@ -25,7 +31,8 @@ check_deps () {
         local opt=false
     } && {
         unset GETOPT_COMPATIBLE
-        local out=$(getopt -T)
+        local out
+        out=$(getopt -T)
         if (( $? != 4 )) && [[ -n $out ]]; then
             local opt=false
         fi
@@ -157,7 +164,8 @@ compare_version () {
 ## $1: system name
 read_config () {
     if [[ $LUA == true ]] && [[ -f "conf.lua" ]]; then
-        local var=$(lua - <<EOF
+        local var
+        var=$(lua - <<EOF
 f = loadfile("conf.lua")
 t, love = {window = {}, modules = {}, screen = {}}, {}
 f()
@@ -234,8 +242,10 @@ read_options () {
             -i|--${pre}icon )
                 ICON="$2"
                 if [[ -d $ICON ]]; then
-                    local icon="$(readlink -m "$ICON")"
-                    local wd="$(readlink -m "$PWD")"
+                    local wd
+                    local icon
+                    icon="$(readlink -m "$ICON")"
+                    wd="$(readlink -m "$PWD")"
                     EXCLUDE+=( "${icon//$wd\/}/*" )
                 elif [[ -f $ICON ]]; then
                     EXCLUDE+=( "$ICON" )
@@ -352,8 +362,10 @@ create_love_file () {
         if [[ -d $file ]]; then file="$file/*"; fi
         dotfiles+=( "$file" )
     done
-    local release_dir="$(readlink -m "$RELEASE_DIR")"
-    local wd="$(readlink -m "$PWD")"
+    local wd
+    local release_dir
+    release_dir="$(readlink -m "$RELEASE_DIR")"
+    wd="$(readlink -m "$PWD")"
     zip -FS -$1 -r "$RELEASE_DIR/$LOVE_FILE" \
         -x "$0" "${release_dir//$wd\/}/*" "${dotfiles[@]}" "${EXCLUDE[@]}" @ \
         "${FILES[@]}"
@@ -397,9 +409,6 @@ main () {
     LOVE_WEB_VERSION=$(curl -s https://love2d.org/releases.xml | grep -m 2 "<title>" | tail -n 1 | grep -Eo "[0-9]+.[0-9]+.[0-9]+")
     gen_version $LOVE_WEB_VERSION
 
-    INSTALLED=false
-    EMBEDDED=false
-
     DEFAULT_MODULE=true
 
     TITLE="$(basename $(pwd))"
@@ -409,9 +418,6 @@ main () {
     FILES=()
     EXCLUDE=()
 
-    OPTIONS="La:d:e:hi:l:p:r:t:u:v:x:"
-    LONG_OPTIONS="author:,clean,description:,email:,exclude:,help,icon:,love:,pkg:,release:,title:,url:,version:"
-    ARGS=$(getopt -o "$OPTIONS" -l "$LONG_OPTIONS" -n 'love-release' -- "$@")
     if (( $? != 0 )); then short_help; exit_module "options"; fi
     eval set -- "$ARGS"
     read_options
