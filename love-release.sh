@@ -388,74 +388,76 @@ exit_module () {
     esac
 }
 
-
-
 # Main
+main () {
+    check_deps
 
-check_deps
+    # Get latest LÖVE version number
+    gen_version $LOVE_DEF_VERSION
+    LOVE_WEB_VERSION=$(curl -s https://love2d.org/releases.xml | grep -m 2 "<title>" | tail -n 1 | grep -Eo "[0-9]+.[0-9]+.[0-9]+")
+    gen_version $LOVE_WEB_VERSION
 
-# Get latest LÖVE version number
-gen_version $LOVE_DEF_VERSION
-LOVE_WEB_VERSION=$(curl -s https://love2d.org/releases.xml | grep -m 2 "<title>" | tail -n 1 | grep -Eo "[0-9]+.[0-9]+.[0-9]+")
-gen_version $LOVE_WEB_VERSION
+    INSTALLED=false
+    EMBEDDED=false
 
-INSTALLED=false
-EMBEDDED=false
+    DEFAULT_MODULE=true
 
-DEFAULT_MODULE=true
+    TITLE="$(basename $(pwd))"
+    PROJECT_DIR="$PWD"
+    RELEASE_DIR=releases
+    CACHE_DIR=~/.cache/love-release
+    FILES=()
+    EXCLUDE=()
 
-TITLE="$(basename $(pwd))"
-PROJECT_DIR="$PWD"
-RELEASE_DIR=releases
-CACHE_DIR=~/.cache/love-release
-FILES=()
-EXCLUDE=()
-
-OPTIONS="La:d:e:hi:l:p:r:t:u:v:x:"
-LONG_OPTIONS="author:,clean,description:,email:,exclude:,help,icon:,love:,pkg:,release:,title:,url:,version:"
-ARGS=$(getopt -o "$OPTIONS" -l "$LONG_OPTIONS" -n 'love-release' -- "$@")
-if (( $? != 0 )); then short_help; exit_module "options"; fi
-eval set -- "$ARGS"
-read_options
-while [[ $1 != '--' ]]; do shift; done; shift
-for arg do
-    FILES+=( "$arg" )
-done
-if (( ${#FILES} == 0 )); then FILES+=( "." ); fi
-eval set -- "$ARGS"
-
-if [[ $INSTALLED == false && $EMBEDDED == false ]]; then
-    exit_module "undef" "love-release has not been installed, and is not embedded into one script."
-fi
-
-if [[ ! -f "main.lua" ]]; then
-    >&2 echo "No main.lua file was found."
-    exit_module 1
-fi
-
-if [[ $EMBEDDED == true ]]; then
-    : # include_scripts_here
-elif [[ $INSTALLED == true ]]; then
-    SCRIPTS_DIR="scripts"
-    for file in "$SCRIPTS_DIR"/*.sh; do
-        (source "$file")
-        default_module
+    OPTIONS="La:d:e:hi:l:p:r:t:u:v:x:"
+    LONG_OPTIONS="author:,clean,description:,email:,exclude:,help,icon:,love:,pkg:,release:,title:,url:,version:"
+    ARGS=$(getopt -o "$OPTIONS" -l "$LONG_OPTIONS" -n 'love-release' -- "$@")
+    if (( $? != 0 )); then short_help; exit_module "options"; fi
+    eval set -- "$ARGS"
+    read_options
+    while [[ $1 != '--' ]]; do shift; done; shift
+    for arg do
+        FILES+=( "$arg" )
     done
-fi
+    if (( ${#FILES} == 0 )); then FILES+=( "." ); fi
+    eval set -- "$ARGS"
+
+    if [[ $INSTALLED == false && $EMBEDDED == false ]]; then
+        exit_module "undef" "love-release has not been installed, and is not embedded into one script."
+    fi
+
+    if [[ ! -f "main.lua" ]]; then
+        >&2 echo "No main.lua file was found."
+        exit_module 1
+    fi
+
+    if [[ $EMBEDDED == true ]]; then
+        : # include_scripts_here
+    elif [[ $INSTALLED == true ]]; then
+        SCRIPTS_DIR="scripts"
+        for file in "$SCRIPTS_DIR"/*.sh; do
+            (source "$file")
+            default_module
+        done
+    fi
 
 
-(
-    init_module "LÖVE" "love" "L"
-    create_love_file 9
-    exit_module
-)
-if [[ $? -ne 0 && $DEFAULT_MODULE == true ]]; then
-(
-    init_module "LÖVE" "default"
-    create_love_file 9
-    exit_module
-)
-fi
+    (
+        init_module "LÖVE" "love" "L"
+        create_love_file 9
+        exit_module
+    )
+    if [[ $? -ne 0 && $DEFAULT_MODULE == true ]]; then
+    (
+        init_module "LÖVE" "default"
+        create_love_file 9
+        exit_module
+    )
+    fi
 
-exit 0
+    return 0
+}
+
+
+main "$@"
 

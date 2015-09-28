@@ -12,19 +12,18 @@ SED_INSTALL_DIR=$(shell echo "$(INSTALL_DIR)" | sed -e 's/[\/&]/\\&/g')
 
 love-release: deps clean
 	mkdir -p '$(BUILD_DIR)'
-	longopt=$$(grep "^LONG_OPTIONS" love-release.sh | sed -Ee 's/LONG_OPTIONS="(.*)"/\1/'); \
+	longopt=$$(grep -m1 "LONG_OPTIONS" love-release.sh | sed -E 's/.*LONG_OPTIONS="(.*)"/\1/'); \
 	for file in scripts/*.sh; do \
-		s="$$(grep -E -m 1 "^OPTIONS=['\"]?.*['\"]?" "$$file" | sed -Ee "s/OPTIONS=['\"]?//" -e "s/['\"]?$$//")"; \
-		short="$${s}$${short}"; \
-		s="$$(echo "$$s" | sed -e "s/[:]*$$//")"; \
-		l="$$s$$(echo "$$longopt" | sed -e "s/,/,$${s}/g")"; \
-		ll="$$(grep -E -m 1 "^LONG_OPTIONS=['\"]?.*['\"]?" "$$file" | sed -Ee "s/LONG_OPTIONS=['\"]?//" -e "s/['\"]?$$//" -e "s/,/,$${s}/g")"; \
-		if [[ -n $$ll ]]; then l="$${l},$${s}$${ll}"; fi; \
-		long="$${l},$${long}"; \
-		shelp="$$shelp\\n\\ -$$(grep "init_module" $$file | sed -Ee 's/init_module //' -e 's/" "/	/g' -e "s/\"//g" | awk -F "\t" '{print($$3,"  ",$$1)}')\\\\"; \
+		s="$$(grep -E -m1 "^OPTIONS" "$$file" | sed -E "s/OPTIONS=(['\"]?)(.*)\1/\2/")"; \
+		short="$${short}$${s}"; \
+		s="$${s:0:1}"; \
+		ll=$$(grep -E -m1 "^LONG_OPTIONS" "$$file" | sed -E "s/LONG_OPTIONS=(['\"]?)(.*)\1/\2/"); \
+		long="$${long},$${s}$${longopt//,/,$$s}"; \
+		if [[ -n $$ll ]]; then long="$${long},$${s}$${ll//,/,$$s}"; fi; \
+		shelp="$$shelp\\n\\ -$$(grep "init_module" $$file | sed -Ee 's/init_module //' -e 's/" "/	/g' -e "s/\"//g" | awk -F "\t" '{print($$3,"  ",$$1)}')\\"; \
 	done; \
 	shelp="$$shelp\\n"; \
-	sed -Ee "s/^OPTIONS=(['\"]?)/OPTIONS=\1$$short/" -e "s/^LONG_OPTIONS=(['\"]?)/LONG_OPTIONS=\1$$long/" \
+	sed -Ee "s/[^_]OPTIONS=(['\"]?)/ OPTIONS=\1$$short/" -e "s/LONG_OPTIONS=(['\"]?)(.*)\1/LONG_OPTIONS=\1\2$$long\1/" \
 		-e 's/INSTALLED=false/INSTALLED=true/' \
 		-e 's/SCRIPTS_DIR="scripts"/SCRIPTS_DIR="$(SED_INSTALL_DIR)\/scripts"/' \
 		-e "$$(echo "$$(sed -n '/^EndOfSHelp/=' love-release.sh) i \\$$(printf "$$shelp")")" love-release.sh > '$(BUILD_DIR)/love-release'; \
@@ -43,22 +42,21 @@ install:
 
 embedded: clean
 	mkdir -p '$(BUILD_DIR)'
-	longopt=$$(grep "^LONG_OPTIONS" love-release.sh | sed -Ee 's/LONG_OPTIONS="(.*)"/\1/'); \
+	longopt=$$(grep -m1 "LONG_OPTIONS" love-release.sh | sed -E 's/.*LONG_OPTIONS="(.*)"/\1/'); \
 	for file in scripts/*.sh; do \
 		module="$$(basename -s '.sh' "$$file")"; \
 		content='(source <(cat <<\EndOfModule'$$'\n'"$$(cat $$file)"$$'\n''EndOfModule'$$'\n''))'$$'\n''default_module'$$'\n\n'; \
 		echo "$$content" >> "$(BUILD_DIR)/tmp"; \
-		s="$$(grep -E -m 1 "^OPTIONS=['\"]?.*['\"]?" "$$file" | sed -Ee "s/OPTIONS=['\"]?//" -e "s/['\"]?$$//")"; \
-		short="$${s}$${short}"; \
-		s="$$(echo "$$s" | sed -e "s/[:]*$$//")"; \
-		l="$$s$$(echo "$$longopt" | sed -e "s/,/,$${s}/g")"; \
-		ll="$$(grep -E -m 1 "^LONG_OPTIONS=['\"]?.*['\"]?" "$$file" | sed -Ee "s/LONG_OPTIONS=['\"]?//" -e "s/['\"]?$$//" -e "s/,/,$${s}/g")"; \
-		if [[ -n $$ll ]]; then l="$${l},$${s}$${ll}"; fi; \
-		long="$${l},$${long}"; \
-		shelp="$$shelp\\n\\ -$$(grep "init_module" $$file | sed -Ee 's/init_module //' -e 's/" "/	/g' -e "s/\"//g" | awk -F "\t" '{print($$3,"  ",$$1)}')\\\\"; \
+		s="$$(grep -E -m1 "^OPTIONS" "$$file" | sed -E "s/OPTIONS=(['\"]?)(.*)\1/\2/")"; \
+		short="$${short}$${s}"; \
+		s="$${s:0:1}"; \
+		ll=$$(grep -E -m1 "^LONG_OPTIONS" "$$file" | sed -E "s/LONG_OPTIONS=(['\"]?)(.*)\1/\2/"); \
+		long="$${long},$${s}$${longopt//,/,$$s}"; \
+		if [[ -n $$ll ]]; then long="$${long},$${s}$${ll//,/,$$s}"; fi; \
+		shelp="$$shelp\\n\\ -$$(grep "init_module" $$file | sed -Ee 's/init_module //' -e 's/" "/	/g' -e "s/\"//g" | awk -F "\t" '{print($$3,"  ",$$1)}')\\"; \
 	done; \
 	shelp="$$shelp\\n"; \
-	sed -Ee "s/^OPTIONS=(['\"]?)/OPTIONS=\1$$short/" -e "s/^LONG_OPTIONS=(['\"]?)/LONG_OPTIONS=\1$$long/" \
+	sed -Ee "s/[^_]OPTIONS=(['\"]?)/ OPTIONS=\1$$short/" -e "s/LONG_OPTIONS=(['\"]?)(.*)\1/LONG_OPTIONS=\1\2$$long\1/" \
 		-e 's/EMBEDDED=false/EMBEDDED=true/' \
 		-e '/include_scripts_here$$/r $(BUILD_DIR)/tmp' \
 		-e "$$(echo "$$(sed -n '/^EndOfSHelp/=' love-release.sh) i \\$$(printf "$$shelp")")" love-release.sh > '$(BUILD_DIR)/love-release.sh';
