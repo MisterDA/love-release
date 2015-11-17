@@ -1,7 +1,7 @@
 # Windows
 init_module "Windows" "windows" "W"
-OPTIONS="W::"
-LONG_OPTIONS="appid:,installer"
+MOD_OPTIONS="W::"
+MOD_LONG_OPTIONS="appid:,installer"
 
 if [[ -z $IDENTITY ]]; then
     IDENTITY=$(echo $IDENTITY | sed -e 's/[^-a-zA-Z0-9_]/-/g' | tr '[:upper:]' '[:lower:]')
@@ -234,4 +234,3 @@ fi
 
 
 exit_module
-

@@ -1,7 +1,7 @@
 # Android debug package
 init_module "Android" "android" "A"
-OPTIONS="A"
-LONG_OPTIONS="activity:,update"
+MOD_OPTIONS="A"
+MOD_LONG_OPTIONS="activity:,update"
 
 
 IDENTITY=$(echo $TITLE | sed -e 's/[^-a-zA-Z0-9_]/-/g' | tr '[:upper:]' '[:lower:]')
@@ -153,4 +153,3 @@ rm -rf src/com bin gen
 
 
 exit_module
-

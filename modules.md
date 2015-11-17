@@ -51,10 +51,10 @@ For example, we could have `init_module "Android" "android" "A"`.
 Declare the additional options your script will be using.
 Beware ! They are parsed by sed, so let them be simple strings at the beginning of the line.
 
-Love-release uses GNU getopt. Short options are made of one character. Add them in the `$OPTIONS` variable. Long options can be added in the `$LONG_OPTIONS` variable, separated by a comma. Each option may be followed by one colon to indicate it has a required argument, and by two colons to indicate it has an optional argument.
+Love-release uses GNU getopt. Short options are made of one character. Add them in the `$MOD_OPTIONS` variable. Long options can be added in the `$MOD_LONG_OPTIONS` variable, separated by a comma. Each option may be followed by one colon to indicate it has a required argument, and by two colons to indicate it has an optional argument.
 ```bash
-OPTIONS="A"
-LONG_OPTIONS="activity:,update"
+MOD_OPTIONS="A"
+MOD_LONG_OPTIONS="activity:,update"
 ```
 
 ## Setup

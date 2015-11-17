@@ -1,7 +1,7 @@
 # Mac OS X
 init_module "Mac OS X" "osx" "M"
-OPTIONS="M"
-LONG_OPTIONS=""
+MOD_OPTIONS="M"
+MOD_LONG_OPTIONS=""
 
 
 IDENTITY=$(echo $TITLE | sed -e 's/[^-a-zA-Z0-9_]/-/g' | tr '[:upper:]' '[:lower:]')
@@ -97,4 +97,3 @@ fi
 
 
 exit_module
-

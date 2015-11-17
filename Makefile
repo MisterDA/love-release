@@ -14,10 +14,10 @@ love-release: deps clean
 	mkdir -p '$(BUILD_DIR)'
 	longopt=$$(grep -m1 "LONG_OPTIONS" love-release.sh | sed -E 's/.*LONG_OPTIONS="(.*)"/\1/'); \
 	for file in scripts/*.sh; do \
-		s="$$(grep -E -m1 "^OPTIONS" "$$file" | sed -E "s/OPTIONS=(['\"]?)(.*)\1/\2/")"; \
+		s="$$(grep -E -m1 "^MOD_OPTIONS" "$$file" | sed -E "s/OPTIONS=(['\"]?)(.*)\1/\2/")"; \
 		short="$${short}$${s}"; \
 		s="$${s:0:1}"; \
-		ll=$$(grep -E -m1 "^LONG_OPTIONS" "$$file" | sed -E "s/LONG_OPTIONS=(['\"]?)(.*)\1/\2/"); \
+		ll=$$(grep -E -m1 "^MOD_LONG_OPTIONS" "$$file" | sed -E "s/LONG_OPTIONS=(['\"]?)(.*)\1/\2/"); \
 		long="$${long},$${s}$${longopt//,/,$$s}"; \
 		if [[ -n $$ll ]]; then long="$${long},$${s}$${ll//,/,$$s}"; fi; \
 		shelp="$$shelp\\n\\ -$$(grep "init_module" $$file | sed -Ee 's/init_module //' -e 's/" "/	/g' -e "s/\"//g" | awk -F "\t" '{print($$3,"  ",$$1)}')\\"; \
@@ -47,10 +47,10 @@ embedded: clean
 		module="$$(basename -s '.sh' "$$file")"; \
 		content='(source <(cat <<\EndOfModule'$$'\n'"$$(cat $$file)"$$'\n''EndOfModule'$$'\n''))'$$'\n''default_module'$$'\n\n'; \
 		echo "$$content" >> "$(BUILD_DIR)/tmp"; \
-		s="$$(grep -E -m1 "^OPTIONS" "$$file" | sed -E "s/OPTIONS=(['\"]?)(.*)\1/\2/")"; \
+		s="$$(grep -E -m1 "^MOD_OPTIONS" "$$file" | sed -E "s/OPTIONS=(['\"]?)(.*)\1/\2/")"; \
 		short="$${short}$${s}"; \
 		s="$${s:0:1}"; \
-		ll=$$(grep -E -m1 "^LONG_OPTIONS" "$$file" | sed -E "s/LONG_OPTIONS=(['\"]?)(.*)\1/\2/"); \
+		ll=$$(grep -E -m1 "^MOD_LONG_OPTIONS" "$$file" | sed -E "s/LONG_OPTIONS=(['\"]?)(.*)\1/\2/"); \
 		long="$${long},$${s}$${longopt//,/,$$s}"; \
 		if [[ -n $$ll ]]; then long="$${long},$${s}$${ll//,/,$$s}"; fi; \
 		shelp="$$shelp\\n\\ -$$(grep "init_module" $$file | sed -Ee 's/init_module //' -e 's/" "/	/g' -e "s/\"//g" | awk -F "\t" '{print($$3,"  ",$$1)}')\\"; \
@@ -106,4 +106,3 @@ remove:
 
 clean:
 	rm -rf '$(BUILD_DIR)'
-

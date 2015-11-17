@@ -1,7 +1,7 @@
 # Debian package
 init_module "Debian" "debian" "D"
-OPTIONS="D"
-LONG_OPTIONS=""
+MOD_OPTIONS="D"
+MOD_LONG_OPTIONS=""
 
 
 IDENTITY=$(echo $TITLE | sed -e 's/[^-a-zA-Z0-9_]/-/g' | tr '[:upper:]' '[:lower:]')
@@ -101,4 +101,3 @@ rm -rf "$TEMP"
 
 
 exit_module
-
