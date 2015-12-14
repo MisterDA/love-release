@@ -1,6 +1,7 @@
 ### NAME
 [love-release][] -- Bash script to generate [LÖVE][] game releases  
-Automate LÖVE [Game Distribution][].
+Automate LÖVE [Game Distribution][].  
+MIT-licensed.
 
 ### INSTALLATION
 #### Dependencies
