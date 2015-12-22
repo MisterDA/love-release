@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 # LÖVE version
-readonly LOVE_DEF_VERSION=0.9.2
+readonly LOVE_DEF_VERSION=0.10.0
 
 readonly INSTALLED=false
 readonly EMBEDDED=false
@@ -466,4 +466,3 @@ main () {
 
 
 main "$@"
-
