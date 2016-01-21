@@ -68,12 +68,14 @@ local function release(script, project, arch)
   os.rename(bin, project.title.."-win"..arch..".zip")
 end
 
-function s.script(project)
+function s.script(project, arch)
   local script = Script:new(project)
   script:createLoveFile()
   fs.change_dir(project.releaseDirectory)
-  release(script, project, 32)
-  if project.loveVersion >= semver'0.8.0' then
+  if arch == 32 then
+    release(script, project, 32)
+  end
+  if arch == 64 and project.loveVersion >= semver'0.8.0' then
     release(script, project, 64)
   end
   fs.pop_dir()
@@ -81,7 +83,7 @@ end
 
 
 setmetatable(s, {
-  __call = function(_, project) return s.script(project) end,
+  __call = function(_, project, arch) return s.script(project, arch) end,
 })
 
 return s

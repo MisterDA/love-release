@@ -43,13 +43,16 @@ Project.projectDirectory = nil
 --- Project release directory, where to store the releases.
 Project.releaseDirectory = nil
 
+--- True is the files should be precompiled to LuaJIT bytecode.
+Project.compile = false
+
 Project._fileTree = nil
 Project._fileList = nil
 
 function Project:initialize()
   local defaultDirectory = fs.current_dir()
   self:setProjectDirectory(defaultDirectory)
-  self:setReleaseDirectory(defaultDirectory.."/releases")
+  self:setReleaseDirectory(defaultDirectory)
 end
 
 --- Recursive function used to build the tree.
@@ -115,17 +118,29 @@ end
 --- Excludes files from the LÖVE file.
 -- @todo This function should be able to parse and use CVS files such as
 -- gitignore. It should also work on the file tree rather than on the file list.
--- For now it only exludes the release directory if it is within the project
--- directory and works on the file list.
+-- For now it  works on the file list and only exludes the release directory if
+-- it is within the project directory.
 function Project:excludeFiles()
-  local dir = self.releaseDirectory:gsub(
+  local dir, rm_dir = self.releaseDirectory:gsub(
       "^"..utils.lua.escape_string_regex(self.projectDirectory).."/",
       "")
-  if dir then
+  if rm_dir > 0 then
+    rm_dir = true
+    dir = "^"..dir
+  else
+    rm_dir = false
+  end
+
+  if rm_dir then
+    local rm = false
+    local file
     local n = #self._fileList
     for i = 1, n do
-      if self._fileList[i]:find("^"..dir) then
+      file = self._fileList[i]
+      if rm_dir then if file:find(dir) then rm = true end end
+      if rm then
         self._fileList[i] = nil
+        rm = false
       end
     end
   end
@@ -168,6 +183,7 @@ function Project:__tostring()
   '  description = '..escape(self.description)..',\n'..
   '  homepage = '..escape(self.homepage)..',\n'..
   '  identifier = '..escape(self.identifier)..',\n'..
+  '  compile = '..escape(self.compile)..',\n'..
   '  projectDirectory = '..escape(self.projectDirectory)..',\n'..
   '  releaseDirectory = '..escape(self.releaseDirectory)..',\n'..
   '}'
@@ -266,6 +282,21 @@ function Project:setReleaseDirectory(directory)
   fs.pop_dir()
   self.releaseDirectory = directory
   return self
+end
+
+--- Sets if Lua files should be precompiled to LuaJIT bytecode. By default they
+-- are not compiled.
+-- @bool value wether the files should be compiled or not.
+-- @treturn project self
+function Project:setCompile(value)
+  if value then
+    if package.loaded.jit then
+      self.compile = true
+    else
+      assert(fs.is_tool_available("luajit", "LuaJIT", "-v"))
+      self.compile = true
+    end
+  end
 end
 
 

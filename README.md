@@ -9,9 +9,48 @@ Available as a [LuaRocks][luarocks] [package][package].
 ## Features
 love-release makes your LÖVE game release easier. It can create from your sources Windows executables, MacOS X applications, Debian packages and simple LÖVE files.
 
-love-release creates only one LÖVE file in a release directory and keeps it synced with your sources.
+love-release creates only one LÖVE file per release directory and keeps it synced with your sources.
 
 love-release can extract its informations from the environment: it guesses your game's title from the directory where it's stored, selects by default the latest LÖVE version from the web or uses its latest bundled LÖVE version, then parses the `conf.lua` file to extract even more informations such as the real LÖVE version your project uses.
+
+### Usage
+```
+Usage: love-release [-D] [-M] [-a <author>] [-b] [-d <desc>]
+       [-e <email>] [-l <love>] [-p <package>] [-t <title>] [-u <url>]
+       [--uti <uti>] [-v <v>] [--version] [-h] [<release>] [<source>]
+       [-W [32|64]]
+
+Makes LÖVE games releases easier !
+
+Arguments:
+   release               Project release directory.
+   source                Project source directory.
+
+Options:
+   -D                    Debian package.
+   -M                    MacOS X application.
+   -W [32|64]            Windows executable.
+   -a <author>, --author <author>
+                         Author full name.
+   -b                    Compile new or updated files to LuaJIT bytecode.
+   -d <desc>, --desc <desc>
+                         Project description.
+   -e <email>, --email <email>
+                         Author email.
+   -l <love>, --love <love>
+                         LÖVE version to use.
+   -p <package>, --package <package>
+                         Package and command name.
+   -t <title>, --title <title>
+                         Project title.
+   -u <url>, --url <url> Project homepage url.
+   --uti <uti>           Project Uniform Type Identifier.
+   -v <v>                Project version.
+   --version             Show love-release version and exit.
+   -h, --help            Show this help message and exit.
+
+For more info, see https://github.com/MisterDA/love-release
+```
 
 ### Configuration
 love-release prints to the command-line a Lua table containing the informations it uses to generate your project. These informations can be stored in your `conf.lua` file to be used later.
@@ -46,6 +85,7 @@ love-release is only installable through LuaRocks and highly depends on LuaRocks
 #### Optional
 - `love` can be used to determine your system LÖVE version.
 - `fakeroot` and `dpkg-deb` are required to create Debian packages.
+- [LuaJIT][luajit] can be used to compile your sources, either with `luarocks-luajit` or if `luajit` is installed.
 
 ### Install
 
@@ -77,6 +117,7 @@ Every bug report or feature request is gladly welcome !
 [libzip]: http://www.nih.at/libzip/
 [love]: https://www.love2d.org/
 [lua]: http://www.lua.org/
+[luajit]: http://luajit.org/
 [luarocks]: https://luarocks.org/
 [lua-zip]: https://github.com/brimworks/lua-zip
 [loadconf]: https://github.com/Alloyed/loadconf

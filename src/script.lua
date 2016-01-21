@@ -60,13 +60,22 @@ function Script:createLoveFile()
       if attributes.mode == "directory" then
         ar:add_dir(file)
       else
-        ar:add(file, "file", file)
+        if self.project.compile then
+          ar:add(file, "string", utils.lua.bytecode(file))
+        else
+          ar:add(file, "file", file)
+        end
       end
     -- file in the filesystem is more recent than in the archive
     elseif attributes and stat and attributes.modification > stat.mtime + 5 then
       if attributes.mode == "file" then
         utils.io.out("Update "..file.."\n")
-        ar:replace(assert(ar:name_locate(file)), "file", file)
+        if self.project.compile then
+          ar:replace(assert(ar:name_locate(file)), "string",
+                     utils.lua.bytecode(file))
+        else
+          ar:replace(assert(ar:name_locate(file)), "file", file)
+        end
       end
     end
   end

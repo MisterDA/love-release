@@ -14,6 +14,7 @@ It automates LÖVE Game Distribution.
   homepage = "https://github.com/MisterDA/love-release",
 }
 dependencies = {
+  "argparse",
   "loadconf",
   "lua ~> 5.1",
   "luafilesystem",
@@ -28,6 +29,7 @@ build = {
     ["love-release.scripts.love"] = "src/scripts/love.lua",
     ["love-release.scripts.macosx"] = "src/scripts/macosx.lua",
     ["love-release.scripts.windows"] = "src/scripts/windows.lua",
+    ["love-release.pipes.args"] = "src/pipes/args.lua",
     ["love-release.pipes.conf"] = "src/pipes/conf.lua",
     ["love-release.pipes.env"] = "src/pipes/env.lua",
     ["love-release.project"] = "src/project.lua",
