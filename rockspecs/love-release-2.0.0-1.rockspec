@@ -1,7 +1,8 @@
 package = "love-release"
-version = "scm-1"
+version = "2.0.0"
 source = {
   url = "git://github.com/MisterDA/love-release.git",
+  tag = "v2.0.0",
 }
 description = {
   summary = "Make LÖVE games releases easier",
