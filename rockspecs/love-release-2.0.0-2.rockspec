@@ -1,5 +1,5 @@
 package = "love-release"
-version = "2.0.0"
+version = "2.0.0-2"
 source = {
   url = "git://github.com/MisterDA/love-release.git",
   tag = "v2.0.0",

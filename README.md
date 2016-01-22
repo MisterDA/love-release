@@ -92,6 +92,11 @@ love-release is only installable through LuaRocks and highly depends on LuaRocks
 ```sh
 # sudo
 luarocks install --server=http://luarocks.org/dev lua-zip
+
+# latest stable version
+luarocks install love-release
+
+# development version
 luarocks install --server=http://luarocks.org/dev love-release
 ```
 
