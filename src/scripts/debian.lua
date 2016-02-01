@@ -109,6 +109,7 @@ function s.script(project)
       "love "..loveFileDeb.."\n",
       true
   )
+  assert(fs.chmod(tempDir.."/usr/bin/"..project.package, "+x"))
 
   -- /usr/share/games/${PACKAGE}/${LOVE_FILE}
   copyFile(project.releaseDirectory.."/"..script.loveFile, loveFileDeb, true)
