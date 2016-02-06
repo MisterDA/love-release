@@ -14,7 +14,7 @@ local s = {}
 local function validate(project)
   local valid, err = true, utils.io.err
   if type(project.identifier) ~= "string" or project.identifier == "" then
-    err("DEBIAN: No author specified.\n")
+    err("MacOS X: No identifier specified.\n")
     valid = false
   end
   if not valid then os.exit(1) end
