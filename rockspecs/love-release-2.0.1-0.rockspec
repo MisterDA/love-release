@@ -1,8 +1,8 @@
 package = "love-release"
-version = "2.0.0-2"
+version = "2.0.1-0"
 source = {
   url = "git://github.com/MisterDA/love-release.git",
-  tag = "v2.0.0",
+  tag = "v2.0.1",
 }
 description = {
   summary = "Make LÖVE games releases easier",
