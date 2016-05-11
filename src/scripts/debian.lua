@@ -106,7 +106,7 @@ function s.script(project)
   -- /usr/bin/${PACKAGE}
   writeFile("/usr/bin/"..project.package,
       "#!/bin/sh\n"..
-      "love "..loveFileDeb.."\n",
+      "love '"..loveFileDeb:gsub("'", "\\'").."'\n",
       true
   )
   assert(fs.chmod(tempDir.."/usr/bin/"..project.package, "+x"))
