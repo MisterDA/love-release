@@ -15,13 +15,16 @@ love-release 3 is currently in development. See [#40](https://github.com/MisterD
 
 ### Usage
 ```
-Usage: love-release [--version] [-h]
+Usage: love-release [--version] [-h] <command> ...
 
 Makes LÖVE games releases easier !
 
 Options:
    --version             Show love-release version and exit.
    -h, --help            Show this help message and exit.
+
+Commands:
+   run                   Runs this project.
 
 For more info, see https://github.com/MisterDA/love-release
 ```

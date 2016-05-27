@@ -21,6 +21,7 @@ build = {
   type = "builtin",
   modules = {
     ["love-release.task"] = "src/task.lua",
+    ["love-release.tasks.run"] = "src/tasks/run.lua",
   },
   install = {
     bin = {
