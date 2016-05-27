@@ -1,7 +1,0 @@
-describe("love-release tests", function()
-  describe("should test something", function()
-    it("not right now", function()
-      assert.truthy("Sorry.")
-    end)
-  end)
-end)
