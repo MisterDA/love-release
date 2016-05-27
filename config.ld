@@ -4,5 +4,5 @@ description = [[
 love-release - a Lua script to make LÖVE games releases easier
 ]]
 readme = "README.md"
-format = "discount"
+format = "markdown"
 title = "love-release documentation"
