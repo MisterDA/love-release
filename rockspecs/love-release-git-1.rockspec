@@ -14,13 +14,17 @@ It automates LÖVE Game Distribution.
   homepage = "https://github.com/MisterDA/love-release",
 }
 dependencies = {
+  "argparse ~> 0.5",
+  "middleclass ~> 4",
 }
 build = {
   type = "builtin",
   modules = {
+    ["love-release.task"] = "src/task.lua",
   },
   install = {
     bin = {
+      ["love-release"] = "src/main.lua",
     },
   },
 }
