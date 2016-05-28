@@ -1,7 +1,7 @@
 # love-release
 [![License](http://img.shields.io/badge/License-MIT-brightgreen.svg)](LICENSE)
 [![Build Status](https://travis-ci.org/MisterDA/love-release.svg?branch=love-release-3)](https://travis-ci.org/MisterDA/love-release)
-[![Coverage Status](https://coveralls.io/repos/github/MisterDA/love-release/badge.svg?branch=master)](https://coveralls.io/github/MisterDA/love-release?branch=love-release-3)
+[![Coverage Status](https://coveralls.io/repos/github/MisterDA/love-release/badge.svg?branch=love-release-3)](https://coveralls.io/github/MisterDA/love-release?branch=love-release-3)
 [![LuaRocks](https://img.shields.io/badge/LuaRocks-git--1-blue.svg)](https://luarocks.org/modules/rucikir/love-release)
 ![Lua](https://img.shields.io/badge/Lua-5.1%20%E2%86%92%205.3%2C%20JIT-blue.svg)
 
