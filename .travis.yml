@@ -28,8 +28,8 @@ after_success:
   - luacov-coveralls --exclude $TRAVIS_BUILD_DIR/lua_install
 
 branches:
-  only:
-    - master
+  except:
+    - bash
 
 notifications:
   email:
