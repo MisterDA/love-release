@@ -50,6 +50,8 @@ function Args:initialize()
   parser:option("--uti", "Project Uniform Type Identifier.")
   parser:option("-v", "Project version.")
         :target("version")
+  parser:option("-x --exclude", "Exclude file patterns."):count("*")
+        :target("excludeFileList")
 
   parser:flag("--version", "Show love-release version and exit.")
         :target("love_release")
@@ -89,6 +91,7 @@ function Args:__call(project)
   if args.url then project:setHomepage(args.url) end
   if args.uti then project:setIdentifier(args.uti) end
   if args.version then project:setVersion(args.version) end
+  if args.excludeFileList then project:setExcludeFileList(args.excludeFileList) end
 
   if project.projectDirectory == project.releaseDirectory then
     project:setReleaseDirectory(project.releaseDirectory.."/releases")

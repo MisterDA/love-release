@@ -37,6 +37,9 @@ Project.homepage = nil
 --- Uniform Type Identifier in reverse-DNS format.
 Project.identifier = nil
 
+--- Sequential table of string patterns to exclude from the project.
+Project.excludeFileList = {}
+
 --- Project directory, where to find the game sources.
 Project.projectDirectory = nil
 
@@ -183,6 +186,7 @@ function Project:__tostring()
   '  description = '..escape(self.description)..',\n'..
   '  homepage = '..escape(self.homepage)..',\n'..
   '  identifier = '..escape(self.identifier)..',\n'..
+  '  excludeFileList = { '..escape(table.concat(self.excludeFileList, ', '))..'} ,\n'..
   '  compile = '..escape(self.compile)..',\n'..
   '  projectDirectory = '..escape(self.projectDirectory)..',\n'..
   '  releaseDirectory = '..escape(self.releaseDirectory)..',\n'..
@@ -258,6 +262,14 @@ end
 -- @treturn project self.
 function Project:setIdentifier(identifier)
   self.identifier = identifier
+  return self
+end
+
+--- Sets the excludeFileList.
+-- @string excludeFileList the excludeFileList.
+-- @treturn project self.
+function Project:setExcludeFileList(excludeFileList)
+  self.excludeFileList = excludeFileList
   return self
 end
 
