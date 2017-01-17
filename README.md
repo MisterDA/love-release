@@ -73,6 +73,7 @@ function love.conf(t)
     description = nil,        -- The project description (string)
     homepage = nil,           -- The project homepage (string)
     identifier = nil,         -- The project Uniform Type Identifier (string)
+    excludeFileList = {},     -- File patterns to exclude. (string list)
     releaseDirectory = nil,   -- Where to store the project releases (string)
   }
 end
