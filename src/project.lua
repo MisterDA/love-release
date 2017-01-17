@@ -78,6 +78,18 @@ _buildFileTree = function(dir)
   end
 end
 
+--- Recursive function to check if file should be excluded based
+--- on a file name string pattern match.
+-- @local
+local function isExcluded(file, exclusionRule, ...)
+  if exclusionRule == nil then return false end
+  if file:find(exclusionRule) then
+    return true
+  else
+    return isExcluded(file, ...)
+  end
+end
+
 --- Constructs the file tree.
 -- @return File tree. The table represents the root directory.
 -- Sub-directories are represented as sub-tables, indexed by the directory name.
@@ -128,23 +140,12 @@ function Project:excludeFiles()
       "^"..utils.lua.escape_string_regex(self.projectDirectory).."/",
       "")
   if rm_dir > 0 then
-    rm_dir = true
     dir = "^"..dir
-  else
-    rm_dir = false
   end
 
-  if rm_dir then
-    local rm = false
-    local file
-    local n = #self._fileList
-    for i = 1, n do
-      file = self._fileList[i]
-      if rm_dir then if file:find(dir) then rm = true end end
-      if rm then
-        self._fileList[i] = nil
-        rm = false
-      end
+  for i=#self._fileList,1,-1 do
+    if isExcluded(self._fileList[i], dir, unpack(self.excludeFileList)) then
+      table.remove(self._fileList, i)
     end
   end
 end
