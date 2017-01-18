@@ -143,6 +143,7 @@ function Project:excludeFiles()
     dir = "^"..dir
   end
 
+  local unpack = unpack or table.unpack
   for i=#self._fileList,1,-1 do
     if isExcluded(self._fileList[i], dir, unpack(self.excludeFileList)) then
       table.remove(self._fileList, i)
