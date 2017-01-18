@@ -5,9 +5,9 @@
 [![LuaRocks](https://img.shields.io/badge/LuaRocks-2.0.3-blue.svg)](https://luarocks.org/modules/rucikir/love-release)
 ![Lua](https://img.shields.io/badge/Lua-5.1%2C%20JIT-blue.svg)
 
-[Lua][lua] 5.1 script that makes [LÖVE][love] game release easier (previously Bash script). 
-Automates LÖVE [Game Distribution][game_dist]. 
-LÖVE [forum topic][forum_topic]. 
+[Lua][lua] 5.1 script that makes [LÖVE][love] game release easier (previously Bash script).  
+Automates LÖVE [Game Distribution][game_dist].  
+LÖVE [forum topic][forum_topic].  
 Available as a [LuaRocks][luarocks] [package][package].
 
 ## Features
@@ -118,8 +118,8 @@ rm -rf '/usr/share/bash-completion/completions/love-release' '/etc/bash_completi
 ```
 
 ## Contribute
-The documentation of love-release internals is written with [LDoc][ldoc]. Generate it by running `ldoc .`. 
-I do not plan to keep developing the Bash script, not even fixing it. If there appears to be any need for it, let me know and I might consider doing so. 
+The documentation of love-release internals is written with [LDoc][ldoc]. Generate it by running `ldoc .`.  
+I do not plan to keep developing the Bash script, not even fixing it. If there appears to be any need for it, let me know and I might consider doing so.  
 Every bug report or feature request is gladly welcome !
 
 [forum_topic]: https://love2d.org/forums/viewtopic.php?t=75387
