@@ -37,6 +37,9 @@ Project.homepage = nil
 --- Uniform Type Identifier in reverse-DNS format.
 Project.identifier = nil
 
+--- Sequential table of string patterns to exclude from the project.
+Project.excludeFileList = {}
+
 --- Project directory, where to find the game sources.
 Project.projectDirectory = nil
 
@@ -72,6 +75,18 @@ _buildFileTree = function(dir)
         dir[#dir+1] = file
       end
     end
+  end
+end
+
+--- Recursive function to check if file should be excluded based
+--- on a file name string pattern match.
+-- @local
+local function isExcluded(file, exclusionRule, ...)
+  if exclusionRule == nil then return false end
+  if file:find(exclusionRule) then
+    return true
+  else
+    return isExcluded(file, ...)
   end
 end
 
@@ -125,23 +140,13 @@ function Project:excludeFiles()
       "^"..utils.lua.escape_string_regex(self.projectDirectory).."/",
       "")
   if rm_dir > 0 then
-    rm_dir = true
     dir = "^"..dir
-  else
-    rm_dir = false
   end
 
-  if rm_dir then
-    local rm = false
-    local file
-    local n = #self._fileList
-    for i = 1, n do
-      file = self._fileList[i]
-      if rm_dir then if file:find(dir) then rm = true end end
-      if rm then
-        self._fileList[i] = nil
-        rm = false
-      end
+  local unpack = unpack or table.unpack
+  for i=#self._fileList,1,-1 do
+    if isExcluded(self._fileList[i], dir, unpack(self.excludeFileList)) then
+      table.remove(self._fileList, i)
     end
   end
 end
@@ -183,6 +188,7 @@ function Project:__tostring()
   '  description = '..escape(self.description)..',\n'..
   '  homepage = '..escape(self.homepage)..',\n'..
   '  identifier = '..escape(self.identifier)..',\n'..
+  '  excludeFileList = { '..escape(table.concat(self.excludeFileList, ', '))..'} ,\n'..
   '  compile = '..escape(self.compile)..',\n'..
   '  projectDirectory = '..escape(self.projectDirectory)..',\n'..
   '  releaseDirectory = '..escape(self.releaseDirectory)..',\n'..
@@ -258,6 +264,14 @@ end
 -- @treturn project self.
 function Project:setIdentifier(identifier)
   self.identifier = identifier
+  return self
+end
+
+--- Sets the excludeFileList.
+-- @string excludeFileList the excludeFileList.
+-- @treturn project self.
+function Project:setExcludeFileList(excludeFileList)
+  self.excludeFileList = excludeFileList
   return self
 end
 

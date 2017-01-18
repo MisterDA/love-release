@@ -29,6 +29,12 @@ function pipe.pipe(project)
     end
   end
 
+  local function setTable(key, value)
+    if type(value) == "table" then
+      project["set"..key](project, value)
+    end
+  end
+
   local function setLoveVersion(v)
     if type(v) == "string" and v ~= "" then
       local version = semver(v)
@@ -65,6 +71,7 @@ function pipe.pipe(project)
     setString("Homepage", releases.homepage)
     setString("Identifier", releases.identifier)
     setString("ReleaseDirectory", releases.releaseDirectory)
+    setTable("ExcludeFileList", releases.excludeFileList)
   end
 
   return project

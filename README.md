@@ -21,7 +21,7 @@ love-release can extract its informations from the environment: it guesses your 
 ```
 Usage: love-release [-D] [-M] [-a <author>] [-b] [-d <desc>]
        [-e <email>] [-l <love>] [-p <package>] [-t <title>] [-u <url>]
-       [--uti <uti>] [-v <v>] [--version] [-h] [<release>] [<source>]
+       [--uti <uti>] [-v <v>] [-X <exclude>] [--version] [-h] [<release>] [<source>]
        [-W [32|64]]
 
 Makes LÖVE games releases easier !
@@ -49,6 +49,8 @@ Options:
                          Project title.
    -u <url>, --url <url> Project homepage url.
    --uti <uti>           Project Uniform Type Identifier.
+   -x <exclude_pattern>, --exclude <exclude_pattern>
+                         Exclude file patterns.
    -v <v>                Project version.
    --version             Show love-release version and exit.
    -h, --help            Show this help message and exit.
@@ -71,6 +73,7 @@ function love.conf(t)
     description = nil,        -- The project description (string)
     homepage = nil,           -- The project homepage (string)
     identifier = nil,         -- The project Uniform Type Identifier (string)
+    excludeFileList = {},     -- File patterns to exclude. (string list)
     releaseDirectory = nil,   -- Where to store the project releases (string)
   }
 end
