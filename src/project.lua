@@ -62,19 +62,24 @@ end
 -- @local
 local _buildFileTree
 _buildFileTree = function(dir)
-  local subDir
+  local subDirs = {}
+
   for file in assert(fs.dir()) do
     if not file:find("^%.git") then
       if fs.is_dir(file) then
-        subDir = {}
-        dir[file] = subDir
-        assert(fs.change_dir(file))
-        _buildFileTree(subDir, file)
-        assert(fs.pop_dir())
+        subDirs[#subDirs + 1] = file
       elseif fs.is_file(file) then
         dir[#dir+1] = file
       end
     end
+  end
+
+  for _, path in ipairs(subDirs) do
+    local newDir = {}
+    dir[path] = newDir
+    assert(fs.change_dir(path))
+    _buildFileTree(newDir)
+    assert(fs.pop_dir())
   end
 end
 
