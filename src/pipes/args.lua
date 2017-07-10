@@ -91,7 +91,7 @@ function Args:__call(project)
   if args.url then project:setHomepage(args.url) end
   if args.uti then project:setIdentifier(args.uti) end
   if args.version then project:setVersion(args.version) end
-  if args.excludeFileList then project:setExcludeFileList(args.excludeFileList) end
+  if #args.excludeFileList >= 1 then project:setExcludeFileList(args.excludeFileList) end
 
   if project.projectDirectory == project.releaseDirectory then
     project:setReleaseDirectory(project.releaseDirectory.."/releases")
