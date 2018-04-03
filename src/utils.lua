@@ -33,6 +33,7 @@ utils.love = {}
 --- All supported LÖVE versions.
 -- @local
 utils.love.versionTable = {
+  semver'11.0.0',
   semver'0.10.2', semver'0.10.1', semver'0.10.0',
   semver'0.9.2', semver'0.9.1', semver'0.9.0',
   semver'0.8.0',
