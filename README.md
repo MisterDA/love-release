@@ -1,8 +1,8 @@
 # love-release
-[![License](http://img.shields.io/badge/License-MIT-brightgreen.svg)](LICENSE)
+[![License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](LICENSE)
 [![Build Status](https://travis-ci.org/MisterDA/love-release.svg?branch=master)](https://travis-ci.org/MisterDA/love-release)
 [![Coverage Status](https://coveralls.io/repos/github/MisterDA/love-release/badge.svg?branch=master)](https://coveralls.io/github/MisterDA/love-release?branch=master)
-[![LuaRocks](https://img.shields.io/badge/LuaRocks-2.0.4-blue.svg)](https://luarocks.org/modules/rucikir/love-release)
+[![LuaRocks](https://img.shields.io/badge/LuaRocks-2.0.5-blue.svg)](https://luarocks.org/modules/rucikir/love-release)
 ![Lua](https://img.shields.io/badge/Lua-5.1%2C%20JIT-blue.svg)
 
 [Lua][lua] 5.1 script that makes [LÖVE][love] game release easier (previously Bash script).  
