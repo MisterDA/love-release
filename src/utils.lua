@@ -3,7 +3,6 @@
 
 local cfg = require 'luarocks.cfg'
 local fs = require 'luarocks.fs'
-local semver = require 'semver'
 
 local utils = {}
 
@@ -30,40 +29,75 @@ end
 
 utils.love = {}
 
+local ver = {
+   major = nil,
+   minor = nil,
+   patch = nil,
+   str = nil
+}
+utils.love.ver = ver
+
+function ver:new(str)
+   local major, minor, patch = str:match("^(%d+)%.?(%d*)%.?(%d*)$")
+   assert(type(major) == 'string',
+          ("Could not extract version number(s) from %q"):format(str))
+   local major, minor, patch = tonumber(major), tonumber(minor), tonumber(patch)
+   local o = { major = major, minor = minor, patch = patch, str = str }
+   setmetatable(o, self)
+   self.__index = self
+   return o
+end
+
+function ver:__eq(other)
+   return self.major == other.major and self.minor == other.minor and
+      self.patch == other.patch
+end
+
+function ver:__lt(other)
+   if self.major ~= other.major then return self.major < other.major end
+   if self.minor ~= other.minor then return self.minor < other.minor end
+   if self.patch ~= other.patch then return self.patch < other.patch end
+   return false
+end
+
+function ver:__tostring()
+   local buffer = { ("%d.%d"):format(self.major, self.minor) }
+   if self.patch then table.insert(buffer, "." .. self.patch) end
+   return table.concat(buffer)
+end
+
+setmetatable(ver, { __call = ver.new })
+
 --- All supported LÖVE versions.
 -- @local
 utils.love.versionTable = {
-  semver'11.0.0',
-  semver'0.10.2', semver'0.10.1', semver'0.10.0',
-  semver'0.9.2', semver'0.9.1', semver'0.9.0',
-  semver'0.8.0',
-  semver'0.7.2', semver'0.7.1', semver'0.7.0',
-  semver'0.6.2', semver'0.6.1', semver'0.6.0',
+  ver'11.1', ver'11.0',
+  ver'0.10.2', ver'0.10.1', ver'0.10.0',
+  ver'0.9.2', ver'0.9.1', ver'0.9.0',
+  ver'0.8.0',
+  ver'0.7.2', ver'0.7.1', ver'0.7.0',
+  ver'0.6.2', ver'0.6.1', ver'0.6.0',
 --[[
-  semver'0.5.0',
-  semver'0.4.0',
-  semver'0.3.2', semver'0.3.1', semver'0.3.0',
-  semver'0.2.1', semver'0.2.0',
-  semver'0.1.1',
+  ver'0.5.0',
+  ver'0.4.0',
+  ver'0.3.2', ver'0.3.1', ver'0.3.0',
+  ver'0.2.1', ver'0.2.0',
+  ver'0.1.1',
 --]]
 }
 
 --- Last script LÖVE version.
-function utils.love.lastVersion()
-  return utils.love.versionTable[1]
-end
+utils.love.lastVersion = utils.love.versionTable[1]
 
 --- First supported LÖVE version.
-function utils.love.minVersion()
-  return utils.love.versionTable[#utils.love.versionTable]
-end
+utils.love.minVersion = utils.love.versionTable[#utils.love.versionTable]
 
 --- Checks if a LÖVE version exists and is supported.
--- @tparam semver version LÖVE version.
+-- @tparam ver version LÖVE version.
 -- @treturn bool true is the version is supported.
 function utils.love.isSupported(version)
-  if version >= utils.love.minVersion()
-      and version <= utils.love.lastVersion() then
+  if version >= utils.love.minVersion
+      and version <= utils.love.lastVersion then
     for _, v in ipairs(utils.love.versionTable) do
       if version == v then
         return true

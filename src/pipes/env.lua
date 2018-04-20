@@ -3,14 +3,14 @@
 -- @usage env(project)
 
 local fs = require 'luarocks.fs'
-local semver = require 'semver'
 local utils = require 'love-release.utils'
+local ver = utils.love.ver
 
 local pipe = {}
 
 
 --- Gets the version of the installed LÖVE.
--- @treturn semver LÖVE version.
+-- @treturn ver LÖVE version.
 -- @local
 local function getSystemLoveVersion()
   local handle = io.popen('love --version')
@@ -18,12 +18,12 @@ local function getSystemLoveVersion()
   handle:close()
   local version = result:match('%d+%.%d+%.%d+')
   if version then
-    return semver(version)
+    return ver(version)
   end
 end
 
 --- Gets the latest LÖVE version from the web.
--- @treturn semver LÖVE version.
+-- @treturn ver LÖVE version.
 -- @local
 local function getWebLoveVersion()
   local releasesPath = utils.cache.."/releases.xml"
@@ -35,17 +35,17 @@ local function getWebLoveVersion()
     local releasesXml = io.open(releasesPath, "rb")
     local version = releasesXml:read("*a"):match("<title>(%d+%.%d+%.%d+)")
     releasesXml:close()
-    return semver(version)
+    return ver(version)
   else
     return nil, err
   end
 end
 
 --- Gets the latest LÖVE version from the script, the system and the web.
--- @tparam semver script script version.
--- @tparam semver system system version.
--- @tparam semver web web version.
--- @treturn semver the latest version.
+-- @tparam ver script script version.
+-- @tparam ver system system version.
+-- @tparam ver web web version.
+-- @treturn ver the latest version.
 -- @local
 local function getLatestLoveVersion(script, system, web)
   local version = script
@@ -79,7 +79,7 @@ function pipe.pipe(project)
 
   local systemLoveVersion = getSystemLoveVersion()
   local webLoveVersion = getWebLoveVersion()
-  local scriptLoveVersion = utils.love.lastVersion()
+  local scriptLoveVersion = utils.love.lastVersion
   local isSupported = utils.love.isSupported
 
   if systemLoveVersion and not isSupported(systemLoveVersion) then

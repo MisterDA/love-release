@@ -217,7 +217,7 @@ function Project:setPackage(package)
 end
 
 --- Sets the LÖVE version used.
--- @tparam semver version the LÖVE version.
+-- @tparam ver version the LÖVE version.
 -- @treturn project self.
 function Project:setLoveVersion(version)
   self.loveVersion = version

@@ -19,7 +19,6 @@ dependencies = {
   "luafilesystem",
   "lua-zip",
   "middleclass",
-  "semver",
 }
 build = {
   type = "builtin",

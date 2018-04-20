@@ -3,10 +3,10 @@
 -- @usage macosx(project)
 
 local fs = require "luarocks.fs"
-local semver = require "semver"
 local zip = require "brimworks.zip"
 local Script = require "love-release.script"
 local utils = require "love-release.utils"
+local ver = utils.love.ver
 
 local s = {}
 
@@ -26,12 +26,14 @@ function s.script(project)
   script:createLoveFile()
   fs.change_dir(project.releaseDirectory)
 
-  local prefix = "love-"..tostring(project.loveVersion).."-macosx-"
+  local prefix = "love-"..tostring(project.loveVersion).."-macos"
   local bin
-  if project.loveVersion >= semver'0.9.0' then
-    bin = prefix.."x64.zip"
+  if project.loveVersion >= ver'11.0.0' then
+    bin = prefix..".zip"
+  elseif project.loveVersion >= ver'0.9.0' then
+    bin = prefix.."x-x64.zip"
   else
-    bin = prefix.."ub.zip"
+    bin = prefix.."x-ub.zip"
   end
   local url = "https://bitbucket.org/rude/love/downloads/"..bin
   local cache = utils.cache.."/"..bin
@@ -78,7 +80,7 @@ function s.script(project)
   assert(ar:replace(infoPlistIndex, "string", infoPlist))
   ar:close()
 
-  os.rename(bin, project.title.."-macosx.zip")
+  os.rename(bin, project.title.."-macos.zip")
 
   fs.pop_dir()
 end

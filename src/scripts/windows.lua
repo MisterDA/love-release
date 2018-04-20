@@ -3,10 +3,10 @@
 -- @usage windows(project)
 
 local fs = require "luarocks.fs"
-local semver = require "semver"
 local zip = require "brimworks.zip"
 local Script = require "love-release.script"
 local utils = require "love-release.utils"
+local ver = utils.love.ver
 
 local s = {}
 
@@ -14,7 +14,11 @@ local s = {}
 local function release(script, project, arch)
   local prefix = "love-"..tostring(project.loveVersion).."-win"
   local dir, bin
-  if project.loveVersion >= semver'0.9.0' then
+  if project.loveVersion.major == 11 then
+     bin = prefix..arch..".zip"
+     prefix = "love-"..tostring(project.loveVersion)..".0-win"
+     dir = prefix..arch.."/"
+  elseif project.loveVersion >= ver'0.9.0' then
     bin = prefix..arch..".zip"
     dir = prefix..arch.."/"
   else
@@ -75,7 +79,7 @@ function s.script(project, arch)
   if arch == 32 then
     release(script, project, 32)
   end
-  if arch == 64 and project.loveVersion >= semver'0.8.0' then
+  if arch == 64 and project.loveVersion >= ver'0.8.0' then
     release(script, project, 64)
   end
   fs.pop_dir()

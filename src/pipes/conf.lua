@@ -4,10 +4,8 @@
 
 local fs = require 'luarocks.fs'
 local loadconf = require 'loadconf'
-local semver = require 'semver'
-
 local utils = require 'love-release.utils'
-
+local ver = utils.love.ver
 
 local pipe = {}
 
@@ -37,7 +35,7 @@ function pipe.pipe(project)
 
   local function setLoveVersion(v)
     if type(v) == "string" and v ~= "" then
-      local version = semver(v)
+      local version = ver(v)
       if not utils.love.isSupported(version) then
         local scriptLoveVersion = project.loveVersion
         err("CONF: Your LÖVE conf version ("..v
