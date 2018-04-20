@@ -15,9 +15,9 @@ It automates LÖVE Game Distribution.
 dependencies = {
   "argparse",
   "loadconf",
-  "lua ~> 5.1",
+  "lua",
   "luafilesystem",
-  "lua-zip",
+  "lua-libzip",
   "middleclass",
 }
 build = {

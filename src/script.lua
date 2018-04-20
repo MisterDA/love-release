@@ -4,7 +4,7 @@
 local fs = require 'luarocks.fs'
 local class = require 'middleclass'
 local lfs = require "lfs"
-local zip = require 'brimworks.zip'
+local zip = require 'misterda.zip'
 local utils = require 'love-release.utils'
 
 local Script = class('Script')
