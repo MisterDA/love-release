@@ -1,21 +1,30 @@
 # love-release
 [![License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](LICENSE)
-[![Build Status](https://travis-ci.org/MisterDA/love-release.svg?branch=master)](https://travis-ci.org/MisterDA/love-release)
-[![Coverage Status](https://coveralls.io/repos/github/MisterDA/love-release/badge.svg?branch=master)](https://coveralls.io/github/MisterDA/love-release?branch=master)
+[![Build Status](https://travis-ci.org/MisterDA/love-release.svg?branch=master)](https://travis-ci.org/MisterDA/love-release)
+[![Coverage Status](https://coveralls.io/repos/github/MisterDA/love-release/badge.svg?branch=master)](https://coveralls.io/github/MisterDA/love-release?branch=master)
 [![LuaRocks](https://img.shields.io/badge/LuaRocks-2.0.6-blue.svg)](https://luarocks.org/modules/rucikir/love-release)
 ![Lua](https://img.shields.io/badge/Lua-5.1%2C%20JIT-blue.svg)
 
-[Lua][lua] script that makes [LÖVE][love] game release easier (previously Bash script).  
+[Lua][lua] script that makes [LÖVE][love] game release easier (previously
+Bash script).  
 Automates LÖVE [Game Distribution][game_dist].  
 LÖVE [forum topic][forum_topic].  
 Available as a [LuaRocks][luarocks] [package][package].
 
 ## Features
-love-release makes your LÖVE game release easier. It can create from your sources Windows executables, MacOS X applications, Debian packages and simple LÖVE files.
+love-release makes your LÖVE game release easier. love-release can
+create from your sources: Windows executables, MacOS X applications,
+Debian packages, and simple LÖVE files.
 
-love-release creates only one LÖVE file per release directory and keeps it synced with your sources.
+love-release creates only one LÖVE file per release directory and
+keeps it synced with your sources.
 
-love-release can extract its informations from the environment: it guesses your game's title from the directory where it's stored, selects by default the latest LÖVE version from the web or uses its latest bundled LÖVE version, then parses the `conf.lua` file to extract even more informations such as the real LÖVE version your project uses.
+love-release can extract its informations from the environment: it
+guesses your game's title from the directory where it's stored,
+selects by default the latest LÖVE version from the web or uses its
+latest bundled LÖVE version, then parses the `conf.lua` file to
+extract even more informations such as the real LÖVE version your
+project uses.
 
 ### Usage
 ```
@@ -59,7 +68,9 @@ For more info, see https://github.com/MisterDA/love-release
 ```
 
 ### Configuration
-love-release prints to the command-line a Lua table containing the informations it uses to generate your project. These informations can be stored in your `conf.lua` file to be used later.
+love-release prints to the command-line a Lua table containing the
+informations it uses to generate your project. These informations can
+be stored in your `conf.lua` file to be used later.
 
 ```lua
 function love.conf(t)
@@ -82,20 +93,30 @@ end
 ## Installation
 
 ### Dependencies
-love-release is only installable through LuaRocks and highly depends on LuaRocks internal API. love-release is currently build on LuaRocks 2.3.0. LuaRocks API is not meant to be stable, and a future update could break love-release. As love-release is made for LÖVE, it is written for Lua 5.1.
+love-release is only installable through LuaRocks and highly depends
+on LuaRocks internal API. love-release is currently built on LuaRocks
+2.3.0. LuaRocks API is not meant to be stable, and a future update
+could break love-release.
 
 #### Required
 - [libzip][libzip] and its headers for lua-libzip.
-- Other libraries are automatically installed, but let's give them some credit: [lua-libzip][lua-libzip], [luafilesystem][lfs], [loadconf][loadconf], [middleclass][middleclass], [semver][semver].
+- Other libraries are automatically installed, but let's give them
+  some credit: [lua-libzip][lua-libzip], [luafilesystem][lfs],
+  [loadconf][loadconf], [middleclass][middleclass], [semver][semver].
 
 #### Optional
 - `love` can be used to determine your system LÖVE version.
 - `fakeroot` and `dpkg-deb` are required to create Debian packages.
-- [LuaJIT][luajit] can be used to compile your sources, either with `luarocks-luajit` or if `luajit` is installed.
+- [LuaJIT][luajit] can be used to compile your sources, either with
+  `luarocks-luajit` or with `luajit` if it is installed.
 
 ##### Lua binding to libzip
 
-love-release depends on a Lua binding to [libzip][libzip]. I have forked [brimworks/lua-zip][lua-zip] to integrate new features, and published the fork under the name of [lua-libzip][lua-libzip] in [LuaRocks][lua-libzip-rock]. The name will change when LuaRocks 3 will be released.
+love-release depends on a Lua binding to [libzip][libzip]. I have
+forked [brimworks/lua-zip][lua-zip] to integrate new features, and
+published the fork under the name of [lua-libzip][lua-libzip] in
+[LuaRocks][lua-libzip-rock]. The name will change when LuaRocks 3 is
+released.
 
 ### Install
 
@@ -108,7 +129,10 @@ luarocks install --server=http://luarocks.org/dev love-release
 ```
 
 ### Remove Bash version
-You may have previously installed the Bash version of love-release. You can remove it with the following piece of code. Take the time to assure yourself that the paths are correct and match your installation of love-release.
+You may have previously installed the Bash version of
+love-release. You can remove it with the following piece of code. Take
+the time to assure yourself that the paths are correct and match your
+installation of love-release.
 
 ```sh
 rm -rf '/usr/bin/love-release'
@@ -118,8 +142,11 @@ rm -rf '/usr/share/bash-completion/completions/love-release' '/etc/bash_completi
 ```
 
 ## Contribute
-The documentation of love-release internals is written with [LDoc][ldoc]. Generate it by running `ldoc .`.  
-I do not plan to keep developing the Bash script, not even fixing it. If there appears to be any need for it, let me know and I might consider doing so.  
+The documentation of love-release internals is written with [LDoc][ldoc].
+Generate it by running `ldoc .`.  
+I currently do not plan to continue the development of the Bash script,
+or even to fix it. If there appears to be any need for it, let me know
+and I might consider doing so.  
 Every bug report or feature request is gladly welcome !
 
 [forum_topic]: https://love2d.org/forums/viewtopic.php?t=75387
