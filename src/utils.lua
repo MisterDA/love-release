@@ -41,8 +41,10 @@ function ver:new(str)
    local major, minor, patch = str:match("^(%d+)%.?(%d*)%.?(%d*)$")
    assert(type(major) == 'string',
           ("Could not extract version number(s) from %q"):format(str))
-   local major, minor, patch = tonumber(major), tonumber(minor), tonumber(patch)
-   local o = { major = major, minor = minor, patch = patch, str = str }
+   local o = { major = tonumber(major),
+               minor = tonumber(minor),
+               patch = tonumber(patch),
+               str = str }
    setmetatable(o, self)
    self.__index = self
    return o
