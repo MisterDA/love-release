@@ -60,7 +60,7 @@ function Script:createLoveFile()
       if attributes.mode == "directory" then
         ar:add_dir(file)
       else
-        if self.project.compile then
+        if self.project.compile and file:match(".lua$") then
           ar:add(file, "string", utils.lua.bytecode(file))
         else
           ar:add(file, "file", file)
@@ -70,7 +70,7 @@ function Script:createLoveFile()
     elseif attributes and stat and attributes.modification > stat.mtime + 5 then
       if attributes.mode == "file" then
         utils.io.out("Update "..file.."\n")
-        if self.project.compile then
+        if self.project.compile and file:match(".lua$") then
           ar:replace(assert(ar:name_locate(file)), "string",
                      utils.lua.bytecode(file))
         else
