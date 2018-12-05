@@ -1,11 +1,14 @@
 --- Provides utility functions and constants.
 -- @module utils
 
-local cfg = require 'luarocks.cfg'
+local cfg = require 'luarocks.core.cfg'
 local fs = require 'luarocks.fs'
+local dir = require 'luarocks.dir'
 
 local utils = {}
 
+assert(cfg.init())
+fs.init()
 
 --[[ CACHE ]]--
 
@@ -13,15 +16,9 @@ local utils = {}
 utils.cache = nil
 
 do
-  local cache
-  if cfg.platforms.windows then
-     cache = os.getenv("APPDATA")
-  else
-     cache = os.getenv("HOME").."/.cache"
-  end
-  cache = fs.absolute_name(cache.."/love-release")
-  assert(fs.make_dir(cache))
-  utils.cache = cache
+   local cache = dir.dir_name(cfg.local_cache) .. "/love-release"
+   assert(fs.make_dir(cache))
+   utils.cache = cache
 end
 
 
