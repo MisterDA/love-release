@@ -2,14 +2,14 @@
 [![License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](LICENSE)
 [![Build Status](https://travis-ci.org/MisterDA/love-release.svg?branch=master)](https://travis-ci.org/MisterDA/love-release)
 [![Coverage Status](https://coveralls.io/repos/github/MisterDA/love-release/badge.svg?branch=master)](https://coveralls.io/github/MisterDA/love-release?branch=master)
-[![LuaRocks](https://img.shields.io/badge/LuaRocks-2.0.8-blue.svg)](https://luarocks.org/modules/rucikir/love-release)
+[![LuaRocks](https://img.shields.io/badge/LuaRocks-blue.svg)](https://luarocks.org/modules/rucikir/love-release)
 ![Lua](https://img.shields.io/badge/Lua-5.1%2C%20JIT-blue.svg)
 
 [Lua][lua] script that makes [LÖVE][love] game release easier (previously
-Bash script).  
-Automates LÖVE [Game Distribution][game_dist].  
-LÖVE [forum topic][forum_topic].  
-Available as a [LuaRocks][luarocks] [package][package].
+Bash script).\
+Automates LÖVE [Game Distribution][game_dist].\
+LÖVE [forum topic][forum_topic].\
+Available as a [LuaRocks 3][luarocks] [package][package].
 
 ## Features
 love-release makes your LÖVE game release easier. love-release can
@@ -95,14 +95,14 @@ end
 ### Dependencies
 love-release is only installable through LuaRocks and highly depends
 on LuaRocks internal API. love-release is currently built on LuaRocks
-2.3.0. LuaRocks API is not meant to be stable, and a future update
+3.0.x. LuaRocks API is not meant to be stable, and a future update
 could break love-release.
 
 #### Required
 - [libzip][libzip] and its headers for lua-libzip.
 - Other libraries are automatically installed, but let's give them
-  some credit: [lua-libzip][lua-libzip], [luafilesystem][lfs],
-  [loadconf][loadconf], [middleclass][middleclass], [semver][semver].
+  some credit: [luafilesystem][lfs], [loadconf][loadconf],
+  [middleclass][middleclass], [semver][semver].
 
 #### Optional
 - `love` can be used to determine your system LÖVE version.
@@ -113,10 +113,10 @@ could break love-release.
 ##### Lua binding to libzip
 
 love-release depends on a Lua binding to [libzip][libzip]. I have
-forked [brimworks/lua-zip][lua-zip] to integrate new features, and
-published the fork under the name of [lua-libzip][lua-libzip] in
-[LuaRocks][lua-libzip-rock]. The name will change when LuaRocks 3 is
-released.
+forked [brimworks/lua-zip][brimworks-lua-zip] to
+[misterda/lua-zip][misterda-lua-zip] in order integrate new features,
+and published the fork under my namespace in LuaRocks,
+[rucikir/lua-zip][rucikir-lua-zip-rock].
 
 ### Install
 
@@ -143,10 +143,10 @@ rm -rf '/usr/share/bash-completion/completions/love-release' '/etc/bash_completi
 
 ## Contribute
 The documentation of love-release internals is written with [LDoc][ldoc].
-Generate it by running `ldoc .`.  
+Generate it by running `ldoc .`.
 I currently do not plan to continue the development of the Bash script,
 or even to fix it. If there appears to be any need for it, let me know
-and I might consider doing so.  
+and I might consider doing so.
 Every bug report or feature request is gladly welcome !
 
 [forum_topic]: https://love2d.org/forums/viewtopic.php?t=75387
@@ -158,9 +158,9 @@ Every bug report or feature request is gladly welcome !
 [lua]: http://www.lua.org/
 [luajit]: http://luajit.org/
 [luarocks]: https://luarocks.org/
-[lua-zip]: https://github.com/brimworks/lua-zip
-[lua-libzip]: https://github.com/misterda/lua-zip
-[lua-libzip-rock]: https://luarocks.org/modules/rucikir/lua-libzip
+[brimworks-lua-zip]: https://github.com/brimworks/lua-zip
+[misterda-lua-zip]: https://github.com/misterda/lua-zip
+[rucikir-lua-zip-rock]: https://luarocks.org/modules/rucikir/lua-zip
 [loadconf]: https://github.com/Alloyed/loadconf
 [middleclass]: https://github.com/kikito/middleclass
 [package]: https://luarocks.org/modules/rucikir/love-release
