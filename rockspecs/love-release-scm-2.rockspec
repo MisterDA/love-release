@@ -1,5 +1,6 @@
 package = "love-release"
-version = "scm-1"
+version = "scm-2"
+rockspec_format = "3.0"
 source = {
   url = "git://github.com/MisterDA/love-release.git",
 }
@@ -17,7 +18,7 @@ dependencies = {
   "loadconf",
   "lua",
   "luafilesystem",
-  "lua-libzip",
+  "rucikir/lua-zip",
   "middleclass",
 }
 build = {
