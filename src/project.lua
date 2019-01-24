@@ -138,7 +138,7 @@ end
 --- Excludes files from the LÖVE file.
 -- @todo This function should be able to parse and use CVS files such as
 -- gitignore. It should also work on the file tree rather than on the file list.
--- For now it  works on the file list and only exludes the release directory if
+-- For now it  works on the file list and only excludes the release directory if
 -- it is within the project directory.
 function Project:excludeFiles()
   local dir, rm_dir = self.releaseDirectory:gsub(
