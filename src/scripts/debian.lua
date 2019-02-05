@@ -7,6 +7,7 @@ local dir = require 'luarocks.dir'
 local lfs = require 'lfs'
 local Script = require 'love-release.script'
 local utils = require 'love-release.utils'
+local posix = require "posix"
 
 local s = {}
 
@@ -109,7 +110,8 @@ function s.script(project)
       "love '"..loveFileDeb:gsub("'", "\\'").."'\n",
       true
   )
-  assert(fs.chmod(tempDir.."/usr/bin/"..project.package, "+x"))
+
+  assert(posix.chmod(tempDir.."/usr/bin/"..project.package, 'u+x'))
 
   -- /usr/share/games/${PACKAGE}/${LOVE_FILE}
   copyFile(project.releaseDirectory.."/"..script.loveFile, loveFileDeb, true)
