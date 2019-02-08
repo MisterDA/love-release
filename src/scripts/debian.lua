@@ -109,7 +109,9 @@ function s.script(project)
       "love '"..loveFileDeb:gsub("'", "\\'").."'\n",
       true
   )
-  assert(fs.chmod(tempDir.."/usr/bin/"..project.package, "+x"))
+  -- FIXME: escape this path?
+  assert(fs.set_permissions(tempDir.."/usr/bin/"..project.package),
+                            "exec", "all") -- 755
 
   -- /usr/share/games/${PACKAGE}/${LOVE_FILE}
   copyFile(project.releaseDirectory.."/"..script.loveFile, loveFileDeb, true)
