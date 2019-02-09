@@ -61,7 +61,6 @@ Options:
    -x <exclude_pattern>, --exclude <exclude_pattern>
                          Exclude file patterns.
    -v <v>                Project version.
-   --version             Show love-release version and exit.
    -h, --help            Show this help message and exit.
 
 For more info, see https://github.com/MisterDA/love-release
@@ -143,10 +142,10 @@ rm -rf '/usr/share/bash-completion/completions/love-release' '/etc/bash_completi
 
 ## Contribute
 The documentation of love-release internals is written with [LDoc][ldoc].
-Generate it by running `ldoc .`.
+Generate it by running `ldoc .`.\
 I currently do not plan to continue the development of the Bash script,
 or even to fix it. If there appears to be any need for it, let me know
-and I might consider doing so.
+and I might consider doing so.\
 Every bug report or feature request is gladly welcome !
 
 [forum_topic]: https://love2d.org/forums/viewtopic.php?t=75387

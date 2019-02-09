@@ -53,26 +53,16 @@ function Args:initialize()
   parser:option("-x --exclude", "Exclude file patterns."):count("*")
         :target("excludeFileList")
 
-  parser:flag("--version", "Show love-release version and exit.")
-        :target("love_release")
-
   self.args = parser:parse()
 end
 
 
 function Args:__call(project)
-  local out = utils.io.out
   local args = self.args
 
   if self.pre then
     if args.source then project:setProjectDirectory(args.source) end
     if args.release then project:setReleaseDirectory(args.release) end
-    if args.love_release then
-      local show = require 'luarocks.show'
-      local _, version = show.pick_installed_rock("love-release")
-      out("love-release "..version.."\n")
-      os.exit(0)
-    end
     self.pre = false
     return project
   end
