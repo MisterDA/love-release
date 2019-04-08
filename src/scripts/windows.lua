@@ -3,7 +3,7 @@
 -- @usage windows(project)
 
 local fs = require "luarocks.fs"
-local zip = require "misterda.zip"
+local zip = require "brimworks.zip"
 local Script = require "love-release.script"
 local utils = require "love-release.utils"
 local ver = utils.love.ver
