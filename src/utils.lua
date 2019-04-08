@@ -95,6 +95,7 @@ utils.love.minVersion = utils.love.versionTable[#utils.love.versionTable]
 -- @tparam ver version LÖVE version.
 -- @treturn bool true is the version is supported.
 function utils.love.isSupported(version)
+  assert(getmetatable(version) == ver)
   if version >= utils.love.minVersion
       and version <= utils.love.lastVersion then
     for _, v in ipairs(utils.love.versionTable) do

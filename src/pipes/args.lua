@@ -72,8 +72,9 @@ function Args:__call(project)
   if args.desc then project:setDescription(args.desc) end
   if args.email then project:setEmail(args.email) end
   if args.loveVersion then
+    args.loveVersion = utils.love.ver(args.loveVersion)
     assert(utils.love.isSupported(args.loveVersion),
-           "ARGS: "..args.loveVersion.." is not supported.\n")
+           "ARGS: "..tostring(args.loveVersion).." is not supported.\n")
     project:setLoveVersion(args.loveVersion)
   end
   if args.package then project:setPackage(args.package) end
