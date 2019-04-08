@@ -30,6 +30,9 @@ function s.script(project)
   local bin
   if project.loveVersion >= ver'11.0.0' then
     bin = prefix..".zip"
+  elseif project.loveVersion == ver'0.10.0' then
+    utils.io.err("MacOS X: No LÖVE 0.10.0 binary available.\n")
+    os.exit(1)
   elseif project.loveVersion >= ver'0.9.0' then
     bin = prefix.."x-x64.zip"
   else
@@ -42,7 +45,11 @@ function s.script(project)
   -- Amazon AWS which will answer a 403.
   -- assert(fs.download(url, cache, true))
   if not fs.exists(cache) then
-    assert(fs.download(url, cache))
+    local ok, msg = fs.download(url, cache)
+    if not ok then
+      utils.io.err("Tried to download "..url.." to "..cache.."\n")
+      assert(ok, msg)
+    end
   end
 
   fs.delete(bin)
