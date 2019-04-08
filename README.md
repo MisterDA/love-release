@@ -100,22 +100,14 @@ could break love-release.
 #### Required
 - [libzip][libzip] and its headers for lua-libzip.
 - Other libraries are automatically installed, but let's give them
-  some credit: [luafilesystem][lfs], [loadconf][loadconf],
-  [middleclass][middleclass], [semver][semver].
+  some credit: [lua-zip][lua-zip], [luafilesystem][lfs],
+  [loadconf][loadconf], [middleclass][middleclass], [semver][semver].
 
 #### Optional
 - `love` can be used to determine your system LÖVE version.
 - `fakeroot` and `dpkg-deb` are required to create Debian packages.
 - [LuaJIT][luajit] can be used to compile your sources, either with
   `luarocks-luajit` or with `luajit` if it is installed.
-
-##### Lua binding to libzip
-
-love-release depends on a Lua binding to [libzip][libzip]. I have
-forked [brimworks/lua-zip][brimworks-lua-zip] to
-[misterda/lua-zip][misterda-lua-zip] in order integrate new features,
-and published the fork under my namespace in LuaRocks,
-[rucikir/lua-zip][rucikir-lua-zip-rock].
 
 ### Install
 
@@ -157,9 +149,7 @@ Every bug report or feature request is gladly welcome !
 [lua]: http://www.lua.org/
 [luajit]: http://luajit.org/
 [luarocks]: https://luarocks.org/
-[brimworks-lua-zip]: https://github.com/brimworks/lua-zip
-[misterda-lua-zip]: https://github.com/misterda/lua-zip
-[rucikir-lua-zip-rock]: https://luarocks.org/modules/rucikir/lua-zip
+[lua-zip]: https://github.com/brimworks/lua-zip
 [loadconf]: https://github.com/Alloyed/loadconf
 [middleclass]: https://github.com/kikito/middleclass
 [package]: https://luarocks.org/modules/rucikir/love-release
