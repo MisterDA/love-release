@@ -110,8 +110,8 @@ function s.script(project)
       true
   )
   -- FIXME: escape this path?
-  assert(fs.set_permissions(tempDir.."/usr/bin/"..project.package),
-                            "exec", "all") -- 755
+  assert(fs.set_permissions(tempDir.."/usr/bin/"..project.package,
+                            "exec", "all")) -- 755
 
   -- /usr/share/games/${PACKAGE}/${LOVE_FILE}
   copyFile(project.releaseDirectory.."/"..script.loveFile, loveFileDeb, true)
