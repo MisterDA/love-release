@@ -87,7 +87,7 @@ end
 --- on a file name string pattern match.
 -- @local
 local function isExcluded(file, exclusionRule, ...)
-  if exclusionRule == nil then return false end
+  if exclusionRule == nil or exclusionRule == '' then return false end
   if file:find(exclusionRule) then
     return true
   else
