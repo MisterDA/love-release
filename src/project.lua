@@ -173,7 +173,8 @@ deep(t)
 
 local function escape(var)
   if type(var) == "string" then
-    return "'"..var:gsub("'", "\'").."'"
+    if var == "" then return var
+    else return "'"..var:gsub("'", "\'").."'" end
   else
     return tostring(var)
   end
