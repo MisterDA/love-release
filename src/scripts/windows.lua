@@ -33,12 +33,9 @@ local function release(script, project, arch)
   local url = "https://bitbucket.org/rude/love/downloads/"..bin
   local cache = utils.cache.."/"..bin
 
-  -- Can't cache the archive because luarocks functions use a HEAD request to
-  -- Amazon AWS which will answer a 403.
-  -- assert(fs.download(url, cache, true))
-  if not fs.exists(cache) then
-    assert(fs.download(url, cache))
-  end
+  -- Can't cache the archive because luarocks functions use a HEAD
+  -- request to Amazon AWS which will answer a 403.
+  utils.download(url, cache, false)
 
   fs.delete(bin)
   assert(fs.copy(cache, bin))

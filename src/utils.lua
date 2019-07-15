@@ -155,4 +155,22 @@ function utils.io.err(string)
 end
 
 
+--[[ DOWNLOAD ]]--
+
+--- Downloads and optionally caches a file. Will assert on download
+-- failure.
+-- @string url the document to download
+-- @string dest where to write it
+-- @bool cacheable cache it or not
+function utils.download(url, dest, cacheable)
+  if not fs.exists(dest) then
+    local ok, msg = fs.download(url, dest, cacheable)
+    if not ok then
+      utils.io.err("Tried to download "..url.." to "..dest.."\n")
+      assert(ok, msg)
+    end
+  end
+end
+
+
 return utils
