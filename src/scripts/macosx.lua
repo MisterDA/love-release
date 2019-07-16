@@ -28,7 +28,7 @@ function s.script(project)
 
   local prefix = "love-"..tostring(project.loveVersion).."-macos"
   local bin
-  if project.loveVersion >= ver'11.0.0' then
+  if project.loveVersion >= ver'11.0' then
     bin = prefix..".zip"
   elseif project.loveVersion == ver'0.10.0' then
     utils.io.err("MacOS X: No LÖVE 0.10.0 binary available.\n")
