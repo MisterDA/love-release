@@ -44,23 +44,23 @@ Options:
    -M                    MacOS X application.
    -W [32|64]            Windows executable.
    -a <author>, --author <author>
-                         Author full name.
+                         Author full name. Required for Debian.
    -b                    Compile new or updated files to LuaJIT bytecode.
    -d <desc>, --desc <desc>
-                         Project description.
+                         Project description. Required for Debian.
    -e <email>, --email <email>
-                         Author email.
+                         Author email. Required for Debian.
    -l <love>, --love <love>
                          LÖVE version to use.
    -p <package>, --package <package>
                          Package and command name.
    -t <title>, --title <title>
                          Project title.
-   -u <url>, --url <url> Project homepage url.
-   --uti <uti>           Project Uniform Type Identifier.
+   -u <url>, --url <url> Project homepage url. Required for Debian.
+   --uti <uti>           Project Uniform Type Identifier. Required for macOS.
    -x <exclude_pattern>, --exclude <exclude_pattern>
                          Exclude file patterns.
-   -v <v>                Project version.
+   -v <v>                Project version. Required for Debian.
    -h, --help            Show this help message and exit.
 
 For more info, see https://github.com/MisterDA/love-release
