@@ -29,8 +29,8 @@ function Args:initialize()
 
   parser:flag("-D", "Debian package.")
         :target "debian"
-  parser:flag("-M", "MacOS X application.")
-        :target "macosx"
+  parser:flag("-M", "macOS application.")
+        :target "macos"
   parser:option("-W", "Windows executable.")
         :target "windows"
         :args "0-1"
@@ -93,8 +93,8 @@ function Args:__call(project)
   local script
   script = require 'love-release.scripts.love'
   script(project)
-  if args.macosx then
-    script = require 'love-release.scripts.macosx'
+  if args.macos then
+    script = require 'love-release.scripts.macos'
     script(project)
   end
   if #args.windows > 0 then

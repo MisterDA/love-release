@@ -1,6 +1,6 @@
---- MacOS X app release.
--- @module scripts.macosx
--- @usage macosx(project)
+--- macOS app release.
+-- @module scripts.macos
+-- @usage macos(project)
 
 local fs = require "luarocks.fs"
 local zip = require "brimworks.zip"
@@ -14,7 +14,7 @@ local s = {}
 local function validate(project)
   local valid, err = true, utils.io.err
   if type(project.identifier) ~= "string" or project.identifier == "" then
-    err("MacOS X: No identifier specified.\n")
+    err("macOS: No identifier specified.\n")
     valid = false
   end
   if not valid then os.exit(1) end
@@ -31,7 +31,7 @@ function s.script(project)
   if project.loveVersion >= ver'11.0' then
     bin = prefix..".zip"
   elseif project.loveVersion == ver'0.10.0' then
-    utils.io.err("MacOS X: No LÖVE 0.10.0 binary available.\n")
+    utils.io.err("macOS: No LÖVE 0.10.0 binary available.\n")
     os.exit(1)
   elseif project.loveVersion >= ver'0.9.0' then
     bin = prefix.."x-x64.zip"

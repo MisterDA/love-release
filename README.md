@@ -13,7 +13,7 @@ Available as a [LuaRocks 3][luarocks] [package][package].
 
 ## Features
 love-release makes your LÖVE game release easier. love-release can
-create from your sources: Windows executables, MacOS X applications,
+create from your sources: Windows executables, macOS applications,
 Debian packages, and simple LÖVE files.
 
 love-release creates only one LÖVE file per release directory and
@@ -41,7 +41,7 @@ Arguments:
 
 Options:
    -D                    Debian package.
-   -M                    MacOS X application.
+   -M                    macOS application.
    -W [32|64]            Windows executable.
    -a <author>, --author <author>
                          Author full name. Required for Debian.
