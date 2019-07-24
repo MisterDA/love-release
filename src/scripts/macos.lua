@@ -26,16 +26,21 @@ function s.script(project)
   script:createLoveFile()
   fs.change_dir(project.releaseDirectory)
 
-  local prefix = "love-"..tostring(project.loveVersion).."-macos"
-  local bin
-  if project.loveVersion >= ver'11.0' then
+  local prefix, bin
+  if project.loveVersion > ver'11.0' then
+    prefix = "love-"..tostring(project.loveVersion).."-macos"
+    bin = prefix..".zip"
+  elseif project.loveVersion == ver'11.0' then
+    prefix = "love-"..tostring(project.loveVersion)..".0-macos"
     bin = prefix..".zip"
   elseif project.loveVersion == ver'0.10.0' then
     utils.io.err("macOS: No LÖVE 0.10.0 binary available.\n")
     os.exit(1)
   elseif project.loveVersion >= ver'0.9.0' then
+    prefix = "love-"..tostring(project.loveVersion).."-macos"
     bin = prefix.."x-x64.zip"
   else
+    prefix = "love-"..tostring(project.loveVersion).."-macos"
     bin = prefix.."x-ub.zip"
   end
   local url = "https://bitbucket.org/rude/love/downloads/"..bin
