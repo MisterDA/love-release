@@ -194,7 +194,7 @@ function Project:__tostring()
   '  description = '..escape(self.description)..',\n'..
   '  homepage = '..escape(self.homepage)..',\n'..
   '  identifier = '..escape(self.identifier)..',\n'..
-  '  excludeFileList = { '..escape(table.concat(self.excludeFileList, ', '))..'} ,\n'..
+  '  excludeFileList = { '..escape(table.concat(self.excludeFileList, "', '"))..'} ,\n'..
   '  compile = '..escape(self.compile)..',\n'..
   '  projectDirectory = '..escape(self.projectDirectory)..',\n'..
   '  releaseDirectory = '..escape(self.releaseDirectory)..',\n'..
