@@ -64,6 +64,7 @@ local function release(script, project, arch)
 
   ar:add(dir..project.package..".exe", "string", exe..game)
   ar:delete(dir.."love.exe")
+  ar:delete(dir.."lovec.exe")
   ar:delete(dir.."readme.txt")
   ar:delete(dir.."changes.txt")
 
