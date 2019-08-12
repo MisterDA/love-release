@@ -1,5 +1,5 @@
 package = "love-release"
-version = "2.0.13-1"
+version = "2.0.13-2"
 rockspec_format = "3.0"
 source = {
   url = "git://github.com/MisterDA/love-release.git",
@@ -27,7 +27,7 @@ build = {
   modules = {
     ["love-release.scripts.debian"] = "src/scripts/debian.lua",
     ["love-release.scripts.love"] = "src/scripts/love.lua",
-    ["love-release.scripts.macosx"] = "src/scripts/macosx.lua",
+    ["love-release.scripts.macos"] = "src/scripts/macos.lua",
     ["love-release.scripts.windows"] = "src/scripts/windows.lua",
     ["love-release.pipes.args"] = "src/pipes/args.lua",
     ["love-release.pipes.conf"] = "src/pipes/conf.lua",
