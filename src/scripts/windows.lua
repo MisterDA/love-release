@@ -13,7 +13,8 @@ local s = {}
 
 local function release(script, project, arch)
   local prefix, dir, bin
-  if project.loveVersion >= ver'11.1' then
+  if project.loveVersion == ver'11.2' or
+     project.loveVersion == ver'11.1' then
     prefix = "love-"..tostring(project.loveVersion)
     dir = prefix..".0-win"..arch.."/"
     prefix = prefix.."-win"
