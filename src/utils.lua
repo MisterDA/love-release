@@ -128,11 +128,13 @@ end
 --- Escapes a string to use as a regex.
 -- @string string to escape.
 function utils.lua.escape_string_regex(string)
-  -- ^$()%.[]*+-?
-  return string:gsub('%%', '%%%%'):gsub('^%^', '%%^'):gsub('%$$', '%%$')
-    :gsub('%(', '%%('):gsub('%)', '%%)'):gsub('%.', '%%.')
-    :gsub('%[', '%%['):gsub('%]', '%%]'):gsub('%*', '%%*')
-    :gsub('%+', '%%+'):gsub('%-', '%%-'):gsub('%?', '%%?')
+  return string:gsub('[%^%$%(%)%%%.%[%]%*%+%-%?%z]', {
+                       ['^'] = '%^'; ['$'] = '%$'; ['('] = '%(';
+                       [')'] = '%)'; ['%'] = '%%'; ['.'] = '%.';
+                       ['['] = '%['; [']'] = '%]'; ['*'] = '%*';
+                       ['+'] = '%+'; ['-'] = '%-'; ['?'] = '%?';
+                       ['\0'] = '%z';
+  })
 end
 
 
