@@ -13,8 +13,6 @@ function s.script(project)
 end
 
 
-setmetatable(s, {
-  __call = function(_, project) return s.script(project) end,
-})
+setmetatable(s, { __call = function(_, project) return s.script(project) end })
 
 return s

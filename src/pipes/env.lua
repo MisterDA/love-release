@@ -84,8 +84,8 @@ function pipe.pipe(project)
 
   if systemLoveVersion and not isSupported(systemLoveVersion) then
     err("ENV: Your LÖVE installed version (" .. tostring(systemLoveVersion) ..
-        ") is not supported by love-release (" .. tostring(scriptLoveVersion) ..
-        ").\n")
+          ") is not supported by love-release (" .. tostring(scriptLoveVersion) ..
+          ").\n")
     if systemLoveVersion > scriptLoveVersion then
       err("     You should update love-release.\n")
     elseif systemLoveVersion < scriptLoveVersion then
@@ -95,8 +95,8 @@ function pipe.pipe(project)
 
   if webLoveVersion and not isSupported(webLoveVersion) then
     err("ENV: The upstream LÖVE version (" .. tostring(webLoveVersion) ..
-        ") is not supported by love-release (" .. tostring(scriptLoveVersion) ..
-        ").\n")
+          ") is not supported by love-release (" .. tostring(scriptLoveVersion) ..
+          ").\n")
     err("     You should update love-release.\n")
   end
 
@@ -108,8 +108,6 @@ function pipe.pipe(project)
 end
 
 
-setmetatable(pipe, {
-  __call = function(_, project) return pipe.pipe(project) end,
-})
+setmetatable(pipe, { __call = function(_, project) return pipe.pipe(project) end })
 
 return pipe

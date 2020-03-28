@@ -62,12 +62,12 @@ function s.script(project)
   local infoPlist = assert(infoPlistHandle:read(infoPlistSize))
   infoPlistHandle:close()
   infoPlist = infoPlist
-      :gsub("\n\t<key>UTExportedTypeDeclarations</key>.*</array>",
-            "")
-      :gsub("(CFBundleIdentifier.-<string>)(.-)(</string>)",
-         "%1"..project.identifier.."%3")
-      :gsub("(CFBundleName.-<string>)(.-)(</string>)",
-            "%1"..project.title..".love%3")
+    :gsub("\n\t<key>UTExportedTypeDeclarations</key>.*</array>",
+          "")
+    :gsub("(CFBundleIdentifier.-<string>)(.-)(</string>)",
+          "%1"..project.identifier.."%3")
+    :gsub("(CFBundleName.-<string>)(.-)(</string>)",
+          "%1"..project.title..".love%3")
 
   ar:add("love.app/Contents/Resources/"..script.loveFile,
          "file", script.loveFile)
@@ -91,8 +91,6 @@ function s.script(project)
 end
 
 
-setmetatable(s, {
-  __call = function(_, project) return s.script(project) end,
-})
+setmetatable(s, { __call = function(_, project) return s.script(project) end })
 
 return s

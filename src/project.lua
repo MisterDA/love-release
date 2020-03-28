@@ -142,8 +142,8 @@ end
 -- it is within the project directory.
 function Project:excludeFiles()
   local dir, rm_dir = self.releaseDirectory:gsub(
-      "^"..utils.lua.escape_string_regex(self.projectDirectory).."/",
-      "")
+    "^"..utils.lua.escape_string_regex(self.projectDirectory).."/",
+    "")
   if rm_dir > 0 then
     dir = "^"..dir
   end
@@ -184,21 +184,21 @@ end
 -- @local
 function Project:__tostring()
   return
-  '{\n'..
-  '  title = '..escape(self.title)..',\n'..
-  '  package = '..escape(self.package)..',\n'..
-  '  loveVersion = \''..escape(self.loveVersion)..'\',\n'..
-  '  version = '..escape(self.version)..',\n'..
-  '  author = '..escape(self.author)..',\n'..
-  '  email = '..escape(self.email)..',\n'..
-  '  description = '..escape(self.description)..',\n'..
-  '  homepage = '..escape(self.homepage)..',\n'..
-  '  identifier = '..escape(self.identifier)..',\n'..
-  '  excludeFileList = { '..escape(table.concat(self.excludeFileList, "', '"))..'} ,\n'..
-  '  compile = '..escape(self.compile)..',\n'..
-  '  projectDirectory = '..escape(self.projectDirectory)..',\n'..
-  '  releaseDirectory = '..escape(self.releaseDirectory)..',\n'..
-  '}'
+    '{\n'..
+    '  title = '..escape(self.title)..',\n'..
+    '  package = '..escape(self.package)..',\n'..
+    '  loveVersion = \''..escape(self.loveVersion)..'\',\n'..
+    '  version = '..escape(self.version)..',\n'..
+    '  author = '..escape(self.author)..',\n'..
+    '  email = '..escape(self.email)..',\n'..
+    '  description = '..escape(self.description)..',\n'..
+    '  homepage = '..escape(self.homepage)..',\n'..
+    '  identifier = '..escape(self.identifier)..',\n'..
+    '  excludeFileList = { '..escape(table.concat(self.excludeFileList, "', '"))..'} ,\n'..
+    '  compile = '..escape(self.compile)..',\n'..
+    '  projectDirectory = '..escape(self.projectDirectory)..',\n'..
+    '  releaseDirectory = '..escape(self.releaseDirectory)..',\n'..
+    '}'
 end
 
 --- Sets the title.

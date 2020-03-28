@@ -39,8 +39,8 @@ function pipe.pipe(project)
       if not utils.love.isSupported(version) then
         local scriptLoveVersion = project.loveVersion
         err("CONF: Your LÖVE conf version ("..v
-         .. ") is not supported by love-release ("..tostring(scriptLoveVersion)
-         .. ").\n")
+              .. ") is not supported by love-release ("..tostring(scriptLoveVersion)
+              .. ").\n")
         if version > scriptLoveVersion then
           err("      You should update love-release.\n")
         elseif version < scriptLoveVersion then
@@ -76,8 +76,6 @@ function pipe.pipe(project)
 end
 
 
-setmetatable(pipe, {
-  __call = function(_, project) return pipe.pipe(project) end,
-})
+setmetatable(pipe, { __call = function(_, project) return pipe.pipe(project) end })
 
 return pipe

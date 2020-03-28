@@ -80,34 +80,34 @@ function s.script(project)
 
   -- /DEBIAN/control
   writeFile("/DEBIAN/control",
-      "Package: "..project.package.."\n"..
-      "Version: "..project.version.."\n"..
-      "Architecture: all\n"..
-      "Maintainer: "..project.author.." <"..project.email..">\n"..
-      "Installed-Size: "..
-        math.floor(assert(lfs.attributes(loveFileRel, "size")) / 1024).."\n"..
-      "Depends: love (>= "..tostring(project.loveVersion)..")\n"..
-      "Priority: extra\n"..
-      "Homepage: "..project.homepage.."\n"..
-      "Description: "..project.description.."\n"
+            "Package: "..project.package.."\n"..
+              "Version: "..project.version.."\n"..
+              "Architecture: all\n"..
+              "Maintainer: "..project.author.." <"..project.email..">\n"..
+              "Installed-Size: "..
+              math.floor(assert(lfs.attributes(loveFileRel, "size")) / 1024).."\n"..
+              "Depends: love (>= "..tostring(project.loveVersion)..")\n"..
+              "Priority: extra\n"..
+              "Homepage: "..project.homepage.."\n"..
+              "Description: "..project.description.."\n"
   )
 
   -- /usr/share/applications/${PACKAGE}.desktop
   writeFile("/usr/share/applications/"..project.package..".desktop",
-      "[Desktop Entry]\n"..
-      "Name="..project.title.."\n"..
-      "Comment="..project.description.."\n"..
-      "Exec="..project.package.."\n"..
-      "Type=Application\n"..
-      "Categories=Game;\n",
-      true
+            "[Desktop Entry]\n"..
+              "Name="..project.title.."\n"..
+              "Comment="..project.description.."\n"..
+              "Exec="..project.package.."\n"..
+              "Type=Application\n"..
+              "Categories=Game;\n",
+            true
   )
 
   -- /usr/bin/${PACKAGE}
   writeFile("/usr/bin/"..project.package,
-      "#!/bin/sh\n"..
-      "love '"..loveFileDeb:gsub("'", "\\'").."'\n",
-      true
+            "#!/bin/sh\n"..
+              "love '"..loveFileDeb:gsub("'", "\\'").."'\n",
+            true
   )
   -- FIXME: escape this path?
   assert(fs.set_permissions(tempDir.."/usr/bin/"..project.package,
@@ -125,7 +125,7 @@ function s.script(project)
 
   -- create the package
   local deb = project.releaseDirectory.."/"..project.package.."-"..
-              project.version.."_all.deb"
+    project.version.."_all.deb"
   fs.delete(deb)
   assert(fs.execute("fakeroot dpkg-deb -b ", tempDir, deb),
          "DEBIAN: error while building the package.")
@@ -134,8 +134,6 @@ function s.script(project)
 end
 
 
-setmetatable(s, {
-  __call = function(_, project) return s.script(project) end,
-})
+setmetatable(s, { __call = function(_, project) return s.script(project) end })
 
 return s
