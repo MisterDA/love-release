@@ -16,9 +16,9 @@ fs.init()
 utils.cache = nil
 
 do
-   local cache = dir.dir_name(cfg.local_cache) .. "/love-release"
-   assert(fs.make_dir(cache))
-   utils.cache = cache
+  local cache = dir.dir_name(cfg.local_cache) .. "/love-release"
+  assert(fs.make_dir(cache))
+  utils.cache = cache
 end
 
 
@@ -27,42 +27,42 @@ end
 utils.love = {}
 
 local ver = {
-   major = nil,
-   minor = nil,
-   patch = nil,
-   str = nil
+  major = nil,
+  minor = nil,
+  patch = nil,
+  str = nil
 }
 utils.love.ver = ver
 
 function ver:new(str)
-   local major, minor, patch = str:match("^(%d+)%.?(%d*)%.?(%d*)$")
-   assert(type(major) == 'string',
-          ("Could not extract version number(s) from %q"):format(str))
-   local o = { major = tonumber(major),
-               minor = tonumber(minor),
-               patch = tonumber(patch),
-               str = str }
-   setmetatable(o, self)
-   self.__index = self
-   return o
+  local major, minor, patch = str:match("^(%d+)%.?(%d*)%.?(%d*)$")
+  assert(type(major) == 'string',
+         ("Could not extract version number(s) from %q"):format(str))
+  local o = { major = tonumber(major),
+              minor = tonumber(minor),
+              patch = tonumber(patch),
+              str = str }
+  setmetatable(o, self)
+  self.__index = self
+  return o
 end
 
 function ver:__eq(other)
-   return self.major == other.major and self.minor == other.minor and
-      self.patch == other.patch
+  return self.major == other.major and self.minor == other.minor and
+    self.patch == other.patch
 end
 
 function ver:__lt(other)
-   if self.major ~= other.major then return self.major < other.major end
-   if self.minor ~= other.minor then return self.minor < other.minor end
-   if self.patch ~= other.patch then return self.patch < other.patch end
-   return false
+  if self.major ~= other.major then return self.major < other.major end
+  if self.minor ~= other.minor then return self.minor < other.minor end
+  if self.patch ~= other.patch then return self.patch < other.patch end
+  return false
 end
 
 function ver:__tostring()
-   local buffer = { ("%d.%d"):format(self.major, self.minor) }
-   if self.patch then table.insert(buffer, "." .. self.patch) end
-   return table.concat(buffer)
+  local buffer = { ("%d.%d"):format(self.major, self.minor) }
+  if self.patch then table.insert(buffer, "." .. self.patch) end
+  return table.concat(buffer)
 end
 
 setmetatable(ver, { __call = ver.new })
@@ -97,7 +97,7 @@ utils.love.minVersion = utils.love.versionTable[#utils.love.versionTable]
 function utils.love.isSupported(version)
   assert(getmetatable(version) == ver)
   if version >= utils.love.minVersion
-      and version <= utils.love.lastVersion then
+  and version <= utils.love.lastVersion then
     for _, v in ipairs(utils.love.versionTable) do
       if version == v then
         return true
@@ -130,9 +130,9 @@ end
 function utils.lua.escape_string_regex(string)
   -- ^$()%.[]*+-?
   return string:gsub('%%', '%%%%'):gsub('^%^', '%%^'):gsub('%$$', '%%$')
-                :gsub('%(', '%%('):gsub('%)', '%%)'):gsub('%.', '%%.')
-                :gsub('%[', '%%['):gsub('%]', '%%]'):gsub('%*', '%%*')
-                :gsub('%+', '%%+'):gsub('%-', '%%-'):gsub('%?', '%%?')
+    :gsub('%(', '%%('):gsub('%)', '%%)'):gsub('%.', '%%.')
+    :gsub('%[', '%%['):gsub('%]', '%%]'):gsub('%*', '%%*')
+    :gsub('%+', '%%+'):gsub('%-', '%%-'):gsub('%?', '%%?')
 end
 
 

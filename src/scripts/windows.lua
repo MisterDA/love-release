@@ -14,7 +14,7 @@ local s = {}
 local function release(script, project, arch)
   local prefix, dir, bin
   if project.loveVersion == ver'11.2' or
-     project.loveVersion == ver'11.1' then
+  project.loveVersion == ver'11.1' then
     prefix = "love-"..tostring(project.loveVersion)
     dir = prefix..".0-win"..arch.."/"
     prefix = prefix.."-win"
@@ -73,8 +73,8 @@ local function release(script, project, arch)
     stat = ar:stat(i)
     if stat then
       ar:rename(i, stat.name:gsub(
-          "^"..utils.lua.escape_string_regex(dir),
-          utils.lua.escape_string_regex(project.title).."-win"..arch.."/"))
+                  "^"..utils.lua.escape_string_regex(dir),
+                  utils.lua.escape_string_regex(project.title).."-win"..arch.."/"))
     end
   end
 
@@ -97,8 +97,6 @@ function s.script(project, arch)
 end
 
 
-setmetatable(s, {
-  __call = function(_, project, arch) return s.script(project, arch) end,
-})
+setmetatable(s, { __call = function(_, project, arch) return s.script(project, arch) end })
 
 return s

@@ -17,9 +17,9 @@ function Args:initialize()
   self.pre = Args.pre
 
   local parser = argparse()
-      :name "love-release"
-      :description "Makes LÖVE games releases easier !"
-      :epilog "For more info, see https://github.com/MisterDA/love-release"
+    :name "love-release"
+    :description "Makes LÖVE games releases easier !"
+    :epilog "For more info, see https://github.com/MisterDA/love-release"
 
 
   parser:argument("release", "Project release directory.")
