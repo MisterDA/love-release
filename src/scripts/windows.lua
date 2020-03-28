@@ -74,7 +74,7 @@ local function release(script, project, arch)
     if stat then
       ar:rename(i, stat.name:gsub(
                   "^"..utils.lua.escape_string_regex(dir),
-                  utils.lua.escape_string_regex(project.title).."-win"..arch.."/"))
+                  project.title.."-win"..arch.."/"))
     end
   end
 
