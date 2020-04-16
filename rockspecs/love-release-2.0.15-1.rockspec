@@ -1,9 +1,9 @@
 package = "love-release"
-version = "2.0.14-1"
+version = "2.0.15-1"
 rockspec_format = "3.0"
 source = {
   url = "git://github.com/MisterDA/love-release.git",
-  tag = "v2.0.14",
+  tag = "v2.0.15",
 }
 description = {
   summary = "Make LÖVE games releases easier",
