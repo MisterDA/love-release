@@ -43,7 +43,7 @@ function s.script(project)
     prefix = "love-"..tostring(project.loveVersion).."-macos"
     bin = prefix.."x-ub.zip"
   end
-  local url = "https://bitbucket.org/rude/love/downloads/"..bin
+  local url = "https://github.com/love2d/love/releases/download/"..tostring(project.loveVersion).."/"..bin
   local cache = utils.cache.."/"..bin
 
   -- Can't cache the archive because luarocks functions use a HEAD

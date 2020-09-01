@@ -35,7 +35,7 @@ local function release(script, project, arch)
     prefix = "love-"..tostring(project.loveVersion).."-win"
     dir, bin = prefix..arch.."/", prefix..arch..".zip"
   end
-  local url = "https://bitbucket.org/rude/love/downloads/"..bin
+  local url = "https://github.com/love2d/love/releases/download/"..tostring(project.loveVersion).."/"..bin
   local cache = utils.cache.."/"..bin
 
   -- Can't cache the archive because luarocks functions use a HEAD
