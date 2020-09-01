@@ -101,7 +101,7 @@ could break love-release.
 - [libzip][libzip] and its headers for lua-libzip.
 - Other libraries are automatically installed, but let's give them
   some credit: [lua-zip][lua-zip], [luafilesystem][lfs],
-  [loadconf][loadconf], [middleclass][middleclass], [semver][semver].
+  [loadconf][loadconf], [middleclass][middleclass].
 
 #### Optional
 - `love` can be used to determine your system LÖVE version.
@@ -153,4 +153,3 @@ Every bug report or feature request is gladly welcome !
 [loadconf]: https://github.com/Alloyed/loadconf
 [middleclass]: https://github.com/kikito/middleclass
 [package]: https://luarocks.org/modules/rucikir/love-release
-[semver]: https://github.com/kikito/semver.lua
