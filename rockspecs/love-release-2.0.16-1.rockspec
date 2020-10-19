@@ -1,9 +1,9 @@
 package = "love-release"
-version = "2.0.15-1"
+version = "2.0.16-1"
 rockspec_format = "3.0"
 source = {
   url = "git://github.com/MisterDA/love-release.git",
-  tag = "v2.0.15",
+  tag = "v2.0.16",
 }
 description = {
   summary = "Make LÖVE games releases easier",
@@ -16,7 +16,7 @@ It automates LÖVE Game Distribution.
 }
 dependencies = {
   "argparse",
-  "loadconf",
+  "loadconf >= 0.3.6",
   "lua",
   "luafilesystem",
   "lua-zip",
