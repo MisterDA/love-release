@@ -14,23 +14,23 @@ local s = {}
 local function validate(project)
   local valid, err = true, utils.io.err
   if type(project.author) ~= "string" or project.author == "" then
-    err("DEBIAN: No author specified.\n")
+    err("DEBIAN: No author specified (--author).\n")
     valid = false
   end
   if type(project.description) ~= "string" or project.description == "" then
-    err("DEBIAN: No description specified.\n")
+    err("DEBIAN: No description specified (--desc).\n")
     valid = false
   end
   if type(project.email) ~= "string" or project.email == "" then
-    err("DEBIAN: No email specified.\n")
+    err("DEBIAN: No email specified (--email).\n")
     valid = false
   end
   if type(project.homepage) ~= "string" or project.homepage == "" then
-    err("DEBIAN: No homepage specified.\n")
+    err("DEBIAN: No homepage specified (--url).\n")
     valid = false
   end
   if type(project.version) ~= "string" or project.version == "" then
-    err("DEBIAN: No version specified.\n")
+    err("DEBIAN: No version specified (-v).\n")
     valid = false
   end
   if not valid then os.exit(1) end
