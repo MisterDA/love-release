@@ -1,6 +1,5 @@
 # love-release
 [![License](https://img.shields.io/badge/License-MIT-brightgreen.svg)](LICENSE)
-[![Build Status](https://travis-ci.org/MisterDA/love-release.svg?branch=master)](https://travis-ci.org/MisterDA/love-release)
 [![LuaRocks](https://img.shields.io/badge/LuaRocks-blue.svg)](https://luarocks.org/modules/rucikir/love-release)
 ![Lua](https://img.shields.io/badge/Lua-5.1%2C%20JIT-blue.svg)
 
@@ -8,7 +7,7 @@
 Bash script).\
 Automates LÖVE [Game Distribution][game_dist].\
 LÖVE [forum topic][forum_topic].\
-Available as a [LuaRocks 3][luarocks] [package][package].
+Available as a [LuaRocks 3][luarocks] [package][].
 
 ## Features
 love-release makes your LÖVE game release easier. love-release can
@@ -18,11 +17,11 @@ Debian packages, and simple LÖVE files.
 love-release creates only one LÖVE file per release directory and
 keeps it synced with your sources.
 
-love-release can extract its informations from the environment: it
+love-release can extract its information from the environment: it
 guesses your game's title from the directory where it's stored,
 selects by default the latest LÖVE version from the web or uses its
 latest bundled LÖVE version, then parses the `conf.lua` file to
-extract even more informations such as the real LÖVE version your
+extract even more information such as the real LÖVE version your
 project uses.
 
 ### Usage
@@ -66,9 +65,9 @@ For more info, see https://github.com/MisterDA/love-release
 ```
 
 ### Configuration
-love-release prints to the command-line a Lua table containing the
-informations it uses to generate your project. These informations can
-be stored in your `conf.lua` file to be used later.
+love-release outputs a Lua table containing the information it uses to
+generate your project. That information can be stored in your
+`conf.lua` file to be used later.
 
 ```lua
 function love.conf(t)
@@ -92,20 +91,20 @@ end
 
 ### Dependencies
 love-release is only installable through LuaRocks and highly depends
-on LuaRocks internal API. love-release is currently built on LuaRocks
-3.0.x. LuaRocks API is not meant to be stable, and a future update
-could break love-release.
+on LuaRocks internal API. love-release is currently built on
+LuaRocks 3. LuaRocks API is not meant to be stable, and a future
+update could break love-release.
 
 #### Required
-- [libzip][libzip] and its headers for lua-libzip.
+- [libzip][] and its headers for lua-libzip.
 - Other libraries are automatically installed, but let's give them
-  some credit: [lua-zip][lua-zip], [luafilesystem][lfs],
-  [loadconf][loadconf], [middleclass][middleclass].
+  some credit: [lua-zip][], [luafilesystem][], [loadconf][],
+  [middleclass][].
 
 #### Optional
 - `love` can be used to determine your system LÖVE version.
 - `fakeroot` and `dpkg-deb` are required to create Debian packages.
-- [LuaJIT][luajit] can be used to compile your sources, either with
+- [LuaJIT][] can be used to compile your sources, either with
   `luarocks-luajit` or with `luajit` if it is installed.
 
 ### Install
@@ -125,14 +124,15 @@ the time to assure yourself that the paths are correct and match your
 installation of love-release.
 
 ```sh
-rm -rf '/usr/bin/love-release'
-rm -rf '/usr/share/love-release'
-rm -rf '/usr/share/man/man1/love-release.1.gz'
-rm -rf '/usr/share/bash-completion/completions/love-release' '/etc/bash_completion.d/love-release'
+rm -rf '/usr/bin/love-release'	\
+       '/usr/share/love-release'	\
+       '/usr/share/man/man1/love-release.1.gz'	\
+       '/usr/share/bash-completion/completions/love-release'	\
+       '/etc/bash_completion.d/love-release'
 ```
 
 ## Contribute
-The documentation of love-release internals is written with [LDoc][ldoc].
+The documentation of love-release internals is written with [LDoc][].
 Generate it by running `ldoc .`.\
 I currently do not plan to continue the development of the Bash script,
 or even to fix it. If there appears to be any need for it, let me know
@@ -141,12 +141,12 @@ Every bug report or feature request is gladly welcome !
 
 [forum_topic]: https://love2d.org/forums/viewtopic.php?t=75387
 [game_dist]: https://www.love2d.org/wiki/Game_Distribution
-[ldoc]: https://github.com/stevedonovan/LDoc
-[lfs]: https://github.com/keplerproject/luafilesystem
+[LDoc]: https://github.com/stevedonovan/LDoc
+[luafilesystem]: https://github.com/keplerproject/luafilesystem
 [libzip]: http://www.nih.at/libzip/
 [love]: https://www.love2d.org/
-[lua]: http://www.lua.org/
-[luajit]: http://luajit.org/
+[Lua]: http://www.lua.org/
+[luaJIT]: http://luajit.org/
 [luarocks]: https://luarocks.org/
 [lua-zip]: https://github.com/brimworks/lua-zip
 [loadconf]: https://github.com/Alloyed/loadconf
