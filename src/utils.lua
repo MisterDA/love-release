@@ -70,7 +70,7 @@ setmetatable(ver, { __call = ver.new })
 --- All supported LÖVE versions.
 -- @local
 utils.love.versionTable = {
-  ver'11.3', ver'11.2', ver'11.1', ver'11.0',
+  ver'11.5', ver'11.4', ver'11.3', ver'11.2', ver'11.1', ver'11.0',
   ver'0.10.2', ver'0.10.1', ver'0.10.0',
   ver'0.9.2', ver'0.9.1', ver'0.9.0',
   ver'0.8.0',
